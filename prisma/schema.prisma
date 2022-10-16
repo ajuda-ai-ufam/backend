@@ -6,3 +6,9 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model teste {
+
+  id Int @id
+  teste String
+}
