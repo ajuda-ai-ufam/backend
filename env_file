@@ -2,7 +2,7 @@
 PORT = PORT
 
 #DATABASE
-DATABASE_URL="mysql://user:password@localhost:3306/mydb?schema=master"
+DATABASE_URL = "mysql://user:password@localhost:3306/mydb?schema=master"
 
-
-
+# Secret key
+SECRET_KEY = SECRET_KEY

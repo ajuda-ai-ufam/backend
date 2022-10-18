@@ -7,8 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model teste {
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  registration String   @unique
+  course       Course   @relation(fields: [course_id], references: [id])
+  course_id    String
+  role         Role     @default(ALUNO)
+  password     String
+  updated_at   DateTime @updatedAt
+  created_at   DateTime @default(now())
 
-  id Int @id
-  teste String
+  @@map("users")
 }
+
+model Course {
+  id         String   @id @default(uuid())
+  code       String   @unique
+  name       String
+  User       User[]
+  updated_at DateTime @updatedAt
+  created_at DateTime @default(now())
+
+  @@map("courses")
+}
+
+enum Role {
+  ADMIN
+  PROFESSOR
+  MONITOR
+  ALUNO
+} 
