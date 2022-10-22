@@ -1,9 +1,9 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CourseService } from './course.service';
 
 @Controller('course')
-@UseGuards(JwtAuthGuard)
+@ApiTags('Course')
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 

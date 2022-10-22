@@ -6,18 +6,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Ajudaai API')
-    .setDescription('Backend do Ajudaai')
+    .setTitle('Ajuda Aí API')
+    .setDescription('Backend Ajuda Aí')
     .setVersion('1.0')
-    .addTag('Ajudaai')
+    .addTag('Ajuda Aí')
     .addBearerAuth(
       {
-        // I was also testing it without prefix 'Bearer ' before the JWT
-        description: `[just text field] Please enter token in following format: Bearer <JWT>`,
+        description: 'Please enter token in following format: Bearer <JWT>',
         name: 'Authorization',
-        bearerFormat: 'Bearer', // I`ve tested not to use this field, but the result was the same
+        bearerFormat: 'Bearer',
         scheme: 'Bearer',
-        type: 'http', // I`ve attempted type: 'apiKey' too
+        type: 'http',
         in: 'Header',
       },
       'access-token',
