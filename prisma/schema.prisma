@@ -20,7 +20,7 @@ model User {
   student  Student[]
 
   @@map("users")
-  
+
 }
 
 
@@ -35,7 +35,7 @@ model Student {
   whatsapp  String? @db.VarChar(11)
   linkedin  String? @db.VarChar(100)
 
-  @@map("students")
+  @@map("student")
 
 }
 
