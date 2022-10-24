@@ -18,6 +18,7 @@ model User {
   created_at  DateTime @default(now())
   verification_code Verification_Code[]
   student  Student[]
+  teacher  Teacher[]
 
   @@map("users")
 
@@ -37,6 +38,15 @@ model Student {
 
   @@map("student")
 
+}
+
+model Teacher {
+  
+  user_id  Int @id
+  user  User @relation(fields: [user_id],references: [id])
+
+
+  @@map("teacher")
 }
 
 model Course {
