@@ -8,21 +8,55 @@ datasource db {
 }
 
 model User {
+
   id          Int      @id @default(autoincrement())
-  email       String   @unique
-  name        String
-  password    String
+  email       String   @unique @db.VarChar(50)
+  name        String   @db.VarChar(50)
+  password    String   @db.VarChar(18)
   is_verified Boolean  @default(false)
   updated_at  DateTime @updatedAt
   created_at  DateTime @default(now())
+  verification_code Verification_Code[]
+  student  Student[]
 
   @@map("users")
+
+}
+
+
+model Student {
+
+  user_id  Int  @id @unique
+  user  User @relation(fields: [user_id],references: [id]) 
+  enrollment  String @db.VarChar(10)
+  course  Course @relation(fields: [course_id],references: [id])
+  course_id  Int
+  contact_email  String @db.VarChar(50)
+  whatsapp  String? @db.VarChar(11)
+  linkedin  String? @db.VarChar(100)
+
+  @@map("student")
+
 }
 
 model Course {
   id         Int      @id @default(autoincrement())
   name       String
   code       String   @unique
+  student Student[]
 
   @@map("courses")
+}
+
+model Verification_Code {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique @db.VarChar(6)
+  type        String  @db.VarChar(20)
+  is_verified Boolean  @default(false)
+  user        User @relation(fields: [user_id],references: [id])
+  user_id     Int
+  updated_at  DateTime @updatedAt
+  created_at  DateTime @default(now())
+
+  @@map("verification_code")
 }
