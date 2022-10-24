@@ -9,12 +9,13 @@ datasource db {
 
 model User {
   id          Int      @id @default(autoincrement())
-  email       String   @unique
-  name        String
-  password    String
+  email       String   @unique @db.VarChar(50)
+  name        String   @db.VarChar(50)
+  password    String   @db.VarChar(18)
   is_verified Boolean  @default(false)
   updated_at  DateTime @updatedAt
   created_at  DateTime @default(now())
+  verification_code Verification_Code[]
 
   @@map("users")
 }
@@ -25,4 +26,17 @@ model Course {
   code       String   @unique
 
   @@map("courses")
+}
+
+model Verification_Code {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique @db.VarChar(6)
+  type        String  @db.VarChar(20)
+  is_verified Boolean  @default(false)
+  user        User @relation(fields: [user_id],references: [id])
+  user_id     Int
+  updated_at  DateTime @updatedAt
+  created_at  DateTime @default(now())
+
+  @@map("verification_code")
 }
