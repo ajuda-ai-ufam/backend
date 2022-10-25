@@ -5,12 +5,14 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { UserCreateDto } from './dto/user-create.dto';
+import { StudentCreateDTO } from './dto/student-create.dto';
+import { TeacherCreateDTO } from './dto/teacher-create.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -18,10 +20,16 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post("/student")
   @IsPublic()
-  async create(@Body() data: UserCreateDto) {
-    return this.userService.create(data);
+  async createUserStudent(@Body() data: StudentCreateDTO) {
+    return this.userService.createUserStudent(data);
+  }
+
+  @Post("/teacher")
+  @IsPublic()
+  async createUserTeacher(@Body() data: TeacherCreateDTO) {
+    return this.userService.createUserTeacher(data);
   }
 
   @Get()
@@ -29,6 +37,11 @@ export class UserController {
   @ApiBearerAuth('access_token')
   async findAll() {
     return this.userService.findAll();
+  }
+
+  @Get("/get")
+  async findOne(@Query('enrollment') enrollment: string){
+    return this.userService.findOneByEnrollment(enrollment)
   }
 
   @Delete(':id')
