@@ -32,7 +32,7 @@ export class UserController {
     return this.userService.createUserTeacher(data);
   }
 
-  @Get("/get/all")
+  @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access_token')
   async findAll() {
