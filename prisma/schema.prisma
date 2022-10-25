@@ -16,8 +16,8 @@ model User {
   updated_at        DateTime            @updatedAt
   created_at        DateTime            @default(now())
   verification_code Verification_Code[]
-  student           Student[]
-  teacher           Teacher[]
+  student           Student?
+  teacher           Teacher?
 
   @@map("user")
 }
@@ -26,7 +26,7 @@ model Student {
   user_id       Int     @id @unique
   user          User    @relation(fields: [user_id], references: [id])
   description   String  @db.VarChar(500)
-  enrollment    String  @db.VarChar(10)
+  enrollment    String  @unique @db.VarChar(10)
   course        Course  @relation(fields: [course_id], references: [id])
   course_id     Int
   contact_email String  @db.VarChar(50)
