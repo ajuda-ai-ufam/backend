@@ -49,6 +49,8 @@ model Subject {
   code      String @db.VarChar(10)
   course_id Int
   course    Course @relation(fields: [course_id], references: [id])
+
+  @@map("subject")
 }
 
 model Course {
