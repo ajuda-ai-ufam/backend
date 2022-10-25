@@ -20,7 +20,7 @@ model User {
   student  Student[]
   teacher  Teacher[]
 
-  @@map("users")
+  @@map("user")
 
 }
 
@@ -29,6 +29,7 @@ model Student {
 
   user_id  Int  @id @unique
   user  User @relation(fields: [user_id],references: [id]) 
+  description  String @db.VarChar(500)
   enrollment  String @db.VarChar(10)
   course  Course @relation(fields: [course_id],references: [id])
   course_id  Int
@@ -51,14 +52,15 @@ model Teacher {
 
 model Course {
   id         Int      @id @default(autoincrement())
-  name       String
-  code       String   @unique
+  name       String   @db.VarChar(100)
+  code       String   @unique @db.VarChar(10)
   student Student[]
 
-  @@map("courses")
+  @@map("course")
 }
 
 model Verification_Code {
+
   id         Int      @id @default(autoincrement())
   code       String   @unique @db.VarChar(6)
   type        String  @db.VarChar(20)
