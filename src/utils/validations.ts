@@ -20,7 +20,7 @@ export class Validations {
   }
 
   static validateWhatsapp(whatsapp: string){
-    const re = /^([1-9]{1})([0-9]{10})$/gm;
+    const re = /^([1-9]{1})([\d]{10})$/gm;
     return re.test(whatsapp);
   }
 
