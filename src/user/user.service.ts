@@ -5,6 +5,7 @@ import { StudentService } from 'src/student/student.service';
 import { hashPassword } from 'src/utils/bcrypt';
 import { Validations } from 'src/utils/validations';
 import { StudentCreateDTO } from './dto/student-create.dto';
+import { TeacherCreateDTO } from './dto/teacher-create.dto';
 
 @Injectable()
 export class UserService {
@@ -72,6 +73,10 @@ export class UserService {
     const student = await this.studentService.create(student_object);
 
     return student;
+  }
+
+  async createUserTeacher(data : TeacherCreateDTO){
+    return data;
   }
 
   async findAll() {
