@@ -1,8 +1,8 @@
 export class Validations {
 
   static validateName(name: string){
-    //ajeitar
-    const re = /^([A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ'\s]{1,50})+$/;
+    
+    const re = /^([A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ'\s]{8,50})+$/;
     return re.test(name);
 
   }
@@ -47,7 +47,7 @@ export class Validations {
   }
 
   static validateConfirmPassword(password: string,confirm_password: string) {
-    
+
     if(password == confirm_password) return true;
     else return false;
   
