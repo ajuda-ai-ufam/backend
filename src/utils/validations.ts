@@ -1,3 +1,5 @@
+import { elementAt } from "rxjs";
+
 export class Validations {
 
   static validateName(name: string){
@@ -38,11 +40,11 @@ export class Validations {
   }
 
   static searchNameEnrollmentPassword(password: string,name: string,enrollment: string) {
-    if(password.includes(name) || password.includes(enrollment)){
-      return false;
-    }else{
-      return true;
-    }
+
+    if(password.indexOf(name) == -1) return false;
+    else if(password.indexOf(enrollment) == -1) return false;
+    else return true;
+    
   }
 
   static validateConfirmPassword(password: string,confirm_password: string) {

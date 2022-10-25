@@ -36,8 +36,8 @@ export class UserService {
     if(course == null) throw new NotFoundException("Curso não encontrado!");
 
     if(!Validations.validatePassword(data.password)) throw new BadRequestException("A senha não atende aos requisitos!");
-    //mexer na validacao de senha(nome,matricula) includes
-    if(!Validations.searchNameEnrollmentPassword(data.password,data.name,data.enrollment)) throw new BadRequestException("A senha não deve conter dados como:Nome,Matricula");
+
+    if(!Validations.searchNameEnrollmentPassword(data.password,data.name,data.enrollment)) throw new BadRequestException("A senha não deve conter dados como nome ou matricula.");
 
     if(!Validations.validateConfirmPassword(data.password,data.confirm_password)) throw new BadRequestException("As senhas não são iguais!");
     
