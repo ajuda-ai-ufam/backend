@@ -14,14 +14,19 @@ export class Validations {
   }
 
   static validateLinkedIn(linkedin: string) {
-    const re =
-    /^(https:(?:\/\/)www.linkedin.com(\/)in(\/))/gm;
-    return re.test(linkedin);
+    const re = /^(https:(?:\/\/)www.linkedin.com(\/)in(\/))/gm;
+    if(linkedin.length == 0) return true;
+    else return re.test(linkedin);
+    
+    
   }
 
   static validateWhatsapp(whatsapp: string){
     const re = /^([1-9]{1})([\d]{10})$/gm;
-    return re.test(whatsapp);
+
+    if(whatsapp.length == 0) return true;
+    else return re.test(whatsapp);
+    
   }
 
   static validatePassword(password: string) {

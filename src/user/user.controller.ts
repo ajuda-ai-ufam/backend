@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -29,6 +30,11 @@ export class UserController {
   @ApiBearerAuth('access_token')
   async findAll() {
     return this.userService.findAll();
+  }
+
+  @Get("/get")
+  async findOne(@Query('enrollment') enrollment: string){
+    return this.userService.findOneByEnrollment(enrollment)
   }
 
   @Delete(':id')

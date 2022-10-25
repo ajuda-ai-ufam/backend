@@ -39,10 +39,10 @@ export class UserService {
     if(!Validations.searchNameEnrollmentPassword(data.password,data.name,data.enrollment)) throw new BadRequestException("A senha não deve conter dados como:Nome,Matricula");
 
     if(!Validations.validateConfirmPassword(data.password,data.confirm_password)) throw new BadRequestException("As senhas não são iguais!");
-
-    if(!(data.linkedin != '' && Validations.validateLinkedIn(data.linkedin))) throw new BadRequestException("Link do perfil do Linkedin não compativel.")
     
-    if(!(data.whatsapp != '' && Validations.validateWhatsapp(data.whatsapp))) throw new BadRequestException("Número do Whatsapp inválido.");
+    if(!Validations.validateLinkedIn(data.linkedin)) throw new BadRequestException("Link do perfil do Linkedin não é compativel.")
+    
+    if(!Validations.validateWhatsapp(data.whatsapp)) throw new BadRequestException("Número do Whatsapp inválido.");
 
     const user_enrollment = await this.studentService.findEnrollment(data.enrollment);
 
@@ -51,14 +51,14 @@ export class UserService {
     const user = await this.prisma.user.create({
       data: {
         email : data.email,
-        name : data.name,
+        name : data.name.toUpperCase(),
         password: await hashPassword(data.password),
         is_verified : false,
         created_at : new Date(),
         updated_at : new Date()
       },
     });
-    
+
     const student_object = {
       "user_id" : user.id,
       "description" : data.description,
@@ -103,5 +103,18 @@ export class UserService {
     return this.prisma.user.delete({
       where: { id },
     });
+  }
+
+  async findOneByEnrollment(enrollment : string) {
+
+    const student = await this.prisma.student.findFirst({
+      where : {enrollment : enrollment},
+      include : { user : true}
+    })
+
+    if(student == null) throw new NotFoundException("Usuário não encontrado.");
+
+    return student;
+
   }
 }
