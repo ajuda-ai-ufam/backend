@@ -9,7 +9,7 @@ export class Validations {
 
   static validateEmail(email: string) {
     const re =
-      /^([a-zA-z0-9]{3,20})@icomp.ufam.edu.br$/gm;
+      /^(\w{3,20})@icomp.ufam.edu.br$/gm;
     return re.test(email);
   }
 
