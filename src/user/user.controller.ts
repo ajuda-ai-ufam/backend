@@ -10,7 +10,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { UserCreateDto } from './dto/user-create.dto';
+import { StudentCreateDTO } from './dto/student-create.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -20,8 +20,8 @@ export class UserController {
 
   @Post()
   @IsPublic()
-  async create(@Body() data: UserCreateDto) {
-    return this.userService.create(data);
+  async create(@Body() data: StudentCreateDTO) {
+    return this.userService.createUserStudent(data);
   }
 
   @Get()
