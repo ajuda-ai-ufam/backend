@@ -50,11 +50,21 @@ model Teacher {
   @@map("teacher")
 }
 
+model Subject {
+  id  Int  @id @default(autoincrement())
+  name  String @db.VarChar(100)
+  code  String  @db.VarChar(10)
+  course_id  Int
+  course  Course @relation(fields: [course_id],references: [id])
+
+}
+
 model Course {
   id         Int      @id @default(autoincrement())
   name       String   @db.VarChar(100)
   code       String   @unique @db.VarChar(10)
   student Student[]
+  subject  Subject[]
 
   @@map("course")
 }
