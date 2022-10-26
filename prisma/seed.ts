@@ -5,6 +5,7 @@ const courses = [
   { name: 'Ciência da Computação', code: 'IE08' },
 ];
 
+
 const prisma = new PrismaClient();
 async function main() {
   for (const course of courses) {
@@ -14,6 +15,7 @@ async function main() {
       where: { code: course.code },
     });
   }
+
 }
 main()
   .then(async () => {

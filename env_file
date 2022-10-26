@@ -6,3 +6,6 @@ DATABASE_URL = "mysql://user:password@localhost:3306/mydb?schema=master"
 
 # Secret key
 SECRET_KEY = SECRET_KEY
+
+# Expiration Code = X MIN
+EXPIRED_IN = 10 
