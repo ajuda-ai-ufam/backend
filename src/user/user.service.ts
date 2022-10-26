@@ -35,6 +35,8 @@ export class UserService {
 
     if(course == null) throw new NotFoundException("Curso não encontrado!");
 
+    if(!Validations.validateEnrollment(data.enrollment)) throw new BadRequestException("Matricula não atende aos requisitos!")
+
     if(!Validations.validatePassword(data.password)) throw new BadRequestException("A senha não atende aos requisitos!");
 
     if(!Validations.searchNameEnrollmentPassword(data.password,data.name,data.enrollment)) throw new BadRequestException("A senha não deve conter dados como nome ou matricula.");
@@ -55,6 +57,7 @@ export class UserService {
         name : data.name.toUpperCase(),
         password: await hashPassword(data.password),
         is_verified : false,
+        type_user_id : 1,
         created_at : new Date(),
         updated_at : new Date()
       },
@@ -110,7 +113,7 @@ export class UserService {
     });
   }
 
-  async findOneByEnrollment(enrollment : string) {
+  async findOneByEnrollment(enrollment: string) {
 
     const student = await this.prisma.student.findFirst({
       where : {enrollment : enrollment},
@@ -118,6 +121,8 @@ export class UserService {
     })
 
     if(student == null) throw new NotFoundException("Usuário não encontrado.");
+
+    delete student.user.password;
 
     return student;
 

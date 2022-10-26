@@ -1,5 +1,13 @@
 export class Validations {
 
+  static validateEnrollment(enrollment: string) {
+
+    const re = /^([\d]{8})$/gm;
+
+    return re.test(enrollment);
+
+  }
+
   static validateName(name: string){
     
     const re = /^([A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ'\s]{8,50})+$/;
@@ -40,9 +48,9 @@ export class Validations {
 
   static searchNameEnrollmentPassword(password: string,name: string,enrollment: string) {
 
-    if(password.indexOf(name) == -1) return false;
-    else if(password.indexOf(enrollment) == -1) return false;
-    else return true;
+    if(password.indexOf(name) == -1) return true;
+    else if(password.indexOf(enrollment) == -1) return true;
+    else return false;
 
   }
 

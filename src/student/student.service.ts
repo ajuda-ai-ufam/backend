@@ -17,7 +17,6 @@ export class StudentService {
     async findEnrollment(enrollment : string){
 
         const user_enrollment = await this.prisma.student.findFirst({where : {enrollment : enrollment}});
-        
         return user_enrollment;
 
     }
