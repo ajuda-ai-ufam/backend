@@ -11,16 +11,23 @@ model TypeUser {
   id   Int    @id @default(autoincrement())
   type String @db.VarChar(15)
   user User[]
-  verification_code Verification_Code[]
 
   @@map("type_user")
+}
+
+model TypeCode {
+  id   Int    @id @default(autoincrement())
+  type String @db.VarChar(15)
+  verification_code Verification_Code[]
+
+  @@map("type_code")
 }
 
 model User {
   id                Int                 @id @default(autoincrement())
   email             String              @unique @db.VarChar(50)
   name              String              @db.VarChar(50)
-  password          String              @db.VarChar(18)
+  password          String              
   is_verified       Boolean             @default(false)
   type_user_id      Int
   updated_at        DateTime            @updatedAt
@@ -77,12 +84,12 @@ model Course {
 model Verification_Code {
   id          Int      @id @default(autoincrement())
   code        String   @unique @db.VarChar(6)
-  type        TypeUser @relation(fields: [type_id], references: [id])
+  type        TypeCode @relation(fields: [type_id], references: [id])
   type_id     Int
   is_verified Boolean  @default(false)
   user        User     @relation(fields: [user_id], references: [id])
   user_id     Int
-  updated_at  DateTime @updatedAt
+  updated_at  DateTime? @updatedAt
   created_at  DateTime @default(now())
 
   @@map("verification_code")

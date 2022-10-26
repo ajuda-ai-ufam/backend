@@ -3,9 +3,9 @@ import { ApiProperty } from "@nestjs/swagger";
 export class CodeDTO {
      
     @ApiProperty()
-    enrollment: string;
+    email: string;
 
     @ApiProperty()
-    email: string;
+    type_id : number
 
 }
