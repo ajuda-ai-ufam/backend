@@ -46,6 +46,11 @@ export class Validations {
     
   }
 
+  static searchNameEnrollmentPasswordTeacher(password: string,name: string){
+    if(password.indexOf(name) == -1) return true;
+    else return false;
+  }
+
   static searchNameEnrollmentPassword(password: string,name: string,enrollment: string) {
 
     if(password.indexOf(name) == -1) return true;
