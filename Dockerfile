@@ -10,6 +10,6 @@ CMD ["npx","prisma","generate"]
 
 CMD ["npx","prisma","db","seed"]
 
-EXPOSE 3002
+EXPOSE 3001
 
 CMD ["npm","start"]
