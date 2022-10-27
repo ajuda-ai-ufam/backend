@@ -8,7 +8,7 @@ RUN npm install
 
 RUN npx prisma generate
 
-EXPOSE 3002
+EXPOSE 3001
 
 # ARG UNAME=luiz
 
