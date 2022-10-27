@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  backend:
+    env_file: .env
+    build: .
+    command: npm start
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
