@@ -75,10 +75,11 @@ export class UserService {
       "linkedin"  : data.linkedin
     }
 
-    const student = await this.studentService.create(student_object);
+    await this.studentService.create(student_object);
 
-    return student;
+    return { status : 201,message : "Cadastrado com sucesso!"};
   }
+
 
   async createUserTeacher(data : TeacherCreateDTO){
 
@@ -110,9 +111,9 @@ export class UserService {
       },
     });
 
-    const student = await this.teacherService.create(user.id);
+    await this.teacherService.create(user.id);
 
-    return student;
+    return { status : 201,message : "Cadastrado com sucesso!"};
 
   }
 
