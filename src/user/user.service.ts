@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CourseService } from 'src/course/course.service';
 import { PrismaService } from 'src/database/prisma.service';
 import { StudentService } from 'src/student/student.service';
+import { TeacherService } from 'src/teacher/teacher.service';
 import { hashPassword } from 'src/utils/bcrypt';
 import { Validations } from 'src/utils/validations';
 import { StudentCreateDTO } from './dto/student-create.dto';
@@ -11,12 +12,13 @@ import { TeacherCreateDTO } from './dto/teacher-create.dto';
 export class UserService {
   constructor(private prisma: PrismaService,
               private readonly courseService: CourseService,
-              private readonly studentService: StudentService) {}
+              private readonly studentService: StudentService,
+              private readonly teacherService: TeacherService) {}
 
   async createUserStudent(data: StudentCreateDTO) {
 
     data.name = data.name.trim();
-    //ajeitar validacao de nome
+
     if(!Validations.validateName(data.name)) throw new BadRequestException("O nome deve ter no minimo 1 nome e 1 sobrenome e no maximo 50 caracteres.");
 
     if(!Validations.validateEmail(data.email)) throw new BadRequestException("Email não atende aos requisitos!");
@@ -73,13 +75,46 @@ export class UserService {
       "linkedin"  : data.linkedin
     }
 
-    const student = await this.studentService.create(student_object);
+    await this.studentService.create(student_object);
 
-    return student;
+    return { status : 201,message : "Cadastrado com sucesso!"};
   }
 
+
   async createUserTeacher(data : TeacherCreateDTO){
-    return data;
+
+    data.name = data.name.trim();
+
+    if(!Validations.validateName(data.name)) throw new BadRequestException("O nome deve ter no minimo 1 nome e 1 sobrenome e no maximo 50 caracteres.");
+
+    if(!Validations.validateEmail(data.email)) throw new BadRequestException("Email não atende aos requisitos!");
+
+    const email_exists = await this.findOneByEmail(data.email);
+
+    if (email_exists) throw new BadRequestException('Email já cadastrado.');
+
+    if(!Validations.validatePassword(data.password)) throw new BadRequestException("A senha não atende aos requisitos!");
+
+    if(!Validations.searchNameEnrollmentPasswordTeacher(data.password,data.name)) throw new BadRequestException("A senha não deve conter dados como nome.");
+
+    if(!Validations.validateConfirmPassword(data.password,data.confirm_password)) throw new BadRequestException("As senhas não são iguais!");    
+
+    const user = await this.prisma.user.create({
+      data: {
+        email : data.email,
+        name : data.name.toUpperCase(),
+        password: await hashPassword(data.password),
+        is_verified : false,
+        type_user_id : 2,
+        created_at : new Date(),
+        updated_at : new Date()
+      },
+    });
+
+    await this.teacherService.create(user.id);
+
+    return { status : 201,message : "Cadastrado com sucesso!"};
+
   }
 
   async findAll() {

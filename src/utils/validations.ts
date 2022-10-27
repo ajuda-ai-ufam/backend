@@ -3,7 +3,6 @@ export class Validations {
   static validateEnrollment(enrollment: string) {
 
     const re = /^([\d]{8})$/gm;
-
     return re.test(enrollment);
 
   }
@@ -44,6 +43,11 @@ export class Validations {
     if(password.length >=8 && password.length <=18) return true;
     else return false;
     
+  }
+
+  static searchNameEnrollmentPasswordTeacher(password: string,name: string){
+    if(password.indexOf(name) == -1) return true;
+    else return false;
   }
 
   static searchNameEnrollmentPassword(password: string,name: string,enrollment: string) {
