@@ -9,9 +9,19 @@ import { StudentModule } from './student/student.module';
 import { GenerateCodeModule } from './generate-code/generate-code.module';
 import { TypeUserModule } from './type_user/type_user.module';
 import { TeacherModule } from './teacher/teacher.module';
+import { SubjectModule } from './subject/subject.module';
 
 @Module({
-  imports: [AuthModule, CourseModule, UserModule, StudentModule, GenerateCodeModule, TypeUserModule, TeacherModule],
+  imports: [
+    AuthModule,
+    CourseModule,
+    UserModule,
+    StudentModule,
+    GenerateCodeModule,
+    TypeUserModule,
+    TeacherModule,
+    SubjectModule,
+  ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
