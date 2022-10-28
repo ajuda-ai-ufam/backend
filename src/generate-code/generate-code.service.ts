@@ -1,26 +1,48 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
+import { EmailDTO } from 'src/email/dto/email.dto';
+import { EmailService } from 'src/email/email.service';
 import { StudentService } from 'src/student/student.service';
 import { UserService } from 'src/user/user.service';
+import { Validations } from 'src/utils/validations';
 import { CodeDTO } from './dto/generate-code.dto';
 
 @Injectable()
 export class GenerateCodeService {
 
     constructor(private readonly prisma: PrismaService,
-                private readonly studentService: StudentService,
                 private readonly userService: UserService,
+                private readonly emailService: EmailService
                 ){}
 
     async generate(data: CodeDTO){
 
+        if(!Validations.validateEmail(data.email)) throw new BadRequestException('Email não possui dominio icomp.');
+
+        let email: string = "";
+
+        let subject: string = "";
+
+        let message: string = "";
+
         const date = new Date();
+
         const date_expired = new Date(date.getTime() + Number(process.env.EXPIRED_IN)*60000);
 
         const code = Math.floor(Math.random() * 100000) + 999999;
 
         const user = await this.userService.findOneByEmail(data.email);
 
+        if(data.type_id == 2){
+            email = user.email
+            subject = process.env.SUBJECT_PASSWORD
+            message = `Your code is ${String(code).slice(0,6)}` 
+        }else{
+            email = user.email
+            subject = process.env.SUBJECT_VERIFY_USER
+            message = `Your code is ${String(code).slice(0,6)}`
+        } 
+        
 
         if(user == null) throw new NotFoundException('Usuário não encontrado.');
     
@@ -35,9 +57,10 @@ export class GenerateCodeService {
 
             if(new Date() < date_validade_before_of_generate && codes_exists.type_id == data.type_id) throw new BadRequestException("Você possui um código ativo,so pode ser gerado outro após 5 minutos.")
             else{
+
                 const code_user = await this.prisma.verification_Code.create({
                     data : {
-                        code : String(code),
+                        code : String(code).slice(0,6),
                         is_verified : false,
                         user_id : user.id,
                         created_at : date,
@@ -45,13 +68,17 @@ export class GenerateCodeService {
                         type_id : Number(data.type_id)
                     }
                 });
-    
+                
+                await this.emailService.sendEmail(email,subject,message);
+
                 return code_user;
             }
+
         }else{
+
             const code_user = await this.prisma.verification_Code.create({
                 data : {
-                    code : String(code),
+                    code : String(code).slice(0,6),
                     is_verified : false,
                     user_id : user.id,
                     created_at : date,
@@ -59,6 +86,8 @@ export class GenerateCodeService {
                     type_id : Number(data.type_id)
                 }
             });
+
+            console.log(await this.emailService.sendEmail(email,subject,message));
 
             return code_user;
         }

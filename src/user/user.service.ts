@@ -31,6 +31,8 @@ export class UserService {
 
     if (!Validations.validateEmail(data.email))
       throw new BadRequestException('Email não atende aos requisitos!');
+    
+    if(data.contact_email.length == 0) data.contact_email = data.email;
 
     if (!Validations.validateEmail(data.contact_email))
       throw new BadRequestException(

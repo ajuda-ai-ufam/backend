@@ -39,11 +39,15 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Get('/get')
   async findOne(@Query('enrollment') enrollment: string) {
     return this.userService.findOneByEnrollment(enrollment);
   }
-
+  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.userService.delete(+id);
