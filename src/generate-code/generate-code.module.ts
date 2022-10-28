@@ -6,9 +6,10 @@ import { PrismaService } from 'src/database/prisma.service';
 import { CourseService } from 'src/course/course.service';
 import { StudentService } from 'src/student/student.service';
 import { TeacherService } from 'src/teacher/teacher.service';
+import { EmailService } from 'src/email/email.service';
 
 @Module({
   controllers: [GenerateCodeController],
-  providers: [GenerateCodeService,TeacherService,UserService,CourseService,StudentService,PrismaService]
+  providers: [GenerateCodeService,TeacherService,UserService,CourseService,StudentService,PrismaService,EmailService]
 })
 export class GenerateCodeModule {}
