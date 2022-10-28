@@ -16,8 +16,8 @@ model TypeUser {
 }
 
 model TypeCode {
-  id   Int    @id @default(autoincrement())
-  type String @db.VarChar(15)
+  id                Int                 @id @default(autoincrement())
+  type              String              @db.VarChar(15)
   verification_code Verification_Code[]
 
   @@map("type_code")
@@ -27,7 +27,7 @@ model User {
   id                Int                 @id @default(autoincrement())
   email             String              @unique @db.VarChar(50)
   name              String              @db.VarChar(50)
-  password          String              
+  password          String
   is_verified       Boolean             @default(false)
   type_user_id      Int
   updated_at        DateTime            @updatedAt
@@ -64,7 +64,7 @@ model Teacher {
 model Subject {
   id        Int    @id @default(autoincrement())
   name      String @db.VarChar(100)
-  code      String @db.VarChar(10)
+  code      String @unique @db.VarChar(10)
   course_id Int
   course    Course @relation(fields: [course_id], references: [id])
 
@@ -82,15 +82,15 @@ model Course {
 }
 
 model Verification_Code {
-  id          Int      @id @default(autoincrement())
-  code        String   @unique @db.VarChar(6)
-  type        TypeCode @relation(fields: [type_id], references: [id])
+  id          Int       @id @default(autoincrement())
+  code        String    @unique @db.VarChar(6)
+  type        TypeCode  @relation(fields: [type_id], references: [id])
   type_id     Int
-  is_verified Boolean  @default(false)
-  user        User     @relation(fields: [user_id], references: [id])
+  is_verified Boolean   @default(false)
+  user        User      @relation(fields: [user_id], references: [id])
   user_id     Int
   updated_at  DateTime? @updatedAt
-  created_at  DateTime @default(now())
+  created_at  DateTime  @default(now())
 
   @@map("verification_code")
 }
