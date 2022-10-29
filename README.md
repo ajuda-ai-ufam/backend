@@ -36,6 +36,8 @@ $ npm install
 
 ```bash
 # development
+$ npx prisma generate 
+$ npx prisma migrate dev
 $ npm run start
 
 # watch mode
