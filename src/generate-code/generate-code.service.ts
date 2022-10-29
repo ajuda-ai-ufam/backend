@@ -1,11 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
-import { EmailDTO } from 'src/email/dto/email.dto';
 import { EmailService } from 'src/email/email.service';
-import { StudentService } from 'src/student/student.service';
 import { UserService } from 'src/user/user.service';
 import { Validations } from 'src/utils/validations';
 import { CodeDTO } from './dto/generate-code.dto';
+import { VerifyCodeDTO } from './dto/verify-code.dto';
 
 @Injectable()
 export class GenerateCodeService {
@@ -15,9 +14,45 @@ export class GenerateCodeService {
                 private readonly emailService: EmailService
                 ){}
 
+
+    async verifyCode(data: VerifyCodeDTO){
+
+        const userExists = await this.userService.findOneByEmail(data.email);
+
+        if(!userExists) throw new NotFoundException("Email não encontrado.");
+
+        if(data.type_code == 1 && userExists.is_verified) throw new BadRequestException("Email já verificado.");
+
+        const codeExists = await this.prisma.verification_Code.findFirst({where : {code : data.code,user_id: userExists.id,type_id: Number(data.type_code)},orderBy: {created_at : "desc"}});
+
+        if(!codeExists) throw new NotFoundException("Código inválido.");
+        
+        if(codeExists.is_verified) throw new BadRequestException("Código já utilizado.");
+
+        if(new Date() > codeExists.updated_at) throw new BadRequestException("Código expirado.");
+        
+        if(data.type_code == 1){
+            // update table user-is_verified -> true
+            await this.userService.updateVerified(userExists.id);
+            await this.updateVerifiedCode(codeExists.id);
+        }
+
+        return {statusCode : 200,message: "Código verificado com sucesso."};
+
+
+
+
+
+
+
+
+
+
+    }
+
     async generate(data: CodeDTO){
 
-        if(!Validations.validateEmail(data.email)) throw new BadRequestException('Email não possui dominio icomp.');
+        if(!Validations.validateEmail(data.email)) throw new BadRequestException('Email não atende aos requisitos.');
 
         let email: string = "";
 
@@ -98,6 +133,14 @@ export class GenerateCodeService {
         date.setMinutes(date.getMinutes() + numOfMinutes);
       
         return date;
+    }
+
+    async updateVerifiedCode(id: number){
+        return this.prisma.verification_Code.update({
+            data: { is_verified: true },where:{
+                id: id
+            }
+        })
     }
 
 }

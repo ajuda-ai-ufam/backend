@@ -31,8 +31,8 @@ export class UserService {
 
     if (!Validations.validateEmail(data.email))
       throw new BadRequestException('Email não atende aos requisitos!');
-    
-    if(data.contact_email.length == 0) data.contact_email = data.email;
+
+    if (data.contact_email.length == 0) data.contact_email = data.email;
 
     if (!Validations.validateEmail(data.contact_email))
       throw new BadRequestException(
@@ -204,5 +204,14 @@ export class UserService {
     delete student.user.password;
 
     return student;
+  }
+
+  async updateVerified(id: number) {
+    return this.prisma.user.update({
+      data: {
+        is_verified: true,
+      },
+      where: {id: id },
+    });
   }
 }
