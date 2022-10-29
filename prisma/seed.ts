@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 
 const courses = [
-  { name: 'Engenharia de Software', code: 'IE17' },
-  { name: 'Ciência da Computação', code: 'IE08' },
+  { id: 1,name: 'Engenharia de Software', code: 'IE17' },
+  { id: 2,name: 'Ciência da Computação', code: 'IE08' },
 ];
 
 const subjects = [
