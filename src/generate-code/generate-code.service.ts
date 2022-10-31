@@ -39,15 +39,6 @@ export class GenerateCodeService {
 
         return {statusCode : 200,message: "Código verificado com sucesso."};
 
-
-
-
-
-
-
-
-
-
     }
 
     async generate(data: CodeDTO){
@@ -111,7 +102,7 @@ export class GenerateCodeService {
 
         }else{
 
-            const code_user = await this.prisma.verification_Code.create({
+            await this.prisma.verification_Code.create({
                 data : {
                     code : String(code).slice(0,6),
                     is_verified : false,
@@ -124,7 +115,7 @@ export class GenerateCodeService {
 
             console.log(await this.emailService.sendEmail(email,subject,message));
 
-            return code_user;
+            return {statusCode : 200,message: "Código enviado ao email com sucesso."};
         }
 
     }

@@ -1,9 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
-  Param,
   Post,
   Query,
   UseGuards,
@@ -32,24 +30,11 @@ export class UserController {
     return this.userService.createUserTeacher(data);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
-  async findAll() {
-    return this.userService.findAll();
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
-  @Get('/get')
   async findOne(@Query('enrollment') enrollment: string) {
     return this.userService.findOneByEnrollment(enrollment);
   }
   
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
-  @Delete(':id')
-  async delete(@Param('id') id: string) {
-    return this.userService.delete(+id);
-  }
 }

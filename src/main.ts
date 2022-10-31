@@ -6,10 +6,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Ajuda Aí API')
-    .setDescription('Backend Ajuda Aí')
+    .setTitle('Super Monitoria API')
+    .setDescription('Backend Super Monitoria')
     .setVersion('1.0')
-    .addTag('Ajuda Aí')
+    .addTag('Super Monitoria')
     .addBearerAuth(
       {
         description: 'Please enter token in following format: Bearer <JWT>',

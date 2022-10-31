@@ -22,6 +22,11 @@ export class UserService {
   ) {}
 
   async createUserStudent(data: StudentCreateDTO) {
+
+    const list_data_user = [data.confirm_password,data.email,data.enrollment,data.name,data.password,data.course_id];
+
+    if(list_data_user.includes('')) throw new BadRequestException("Preencha todos os campos.");
+
     data.name = data.name.trim();
 
     if (!Validations.validateName(data.name))
@@ -30,13 +35,13 @@ export class UserService {
       );
 
     if (!Validations.validateEmail(data.email))
-      throw new BadRequestException('Email não atende aos requisitos!');
+      throw new BadRequestException('Email de contato não é válido!');
 
     if (data.contact_email.length == 0) data.contact_email = data.email;
 
-    if (!Validations.validateEmail(data.contact_email))
+    if (!Validations.validateEmailContact(data.contact_email))
       throw new BadRequestException(
-        'Email de contato não atende aos requisitos!',
+        'Email de contato não é válido!',
       );
 
     const email_exists = await this.findOneByEmail(data.email);
@@ -117,6 +122,11 @@ export class UserService {
   }
 
   async createUserTeacher(data: TeacherCreateDTO) {
+
+    const list_data_user = [data.confirm_password,data.email,data.name,data.password];
+
+    if(list_data_user.includes('')) throw new BadRequestException("Preencha todos os campos.");
+
     data.name = data.name.trim();
 
     if (!Validations.validateName(data.name))
