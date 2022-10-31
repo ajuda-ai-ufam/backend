@@ -10,6 +10,6 @@ export class SubjectController {
 
   @Get()
   async findAll(@Query() query: QueryDto) {
-    return await this.subjectService.findAll(query);
+    return this.subjectService.findAll(query);
   }
 }
