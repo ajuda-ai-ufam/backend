@@ -7,9 +7,6 @@ export class SubjectService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(query: QueryDto) {
-    return this.prisma.subject.findMany({
-      skip: +query.quantity * (+query.page - 1),
-      take: +query.quantity,
-    });
+    return this.prisma.subject.findMany();
   }
 }
