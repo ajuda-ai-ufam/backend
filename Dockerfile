@@ -8,7 +8,7 @@ RUN npm install
 
 CMD ["npx","prisma","generate"]
 
-CMD ["npx","prisma","seed"]
+CMD ["npx","prisma","db","seed"]
 
 EXPOSE 3002
 
