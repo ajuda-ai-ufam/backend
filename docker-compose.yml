@@ -6,6 +6,6 @@ services:
     build: .
     command: npm start
     ports:
-      - "3002:3001"
+      - "3002:3002"
     volumes:
-      - .:/app
+      - .:/app-test

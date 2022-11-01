@@ -1,6 +1,6 @@
 FROM node:alpine
 
-WORKDIR  /app
+WORKDIR  /app-test
 
 ADD . .
 
@@ -8,7 +8,7 @@ RUN npm install
 
 RUN npx prisma generate
 
-EXPOSE 3001
+EXPOSE 3002
 
 # ARG UNAME=luiz
 
