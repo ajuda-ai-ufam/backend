@@ -1,15 +1,11 @@
 version: "3"
 
 services:
-  backend:
+  backend-test:
     env_file: .env
     build: .
     command: npm start
     ports:
-<<<<<<< HEAD
       - "3001:3001"
-=======
-      - "3002:3001"
->>>>>>> d8ee062 (BACK-X:Test docker)
     volumes:
       - .:/app-dev

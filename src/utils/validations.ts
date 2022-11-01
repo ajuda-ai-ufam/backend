@@ -9,9 +9,15 @@ export class Validations {
 
   static validateName(name: string){
     
+<<<<<<< HEAD
     //const re = /^([a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ']{3,}){1}+(([',. -][a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ' ]{6,50})?[a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ' ]{6,50}){1,}$/gm;
     //return re.test(name);
     return true;
+=======
+    const re = /^([a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ']{3,}){1}+(([',. -][a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ' ]{6,50})?[a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ' ]{6,50}){1,}$/gm;
+    return re.test(name);
+    
+>>>>>>> 7c8abef (BACK-X:Enviroment)
 
   }
 
