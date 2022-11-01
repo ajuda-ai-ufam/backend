@@ -6,6 +6,6 @@ export class CodeDTO {
     email: string;
 
     @ApiProperty()
-    type_id : number
+    type_code : number
 
 }

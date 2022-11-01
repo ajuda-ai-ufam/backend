@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CodeDTO } from './dto/generate-code.dto';
 import { VerifyCodeDTO } from './dto/verify-code.dto';
@@ -9,6 +9,12 @@ import { GenerateCodeService } from './generate-code.service';
 
 export class GenerateCodeController {
   constructor(private readonly generateCodeService: GenerateCodeService) {}
+
+  @ApiOperation({description:"Rota para listar todos os type-codes."})
+  @Get("type-code")
+  async typeCode(){
+    return this.generateCodeService.typeCode();
+  }
 
   @ApiOperation({description:"Rota para gerar o código de verificação do email ou de senha."})
   @Post("generate")

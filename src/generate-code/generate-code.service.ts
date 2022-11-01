@@ -15,6 +15,10 @@ export class GenerateCodeService {
                 ){}
 
 
+    async typeCode(){
+        return this.prisma.typeCode.findMany();
+    }
+
     async verifyCode(data: VerifyCodeDTO){
 
         const userExists = await this.userService.findOneByEmail(data.email);
@@ -43,6 +47,8 @@ export class GenerateCodeService {
 
     async generate(data: CodeDTO){
 
+        const type_id: number = data.type_code;
+
         if(!Validations.validateEmail(data.email)) throw new BadRequestException('Email não atende aos requisitos.');
 
         let email: string = "";
@@ -59,7 +65,7 @@ export class GenerateCodeService {
 
         const user = await this.userService.findOneByEmail(data.email);
 
-        if(data.type_id == 2){
+        if(type_id == 2){
             email = user.email
             subject = process.env.SUBJECT_PASSWORD
             message = `Your code is ${String(code).slice(0,6)}` 
@@ -74,14 +80,14 @@ export class GenerateCodeService {
     
         if(user.is_verified) throw new BadRequestException('Usuário com email ja verificado.');
         
-        const codes_exists = await this.prisma.verification_Code.findFirst({ where : {user_id : user.id,type_id : Number(data.type_id)},orderBy: {
+        const codes_exists = await this.prisma.verification_Code.findFirst({ where : {user_id : user.id,type_id : Number(type_id)},orderBy: {
             created_at : "desc"
         }})
 
         if(codes_exists){
             const date_validade_before_of_generate = new Date(codes_exists.created_at.getTime() + 5*60000);
 
-            if(new Date() < date_validade_before_of_generate && codes_exists.type_id == data.type_id) throw new BadRequestException("Você possui um código ativo,so pode ser gerado outro após 5 minutos.")
+            if(new Date() < date_validade_before_of_generate && codes_exists.type_id == type_id) throw new BadRequestException("Você possui um código ativo,so pode ser gerado outro após 5 minutos.")
             else{
 
                 const code_user = await this.prisma.verification_Code.create({
@@ -91,7 +97,7 @@ export class GenerateCodeService {
                         user_id : user.id,
                         created_at : date,
                         updated_at : date_expired,
-                        type_id : Number(data.type_id)
+                        type_id : Number(type_id)
                     }
                 });
                 
@@ -109,7 +115,7 @@ export class GenerateCodeService {
                     user_id : user.id,
                     created_at : date,
                     updated_at : date_expired,
-                    type_id : Number(data.type_id)
+                    type_id : Number(type_id)
                 }
             });
 
