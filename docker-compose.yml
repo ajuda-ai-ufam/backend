@@ -1,11 +1,11 @@
 version: "3"
 
 services:
-  backend:
+  backend-test:
     env_file: .env
     build: .
     command: npm start
     ports:
-      - "3002:3001"
+      - "3002:3002"
     volumes:
       - .:/app-test

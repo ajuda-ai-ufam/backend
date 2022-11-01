@@ -6,9 +6,11 @@ ADD . .
 
 RUN npm install
 
-RUN npx prisma generate
+CMD ["npx","prisma","generate"]
 
-EXPOSE 3001
+CMD ["npx","prisma","seed"]
+
+EXPOSE 3002
 
 # ARG UNAME=luiz
 
