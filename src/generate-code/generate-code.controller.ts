@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CodeDTO } from './dto/generate-code.dto';
 import { VerifyCodeDTO } from './dto/verify-code.dto';
 import { GenerateCodeService } from './generate-code.service';
@@ -10,11 +10,13 @@ import { GenerateCodeService } from './generate-code.service';
 export class GenerateCodeController {
   constructor(private readonly generateCodeService: GenerateCodeService) {}
 
+  @ApiOperation({description:"Rota para gerar o código de verificação do email ou de senha."})
   @Post("generate")
   async generateCode(@Body() data : CodeDTO){
     return this.generateCodeService.generate(data);
   }
 
+  @ApiOperation({description:"Rota para validar o código gerado."})
   @Post("verify")
   async verifyCode(@Body() data: VerifyCodeDTO){
     return this.generateCodeService.verifyCode(data);

@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CourseService } from './course.service';
 
 @Controller('course')
@@ -7,6 +7,7 @@ import { CourseService } from './course.service';
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
+  @ApiOperation({description:"Rota para listar todos os cursos."})
   @Get()
   findAll() {
     return this.courseService.findAll();
