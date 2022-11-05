@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
-import { ResponsePagination } from 'src/common/pagination';
+import { IResponsePaginate } from 'src/common/interfaces/pagination';
 import { SubjectService } from './subject.service';
 
 @Controller('subject')
@@ -13,7 +13,7 @@ export class SubjectController {
   @Get()
   async findAll(
     @Query() query: QueryPaginationDto,
-  ): Promise<ResponsePagination> {
+  ): Promise<IResponsePaginate> {
     return await this.subjectService.findAll(query);
   }
 }
