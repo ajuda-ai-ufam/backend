@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 
 const courses = [
-  { id: 1,name: 'Engenharia de Software', code: 'IE17' },
-  { id: 2,name: 'Ciência da Computação', code: 'IE08' },
+  { id: 1, name: 'Engenharia de Software', code: 'IE17' },
+  { id: 2, name: 'Ciência da Computação', code: 'IE08' },
 ];
 
 const subjects = [
@@ -15,14 +15,14 @@ const subjects = [
 ];
 
 const type_user = [
-  { type: 'Student',id : 1},
-  { type : 'Teacher',id : 2}
+  { type: 'Student', id: 1 },
+  { type: 'Teacher', id: 2 },
 ];
 
 const type_code = [
-  { type: 'Login',id : 1},
-  { type : 'Password',id : 2}
-]
+  { type: 'Login', id: 1 },
+  { type: 'Password', id: 2 },
+];
 
 const prisma = new PrismaClient();
 async function main() {
@@ -44,21 +44,20 @@ async function main() {
 
   for (const type of type_user) {
     await prisma.typeUser.upsert({
-      create : type,
-      update:{},
-      where : {id : type.id}
+      create: type,
+      update: {},
+      where: { id: type.id },
     });
   }
 
   for (const type of type_code) {
     await prisma.typeCode.upsert({
-      create : type,
-      update:{},
-      where : {id : type.id}
+      create: type,
+      update: {},
+      where: { id: type.id },
     });
   }
 }
-
 
 main()
   .then(async () => {
