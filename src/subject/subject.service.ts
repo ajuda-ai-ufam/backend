@@ -8,7 +8,6 @@ import { PrismaService } from 'src/database/prisma.service';
 export class SubjectService {
   constructor(private prisma: PrismaService) {}
 
-<<<<<<< HEAD
   async findAll(query: QueryPaginationDto): Promise<IResponsePaginate> {
     const data = await this.prisma.subject.findMany({
       where: {
@@ -18,9 +17,5 @@ export class SubjectService {
       },
     });
     return pagination(data, query);
-=======
-  async findAll(query: QueryDto) {
-    return this.prisma.subject.findMany();
->>>>>>> 718af9d (BACK-X:Update staging,regex)
   }
 }
