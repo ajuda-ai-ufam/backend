@@ -1,6 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { QueryDto } from './dto/query.dto';
+import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
+import { ResponsePagination } from 'src/common/pagination';
 import { SubjectService } from './subject.service';
 
 @Controller('subject')
@@ -8,9 +9,11 @@ import { SubjectService } from './subject.service';
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
-  @ApiOperation({description: "Rota para listar todas as disciplinas."})
+  @ApiOperation({ description: 'Rota para listar todas as disciplinas.' })
   @Get()
-  async findAll(@Query() query: QueryDto) {
-    return this.subjectService.findAll(query);
+  async findAll(
+    @Query() query: QueryPaginationDto,
+  ): Promise<ResponsePagination> {
+    return await this.subjectService.findAll(query);
   }
 }
