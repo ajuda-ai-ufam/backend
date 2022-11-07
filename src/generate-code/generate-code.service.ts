@@ -87,7 +87,7 @@ export class GenerateCodeService {
         if(codes_exists){
             const date_validade_before_of_generate = new Date(codes_exists.created_at.getTime() + 5*60000);
             
-            if(new Date() < date_validade_before_of_generate && codes_exists.type_id == type_id) throw new BadRequestException(`Você possui um código ativo,so pode ser gerado outro após ${process.env.EXPIRED_IN_AGAIN} ${process.env.MESSAGE_IN_AGAIN}`);
+            if(new Date() < date_validade_before_of_generate && codes_exists.type_id == type_id) throw new BadRequestException(`Você possui um código ativo,so pode ser gerado outro após ${process.env.MESSAGE_IN_AGAIN}`);
             else{
 
                 const code_user = await this.prisma.verification_Code.create({
