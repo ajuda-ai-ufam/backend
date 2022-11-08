@@ -1,6 +1,7 @@
 # compiled output
 /dist
 /node_modules
+/secrets
 *.env
 docker-compose.yml
 Dockerfile

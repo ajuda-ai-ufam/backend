@@ -1,9 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as express from 'express';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import * as fs from 'fs';
+import * as http from 'http'
+import * as https from 'https'
+
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+
+  const httpsOptions = {
+    key: fs.readFileSync('./secrets/key.pem', 'utf8'),
+    cert: fs.readFileSync('./secrets/server.crt', 'utf8'),
+  };
+
+  const server = express();
+  const app = await NestFactory.create(AppModule,new ExpressAdapter(server));
 
   app.enableCors({
     origin: true,
@@ -32,7 +45,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('/swagger', app, document);
+  
+  await app.init();
 
-  await app.listen(process.env.PORT);
+  http.createServer(server).listen(process.env.PORT_HTTP);
+  https.createServer(httpsOptions,server).listen(process.env.PORT_HTTPS);
 }
 bootstrap();

@@ -1,6 +1,8 @@
 # PORT 
 PORT = PORT
 
+PORT_HTTPS = PORT
+
 #DATABASE
 DATABASE_URL = "mysql://user:password@localhost:3306/mydb?schema=master"
 
