@@ -8,5 +8,5 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - .:/app-test
+      - .:/app-dev
 
