@@ -10,6 +10,6 @@ CMD ["npx","prisma","generate"]
 
 CMD ["npx","prisma","db","seed"]
 
-EXPOSE 443
+EXPOSE 8080
 
 CMD ["npm","start"]

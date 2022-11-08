@@ -6,7 +6,7 @@ services:
     build: .
     command: npm start
     ports:
-      - "443:443"
+      - "8080:8080"
     volumes:
       - .:/app-test
 
