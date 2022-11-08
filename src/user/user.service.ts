@@ -23,6 +23,8 @@ export class UserService {
 
   async createUserStudent(data: StudentCreateDTO) {
 
+    console.log(data)
+
     const list_data_user = [data.confirm_password,data.email,data.enrollment,data.name,data.password,data.course_id];
 
     if(list_data_user.includes('')) throw new BadRequestException("Preencha todos os campos.");
