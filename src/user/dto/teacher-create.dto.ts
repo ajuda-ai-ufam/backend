@@ -1,17 +1,15 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
-export class TeacherCreateDTO{
+export class TeacherCreateDTO {
+  @ApiProperty()
+  email: string;
 
-    @ApiProperty()
-    email: string;
+  @ApiProperty()
+  name: string;
 
-    @ApiProperty()
-    name: string;
+  @ApiProperty()
+  password: string;
 
-    @ApiProperty()
-    password: string;
-
-    @ApiProperty()
-    confirm_password: string;
-
+  @ApiProperty()
+  confirm_password: string;
 }
