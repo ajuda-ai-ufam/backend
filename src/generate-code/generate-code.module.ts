@@ -7,9 +7,19 @@ import { CourseService } from 'src/course/course.service';
 import { StudentService } from 'src/student/student.service';
 import { TeacherService } from 'src/teacher/teacher.service';
 import { EmailService } from 'src/email/email.service';
+import { SubjectService } from 'src/subject/subject.service';
 
 @Module({
   controllers: [GenerateCodeController],
-  providers: [GenerateCodeService,TeacherService,UserService,CourseService,StudentService,PrismaService,EmailService]
+  providers: [
+    GenerateCodeService,
+    TeacherService,
+    UserService,
+    CourseService,
+    StudentService,
+    PrismaService,
+    EmailService,
+    SubjectService,
+  ],
 })
 export class GenerateCodeModule {}

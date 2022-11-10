@@ -55,18 +55,20 @@ model Student {
 }
 
 model Teacher {
-  user_id Int  @id
-  user    User @relation(fields: [user_id], references: [id])
+  user_id               Int                     @id
+  user                  User                    @relation(fields: [user_id], references: [id])
+  SubjectResponsability SubjectResponsability[]
 
   @@map("teacher")
 }
 
 model Subject {
-  id        Int    @id @default(autoincrement())
-  name      String @db.VarChar(100)
-  code      String @unique @db.VarChar(10)
-  course_id Int
-  course    Course @relation(fields: [course_id], references: [id])
+  id                    Int                     @id @default(autoincrement())
+  name                  String                  @db.VarChar(100)
+  code                  String                  @unique @db.VarChar(10)
+  course_id             Int
+  course                Course                  @relation(fields: [course_id], references: [id])
+  SubjectResponsability SubjectResponsability[]
 
   @@map("subject")
 }
@@ -93,4 +95,23 @@ model Verification_Code {
   created_at  DateTime  @default(now())
 
   @@map("verification_code")
+}
+
+model Coordinator {
+  id Int @id @default(autoincrement())
+
+  @@map("coordinators")
+}
+
+model SubjectResponsability {
+  id           Int      @id @default(autoincrement())
+  status       String   @default("Pendente")
+  updated_at   DateTime @updatedAt
+  created_at   DateTime @default(now())
+  professor_id Int
+  professor    Teacher  @relation(fields: [professor_id], references: [user_id])
+  subject_id   Int
+  subject      Subject  @relation(fields: [subject_id], references: [id])
+
+  @@map("subject_responsability")
 }
