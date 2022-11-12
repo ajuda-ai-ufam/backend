@@ -7,7 +7,7 @@ import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class SubjectService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findOne(id: number): Promise<Subject> {
     return await this.prisma.subject.findUnique({

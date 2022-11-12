@@ -12,6 +12,7 @@ import { TeacherModule } from './teacher/teacher.module';
 import { SubjectModule } from './subject/subject.module';
 import { EmailModule } from './email/email.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { MonitorModule } from './monitor/monitor.module';
 
 @Module({
   imports: [
@@ -29,12 +30,13 @@ import { MailerModule } from '@nestjs-modules/mailer';
         host: process.env.MAIL_HOST,
         secure: false,
         port: Number(process.env.MAIL_PORT),
-        auth:{
+        auth: {
           user: process.env.MAIL_AUTH_USER,
           pass: process.env.MAIL_AUTH_PASS,
         },
       },
-    })
+    }),
+    MonitorModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
