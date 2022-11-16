@@ -55,7 +55,9 @@ export class GenerateCodeService {
 
         let subject: string = "";
 
-        let message: string = "";
+        let context: string = "";
+
+        let template: string = "";
 
         const date = new Date();
 
@@ -68,11 +70,13 @@ export class GenerateCodeService {
         if(type_id == 2){
             email = user.email
             subject = process.env.SUBJECT_PASSWORD
-            message = '' 
+            context = String(code).slice(0,6)
+            template = 'miss_password'
         }else{
             email = user.email
             subject = process.env.SUBJECT_VERIFY_USER
-            message = ''
+            context = String(code).slice(0,6)
+            template = 'code_confirm'
         } 
         
 
@@ -101,7 +105,7 @@ export class GenerateCodeService {
                     }
                 });
                 
-                await this.emailService.sendEmail(email,subject,message);
+                await this.emailService.sendEmail(email,subject,context,template);
 
                 return code_user;
             }
@@ -119,7 +123,7 @@ export class GenerateCodeService {
                 }
             });
 
-            await this.emailService.sendEmail(email,subject,message);
+            await this.emailService.sendEmail(email,subject,context,template);
 
             return {statusCode : 200,message: "Código enviado ao email com sucesso."};
         }

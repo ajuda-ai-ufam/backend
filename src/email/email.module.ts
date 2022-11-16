@@ -1,5 +1,7 @@
 import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+import { join } from 'path';
 import { EmailService } from './email.service';
 
 @Module({
@@ -14,8 +16,11 @@ import { EmailService } from './email.service';
         },
       },
       template: {
-        dir: join(__dirname, 'templates'),
-        adapter: new HandlebarsAdapter()
+        dir: join('./', 'templates'),
+        adapter: new PugAdapter(),
+        options:{
+          strict: true
+        }
       },
     })
   ],
