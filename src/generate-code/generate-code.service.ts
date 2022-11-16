@@ -68,11 +68,11 @@ export class GenerateCodeService {
         if(type_id == 2){
             email = user.email
             subject = process.env.SUBJECT_PASSWORD
-            message = `Your code is ${String(code).slice(0,6)}` 
+            message = '' 
         }else{
             email = user.email
             subject = process.env.SUBJECT_VERIFY_USER
-            message = `Your code is ${String(code).slice(0,6)}`
+            message = ''
         } 
         
 
@@ -119,7 +119,7 @@ export class GenerateCodeService {
                 }
             });
 
-            console.log(await this.emailService.sendEmail(email,subject,message));
+            await this.emailService.sendEmail(email,subject,message);
 
             return {statusCode : 200,message: "Código enviado ao email com sucesso."};
         }

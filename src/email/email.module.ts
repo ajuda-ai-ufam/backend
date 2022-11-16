@@ -13,6 +13,10 @@ import { EmailService } from './email.service';
           pass: process.env.MAIL_AUTH_PASS,
         },
       },
+      template: {
+        dir: join(__dirname, 'templates'),
+        adapter: new HandlebarsAdapter()
+      },
     })
   ],
   providers: [EmailService],
