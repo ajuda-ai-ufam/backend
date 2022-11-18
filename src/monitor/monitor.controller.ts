@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
-import { RequestMonitoringDto } from './dto/request-monitoring.dto';
+import { AcceptMonitoringDto, RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorService } from './monitor.service';
 
 @ApiTags('Monitor')
@@ -26,4 +26,13 @@ export class MonitorController {
   ) {
     return this.monitorService.requestMonitoring(+id, body);
   }
+
+  @Put('accept/:id')
+  async acceptMonitoring(
+    @Param('id') id: number,
+    @Body() body:AcceptMonitoringDto,
+  ){
+    return this.monitorService.acceptMonitoring(id,body)
+  }
+
 }

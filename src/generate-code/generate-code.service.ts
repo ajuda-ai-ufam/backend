@@ -65,8 +65,12 @@ export class GenerateCodeService {
 
         const code = Math.floor(Math.random() * 100000) + 999999;
 
-        const user = await this.userService.findOneByEmail(data.email);
+        const user = await this.userService.findOneByEmail(data.email);        
 
+        if(user == null) throw new NotFoundException('Usuário não encontrado.');
+    
+        if(user.is_verified) throw new BadRequestException('Usuário com email ja verificado.');
+        
         if(type_id == 2){
             email = user.email
             subject = process.env.SUBJECT_PASSWORD
@@ -76,14 +80,9 @@ export class GenerateCodeService {
             email = user.email
             subject = process.env.SUBJECT_VERIFY_USER
             context = String(code).slice(0,6)
-            template = 'code_confirm'
+            template = 'code_confirm_login'
         } 
-        
 
-        if(user == null) throw new NotFoundException('Usuário não encontrado.');
-    
-        if(user.is_verified) throw new BadRequestException('Usuário com email ja verificado.');
-        
         const codes_exists = await this.prisma.verification_Code.findFirst({ where : {user_id : user.id,type_id : Number(type_id)},orderBy: {
             created_at : "desc"
         }})
@@ -94,7 +93,7 @@ export class GenerateCodeService {
             if(new Date() < date_validade_before_of_generate && codes_exists.type_id == type_id) throw new BadRequestException(`Você possui um código ativo,so pode ser gerado outro após ${process.env.MESSAGE_IN_AGAIN}`);
             else{
 
-                const code_user = await this.prisma.verification_Code.create({
+                await this.prisma.verification_Code.create({
                     data : {
                         code : String(code).slice(0,6),
                         is_verified : false,
@@ -107,7 +106,7 @@ export class GenerateCodeService {
                 
                 await this.emailService.sendEmail(email,subject,context,template);
 
-                return code_user;
+                return {statusCode : 200,message: "Código enviado ao email com sucesso."};
             }
 
         }else{

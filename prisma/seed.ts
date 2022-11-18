@@ -5,6 +5,18 @@ const courses = [
   { id: 2, name: 'Ciência da Computação', code: 'IE08' },
 ];
 
+const status_monitoring = [
+  { status: "Aguardando aprovação do Professor",id:1 },
+  { status: "Aprovado",id: 2},
+  { status: "Denunciado",id: 3}
+]
+
+const status_schedule_monitoring = [
+  { status: "Aguardando aprovação do Coordenador",id:1 },
+  { status: "Aprovado",id: 2},
+  { status: "Denunciado",id: 3}
+]
+
 const subjects = [
   { name: 'INTRODUÇAO A PROGRAMAÇÃO', code: 'ICC020', course_id: 1 },
   { name: 'MATEMÁTICA DISCRETA', code: 'ICC120', course_id: 1 },
@@ -17,6 +29,7 @@ const subjects = [
 const type_user = [
   { type: 'Student', id: 1 },
   { type: 'Teacher', id: 2 },
+  { type: 'Coordinator', id: 3}
 ];
 
 const type_code = [
@@ -57,6 +70,24 @@ async function main() {
       where: { id: type.id },
     });
   }
+
+  for(const status of status_monitoring){
+    await prisma.statusMonitoring.upsert({
+      create: status,
+      update: {},
+      where: {id: status.id}
+    })
+  }
+
+  for(const status of status_schedule_monitoring){
+    await prisma.statusScheduleMonitoring.upsert({
+      create: status,
+      update: {},
+      where: {id: status.id}
+    })
+  }
+
+
 }
 
 main()

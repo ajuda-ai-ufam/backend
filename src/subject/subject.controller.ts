@@ -6,7 +6,7 @@ import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { SubjectService } from './subject.service';
 
 @Controller('subject')
-@ApiTags('Disciplinas')
+@ApiTags('Subjects')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 

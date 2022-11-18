@@ -56,9 +56,26 @@ model Student {
   @@map("student")
 }
 
+model StatusMonitoring {
+  id      Int       @id @default(autoincrement())
+  status  String    @db.VarChar(100)
+  Monitor Monitor[]
+
+  @@map("status_monitoring")
+}
+
+model StatusScheduleMonitoring {
+  id                 Int                  @id @default(autoincrement())
+  status             String               @db.VarChar(100)
+  ScheduleMonitoring ScheduleMonitoring[]
+
+  @@map("status_schedule_monitoring")
+}
+
 model Monitor {
   id                       Int                  @id @default(autoincrement())
-  status                   String               @default("Aguardando aprovação do professor")
+  id_status                Int                  @default(1)
+  status                   StatusMonitoring     @relation(fields: [id_status], references: [id])
   responsible_professor_id Int
   responsible_professor    Teacher              @relation(fields: [responsible_professor_id], references: [user_id])
   student_id               Int
@@ -135,14 +152,15 @@ model SubjectResponsability {
 }
 
 model ScheduleMonitoring {
-  id         Int      @id @default(autoincrement())
+  id         Int                      @id @default(autoincrement())
   start      DateTime
   end        DateTime
-  status     String   @default("Aguardando confirmação do monitor")
+  id_status  Int
+  status     StatusScheduleMonitoring @relation(fields: [id_status], references: [id])
   student_id Int
-  student    Student  @relation(fields: [student_id], references: [user_id])
+  student    Student                  @relation(fields: [student_id], references: [user_id])
   monitor_id Int
-  monitor    Monitor  @relation(fields: [monitor_id], references: [id])
+  monitor    Monitor                  @relation(fields: [monitor_id], references: [id])
 
   @@map("schedule_monitoring")
 }
