@@ -15,7 +15,6 @@ export class StudentCreateDTO {
   confirm_password: string;
 
   @IsString()
-  @IsEmpty()
   @ApiProperty()
   description?: string;
 
