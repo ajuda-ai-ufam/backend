@@ -5,25 +5,7 @@ import { EmailService } from './email.service';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
-  imports:[MailerModule.forRoot({
-      transport: {
-        host: process.env.MAIL_HOST,
-        secure: false,
-        port: Number(process.env.MAIL_PORT),
-        auth:{
-          user: process.env.MAIL_AUTH_USER,
-          pass: process.env.MAIL_AUTH_PASS,
-        },
-      },
-      // template: {
-      //   dir: join(__dirname + '/templates'),
-      //   adapter: new HandlebarsAdapter(),
-      //   options:{
-      //     strict: true,
-      //   }
-      // },
-    })
-  ],
+  imports:[MailerModule],
   providers: [EmailService],
   exports: [EmailService]
 })

@@ -11,10 +11,10 @@ export class EmailService {
           from: process.env.MAIL_AUTH_USER,
           subject: subject,
           text: message,
-          // template: `${template}.hbs`,
-          // context: {
-          //   code: message
-          // },
+          template: `${template}.hbs`,
+          context: {
+            code: message
+          },
         });
     }
 

@@ -13,6 +13,8 @@ import { SubjectModule } from './subject/subject.module';
 import { EmailModule } from './email/email.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MonitorModule } from './monitor/monitor.module';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -30,10 +32,17 @@ import { MonitorModule } from './monitor/monitor.module';
         host: process.env.MAIL_HOST,
         secure: false,
         port: Number(process.env.MAIL_PORT),
-        auth: {
+        auth:{
           user: process.env.MAIL_AUTH_USER,
           pass: process.env.MAIL_AUTH_PASS,
         },
+      },
+      template: {
+        dir: join(__dirname.replace('src','email') + '/templates'),
+        adapter: new HandlebarsAdapter(),
+        options:{
+          strict: true,
+        }
       },
     }),
     MonitorModule,
