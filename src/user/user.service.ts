@@ -200,7 +200,7 @@ export class UserService {
   async findOneByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
-      include: { student: true },
+      include: { student: true,type_user: true },
     });
   }
 
