@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as express from 'express';
@@ -6,6 +6,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import * as http from 'http'
 import * as https from 'https'
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 
 
 async function bootstrap() {
@@ -17,7 +18,8 @@ async function bootstrap() {
 
   const server = express();
   const app = await NestFactory.create(AppModule,new ExpressAdapter(server));
-
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }))
   app.enableCors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',

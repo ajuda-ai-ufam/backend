@@ -1,5 +1,5 @@
 import { QueryPaginationDto } from './dto/query-pagination.dto';
-import { IResponsePaginate } from './interfaces/pagination';
+import { IResponsePaginate } from './interfaces/pagination.interface';
 
 export const pagination = (
   data: any[],

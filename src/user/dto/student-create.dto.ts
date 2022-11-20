@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmpty, IsString } from 'class-validator';
 
 export class StudentCreateDTO {
-  
   @ApiProperty()
   email: string;
 
@@ -14,23 +14,29 @@ export class StudentCreateDTO {
   @ApiProperty()
   confirm_password: string;
 
+  @IsString()
+  @IsEmpty()
   @ApiProperty()
-  description : string;
-
-  @ApiProperty()
-  enrollment : string;
-
-  @ApiProperty()
-  course_id : number;
+  description?: string;
 
   @ApiProperty()
-  contact_email : string;
+  enrollment: string;
 
   @ApiProperty()
-  whatsapp ?: string;
+  course_id: number;
 
+  @IsEmpty()
+  @IsString()
   @ApiProperty()
-  linkedin ?: string;
+  contact_email?: string;
 
+  @IsString()
+  @IsEmpty()
+  @ApiProperty()
+  whatsapp?: string;
 
+  @IsString()
+  @IsEmpty()
+  @ApiProperty()
+  linkedin?: string;
 }

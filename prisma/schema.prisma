@@ -41,32 +41,69 @@ model User {
 }
 
 model Student {
-  user_id       Int     @id @unique
-  user          User    @relation(fields: [user_id], references: [id])
-  description   String  @db.VarChar(500)
-  enrollment    String  @unique @db.VarChar(10)
-  course        Course  @relation(fields: [course_id], references: [id])
-  course_id     Int
-  contact_email String  @db.VarChar(50)
-  whatsapp      String? @db.VarChar(11)
-  linkedin      String? @db.VarChar(100)
+  user_id            Int                  @id @unique
+  user               User                 @relation(fields: [user_id], references: [id])
+  description        String               @db.VarChar(500)
+  enrollment         String               @unique @db.VarChar(10)
+  course             Course               @relation(fields: [course_id], references: [id])
+  course_id          Int
+  contact_email      String               @db.VarChar(50)
+  whatsapp           String?              @db.VarChar(11)
+  linkedin           String?              @db.VarChar(100)
+  ScheduleMonitoring ScheduleMonitoring[]
+  Monitor            Monitor[]
 
   @@map("student")
 }
 
+model StatusMonitoring {
+  id      Int       @id @default(autoincrement())
+  status  String    @db.VarChar(100)
+  Monitor Monitor[]
+
+  @@map("status_monitoring")
+}
+
+model StatusScheduleMonitoring {
+  id                 Int                  @id @default(autoincrement())
+  status             String               @db.VarChar(100)
+  ScheduleMonitoring ScheduleMonitoring[]
+
+  @@map("status_schedule_monitoring")
+}
+
+model Monitor {
+  id                       Int                  @id @default(autoincrement())
+  id_status                Int                  @default(1)
+  status                   StatusMonitoring     @relation(fields: [id_status], references: [id])
+  responsible_professor_id Int
+  responsible_professor    Teacher              @relation(fields: [responsible_professor_id], references: [user_id])
+  student_id               Int
+  student                  Student              @relation(fields: [student_id], references: [user_id])
+  subject_id               Int
+  subject                  Subject              @relation(fields: [subject_id], references: [id])
+  ScheduleMonitoring       ScheduleMonitoring[]
+
+  @@map("monitor")
+}
+
 model Teacher {
-  user_id Int  @id
-  user    User @relation(fields: [user_id], references: [id])
+  user_id               Int                     @id
+  user                  User                    @relation(fields: [user_id], references: [id])
+  SubjectResponsability SubjectResponsability[]
+  Monitor               Monitor[]
 
   @@map("teacher")
 }
 
 model Subject {
-  id        Int    @id @default(autoincrement())
-  name      String @db.VarChar(100)
-  code      String @unique @db.VarChar(10)
-  course_id Int
-  course    Course @relation(fields: [course_id], references: [id])
+  id                    Int                     @id @default(autoincrement())
+  name                  String                  @db.VarChar(100)
+  code                  String                  @unique @db.VarChar(10)
+  course_id             Int
+  course                Course                  @relation(fields: [course_id], references: [id])
+  SubjectResponsability SubjectResponsability[]
+  Monitor               Monitor[]
 
   @@map("subject")
 }
@@ -93,4 +130,37 @@ model Verification_Code {
   created_at  DateTime  @default(now())
 
   @@map("verification_code")
+}
+
+model Coordinator {
+  id Int @id @default(autoincrement())
+
+  @@map("coordinators")
+}
+
+model SubjectResponsability {
+  id           Int      @id @default(autoincrement())
+  status       String   @default("Pendente")
+  updated_at   DateTime @updatedAt
+  created_at   DateTime @default(now())
+  professor_id Int
+  professor    Teacher  @relation(fields: [professor_id], references: [user_id])
+  subject_id   Int
+  subject      Subject  @relation(fields: [subject_id], references: [id])
+
+  @@map("subject_responsability")
+}
+
+model ScheduleMonitoring {
+  id         Int                      @id @default(autoincrement())
+  start      DateTime
+  end        DateTime
+  id_status  Int
+  status     StatusScheduleMonitoring @relation(fields: [id_status], references: [id])
+  student_id Int
+  student    Student                  @relation(fields: [student_id], references: [user_id])
+  monitor_id Int
+  monitor    Monitor                  @relation(fields: [monitor_id], references: [id])
+
+  @@map("schedule_monitoring")
 }

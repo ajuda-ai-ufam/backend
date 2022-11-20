@@ -22,10 +22,19 @@ export class UserService {
   ) {}
 
   async createUserStudent(data: StudentCreateDTO) {
+    console.log(data);
 
-    const list_data_user = [data.confirm_password,data.email,data.enrollment,data.name,data.password,data.course_id];
+    const list_data_user = [
+      data.confirm_password,
+      data.email,
+      data.enrollment,
+      data.name,
+      data.password,
+      data.course_id,
+    ];
 
-    if(list_data_user.includes('')) throw new BadRequestException("Preencha todos os campos.");
+    if (list_data_user.includes(''))
+      throw new BadRequestException('Preencha todos os campos.');
 
     data.name = data.name.trim();
 
@@ -40,9 +49,7 @@ export class UserService {
     if (data.contact_email.length == 0) data.contact_email = data.email;
 
     if (!Validations.validateEmailContact(data.contact_email))
-      throw new BadRequestException(
-        'Email de contato não é válido!',
-      );
+      throw new BadRequestException('Email de contato não é válido!');
 
     const email_exists = await this.findOneByEmail(data.email);
 
@@ -122,10 +129,15 @@ export class UserService {
   }
 
   async createUserTeacher(data: TeacherCreateDTO) {
+    const list_data_user = [
+      data.confirm_password,
+      data.email,
+      data.name,
+      data.password,
+    ];
 
-    const list_data_user = [data.confirm_password,data.email,data.name,data.password];
-
-    if(list_data_user.includes('')) throw new BadRequestException("Preencha todos os campos.");
+    if (list_data_user.includes(''))
+      throw new BadRequestException('Preencha todos os campos.');
 
     data.name = data.name.trim();
 
@@ -192,6 +204,12 @@ export class UserService {
     });
   }
 
+  async findOneById(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
   async delete(id: number) {
     const user_exists = await this.prisma.user.findUnique({
       where: { id },
@@ -221,7 +239,7 @@ export class UserService {
       data: {
         is_verified: true,
       },
-      where: {id: id },
+      where: { id: id },
     });
   }
 }

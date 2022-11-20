@@ -55,7 +55,9 @@ export class GenerateCodeService {
 
         let subject: string = "";
 
-        let message: string = "";
+        let context: string = "";
+
+        let template: string = "";
 
         const date = new Date();
 
@@ -63,23 +65,24 @@ export class GenerateCodeService {
 
         const code = Math.floor(Math.random() * 100000) + 999999;
 
-        const user = await this.userService.findOneByEmail(data.email);
-
-        if(type_id == 2){
-            email = user.email
-            subject = process.env.SUBJECT_PASSWORD
-            message = `Your code is ${String(code).slice(0,6)}` 
-        }else{
-            email = user.email
-            subject = process.env.SUBJECT_VERIFY_USER
-            message = `Your code is ${String(code).slice(0,6)}`
-        } 
-        
+        const user = await this.userService.findOneByEmail(data.email);        
 
         if(user == null) throw new NotFoundException('Usuário não encontrado.');
     
         if(user.is_verified) throw new BadRequestException('Usuário com email ja verificado.');
         
+        if(type_id == 2){
+            email = user.email
+            subject = process.env.SUBJECT_PASSWORD
+            context = String(code).slice(0,6)
+            template = 'miss_password'
+        }else{
+            email = user.email
+            subject = process.env.SUBJECT_VERIFY_USER
+            context = String(code).slice(0,6)
+            template = 'code_confirm_login'
+        } 
+
         const codes_exists = await this.prisma.verification_Code.findFirst({ where : {user_id : user.id,type_id : Number(type_id)},orderBy: {
             created_at : "desc"
         }})
@@ -90,7 +93,7 @@ export class GenerateCodeService {
             if(new Date() < date_validade_before_of_generate && codes_exists.type_id == type_id) throw new BadRequestException(`Você possui um código ativo,so pode ser gerado outro após ${process.env.MESSAGE_IN_AGAIN}`);
             else{
 
-                const code_user = await this.prisma.verification_Code.create({
+                await this.prisma.verification_Code.create({
                     data : {
                         code : String(code).slice(0,6),
                         is_verified : false,
@@ -101,9 +104,9 @@ export class GenerateCodeService {
                     }
                 });
                 
-                await this.emailService.sendEmail(email,subject,message);
+                await this.emailService.sendEmail(email,subject,context,template);
 
-                return code_user;
+                return {statusCode : 200,message: "Código enviado ao email com sucesso."};
             }
 
         }else{
@@ -119,7 +122,7 @@ export class GenerateCodeService {
                 }
             });
 
-            console.log(await this.emailService.sendEmail(email,subject,message));
+            await this.emailService.sendEmail(email,subject,context,template);
 
             return {statusCode : 200,message: "Código enviado ao email com sucesso."};
         }
