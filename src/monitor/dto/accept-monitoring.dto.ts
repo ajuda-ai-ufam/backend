@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class RequestMonitoringDto {
+export class AcceptMonitoringDto {
   @ApiProperty()
   subject_id: number;
 
   @ApiProperty()
-  professor_id: number;
+  student_id: number;
 }

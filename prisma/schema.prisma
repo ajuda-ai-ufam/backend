@@ -78,7 +78,7 @@ model Monitor {
   status                   StatusMonitoring     @relation(fields: [id_status], references: [id])
   responsible_professor_id Int
   responsible_professor    Teacher              @relation(fields: [responsible_professor_id], references: [user_id])
-  student_id               Int
+  student_id               Int                  @unique
   student                  Student              @relation(fields: [student_id], references: [user_id])
   subject_id               Int
   subject                  Subject              @relation(fields: [subject_id], references: [id])
@@ -155,7 +155,7 @@ model ScheduleMonitoring {
   id         Int                      @id @default(autoincrement())
   start      DateTime
   end        DateTime
-  id_status  Int
+  id_status  Int                      @default(1)
   status     StatusScheduleMonitoring @relation(fields: [id_status], references: [id])
   student_id Int
   student    Student                  @relation(fields: [student_id], references: [user_id])
