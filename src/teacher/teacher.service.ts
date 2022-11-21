@@ -24,7 +24,7 @@ export class TeacherService {
     const data = await this.prisma.teacher.findMany({
       select: {
         user: {
-          select: { name: true, email: true, is_verified: true },
+          select: { id: true, name: true, email: true, is_verified: true },
         },
         SubjectResponsability: {
           select: {

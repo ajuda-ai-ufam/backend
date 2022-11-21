@@ -15,6 +15,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { MonitorModule } from './monitor/monitor.module';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
+import { RolesGuard } from './auth/guards/roles.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -32,22 +34,30 @@ import { join } from 'path';
         host: process.env.MAIL_HOST,
         secure: false,
         port: Number(process.env.MAIL_PORT),
-        auth:{
+        auth: {
           user: process.env.MAIL_AUTH_USER,
           pass: process.env.MAIL_AUTH_PASS,
         },
       },
       template: {
-        dir: join(__dirname.replace('src','email') + '/templates'),
+        dir: join(__dirname.replace('src', 'email') + '/templates'),
         adapter: new HandlebarsAdapter(),
-        options:{
+        options: {
           strict: true,
-        }
+        },
       },
     }),
     MonitorModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [
+    AppService,
+    PrismaService,
+    {
+      provide: 'APP_GUARD',
+      useClass: RolesGuard,
+    },
+    JwtService,
+  ],
 })
 export class AppModule {}
