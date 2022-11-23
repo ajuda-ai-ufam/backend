@@ -24,18 +24,15 @@ export class StudentCreateDTO {
   @ApiProperty()
   course_id: number;
 
-  @IsEmpty()
   @IsString()
   @ApiProperty()
   contact_email?: string;
 
   @IsString()
-  @IsEmpty()
   @ApiProperty()
   whatsapp?: string;
 
   @IsString()
-  @IsEmpty()
   @ApiProperty()
   linkedin?: string;
 }
