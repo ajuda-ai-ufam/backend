@@ -104,7 +104,7 @@ export class UserService {
     const user = await this.prisma.user.create({
       data: {
         email: data.email,
-        name: data.name.toUpperCase(),
+        name: Validations.capitalizeName(data.name),
         password: await hashPassword(data.password),
         is_verified: false,
         type_user_id: 1,
@@ -200,7 +200,7 @@ export class UserService {
   async findOneByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
-      include: { student: true,type_user: true },
+      include: { student: true, type_user: true },
     });
   }
 
