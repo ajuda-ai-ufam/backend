@@ -37,6 +37,7 @@
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "convert-csv-to-json": "^1.4.0",
     "ejs": "^3.1.8",
     "handlebars": "^4.7.7",
     "moment": "^2.29.4",

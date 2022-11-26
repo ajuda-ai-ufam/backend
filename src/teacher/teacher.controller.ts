@@ -6,7 +6,7 @@ import { TeacherAssingDto } from './dto/teacher-assing.dto';
 import { TeacherService } from './teacher.service';
 
 @Controller('teacher')
-@ApiTags('Professores')
+@ApiTags('Professors')
 export class TeacherController {
   constructor(private readonly teacherService: TeacherService) {}
 
