@@ -1,4 +1,13 @@
 import { PrismaClient } from '@prisma/client';
+import * as csvToJson from 'convert-csv-to-json';
+
+const subjects_es = csvToJson
+  .fieldDelimiter(',')
+  .getJsonFromCsv('prisma/disciplinas_es.csv');
+
+const subjects_cc = csvToJson
+  .fieldDelimiter(',')
+  .getJsonFromCsv('prisma/disciplinas_cc.csv');
 
 const courses = [
   { id: 1, name: 'Engenharia de Software', code: 'IE17' },
@@ -16,15 +25,6 @@ const status_schedule_monitoring = [
   { status: 'Confirmada', id: 2 },
   { status: 'Cancelada', id: 3 },
   { status: 'Vencida', id: 4 },
-];
-
-const subjects = [
-  { name: 'INTRODUÇAO A PROGRAMAÇÃO', code: 'ICC020', course_id: 1 },
-  { name: 'MATEMÁTICA DISCRETA', code: 'ICC120', course_id: 1 },
-  { name: 'ALGORITMOS E ESTRUTURAS DE DADOS I ', code: 'ICC002', course_id: 1 },
-  { name: 'PROJETO E ANÁLISE DE ALGORITMOS ', code: 'ICC006', course_id: 1 },
-  { name: 'INTRODUÇÃO À COMPUTAÇÃO', code: 'ICC001', course_id: 2 },
-  { name: 'LINGUAGENS FORMAIS E AUTÔMATOS', code: 'ICC040', course_id: 2 },
 ];
 
 const type_user = [
@@ -48,10 +48,18 @@ async function main() {
     });
   }
 
-  for (const subject of subjects) {
+  for (const subject of subjects_es) {
     await prisma.subject.upsert({
-      create: subject,
-      update: {},
+      create: { ...subject, course_id: 1 },
+      update: { ...subject, course_id: 1 },
+      where: { code: subject.code },
+    });
+  }
+
+  for (const subject of subjects_cc) {
+    await prisma.subject.upsert({
+      create: { ...subject, course_id: 2 },
+      update: { ...subject, course_id: 2 },
       where: { code: subject.code },
     });
   }

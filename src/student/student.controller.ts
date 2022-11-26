@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ScheduleMonitoringDto } from './dto/schedule-monitoring.dto';
 import { StudentService } from './student.service';
 
-@ApiTags('Alunos')
+@ApiTags('Students')
 @Controller('student')
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}

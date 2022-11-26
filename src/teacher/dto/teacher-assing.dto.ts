@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class TeacherAssingDto {
-  @ApiProperty()
-  professor_id: number;
+  @ApiProperty({ type: [Number] })
+  professors_ids: number[];
 
   @ApiProperty()
   subject_id: number;

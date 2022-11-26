@@ -46,29 +46,38 @@ export class TeacherService {
   }
 
   async assignSubject(body: TeacherAssingDto) {
-    if (!(await this.isProfessor(body.professor_id)))
-      throw new BadRequestException('Professor não encontrado.');
-
     if (!(await this.subjectService.findOne(body.subject_id)))
       throw new BadRequestException('Matéria não encontrada.');
 
-    const subject_responsability =
-      await this.prisma.subjectResponsability.findFirst({
-        where: {
-          subject_id: body.subject_id,
-          professor_id: body.professor_id,
+    for (const professor_id of body.professors_ids) {
+      if (!(await this.isProfessor(professor_id)))
+        throw new BadRequestException('Professor não encontrado.');
+      const subject_responsability =
+        await this.prisma.subjectResponsability.findFirst({
+          where: {
+            subject_id: body.subject_id,
+            professor_id: professor_id,
+          },
+        });
+      if (subject_responsability)
+        throw new BadRequestException('Professor já responsável pela matéria.');
+    }
+    return await this.assingSubjectToProfessor(
+      body.subject_id,
+      body.professors_ids,
+    );
+  }
+
+  async assingSubjectToProfessor(subject_id: number, professors_ids: number[]) {
+    for (const professor_id of professors_ids) {
+      await this.prisma.subjectResponsability.create({
+        data: {
+          professor_id: professor_id,
+          subject_id: subject_id,
         },
       });
-    if (subject_responsability)
-      throw new BadRequestException('Professor já responsável pela matéria.');
-
-    await this.prisma.subjectResponsability.create({
-      data: {
-        professor_id: body.professor_id,
-        subject_id: body.subject_id,
-      },
-    });
-    return { message: 'Disciplina atribuida com sucesso!' };
+    }
+    return { message: `Disciplina atribuida com sucesso!` };
   }
 
   async isProfessor(user_id: number) {
