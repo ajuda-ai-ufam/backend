@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Subject } from '@prisma/client';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
@@ -10,13 +10,32 @@ export class SubjectService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findOne(id: number): Promise<Subject> {
-    return await this.prisma.subject.findUnique({
+    const selecUserData = {
+      select: {
+        user: { select: { id: true, name: true, email: true } },
+      },
+    };
+
+    const data = await this.prisma.subject.findUnique({
       where: { id },
       include: {
-        SubjectResponsability: true,
-        Monitor: true,
+        SubjectResponsability: {
+          select: {
+            professor: selecUserData,
+          },
+        },
+        Monitor: {
+          select: {
+            responsible_professor: selecUserData,
+            student: selecUserData,
+          },
+        },
       },
     });
+
+    if (!data) throw new NotFoundException('Disciplina não encontrada.');
+
+    return data;
   }
 
   async findAll(query: QueryPaginationDto): Promise<IResponsePaginate> {
