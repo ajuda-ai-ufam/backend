@@ -27,7 +27,14 @@ export class SubjectService {
         Monitor: {
           select: {
             responsible_professor: selecUserData,
-            student: selecUserData,
+            student: {
+              select: {
+                user: selecUserData.select.user,
+                course: {
+                  select: { id: true, name: true },
+                },
+              },
+            },
           },
         },
       },
