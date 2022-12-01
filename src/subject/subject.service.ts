@@ -12,6 +12,10 @@ export class SubjectService {
   async findOne(id: number): Promise<Subject> {
     return await this.prisma.subject.findUnique({
       where: { id },
+      include: {
+        SubjectResponsability: true,
+        Monitor: true,
+      },
     });
   }
 

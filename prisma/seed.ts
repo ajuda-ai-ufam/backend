@@ -49,6 +49,15 @@ async function main() {
   }
 
   for (const subject of subjects_es) {
+    subject.name = subject.name
+      .split(' ')
+      .map((word) => {
+        if (word.length > 2)
+          return word[0].toUpperCase() + word.slice(1).toLowerCase();
+        else return word.toLowerCase();
+      })
+      .join(' ');
+    console.log(subject.name);
     await prisma.subject.upsert({
       create: { ...subject, course_id: 1 },
       update: { ...subject, course_id: 1 },
@@ -57,6 +66,14 @@ async function main() {
   }
 
   for (const subject of subjects_cc) {
+    subject.name = subject.name
+      .split(' ')
+      .map((word) => {
+        if (word.length > 2)
+          return word[0].toUpperCase() + word.slice(1).toLowerCase();
+        else return word.toLowerCase();
+      })
+      .join(' ');
     await prisma.subject.upsert({
       create: { ...subject, course_id: 2 },
       update: { ...subject, course_id: 2 },
