@@ -78,7 +78,7 @@ model Monitor {
   status                   StatusMonitoring     @relation(fields: [id_status], references: [id])
   responsible_professor_id Int
   responsible_professor    Teacher              @relation(fields: [responsible_professor_id], references: [user_id])
-  student_id               Int                  @unique
+  student_id               Int                  
   student                  Student              @relation(fields: [student_id], references: [user_id])
   subject_id               Int
   subject                  Subject              @relation(fields: [subject_id], references: [id])
