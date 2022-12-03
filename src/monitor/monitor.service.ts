@@ -61,6 +61,8 @@ export class MonitorService {
     if (!subject) throw new NotFoundException('Disciplina não encontrada.');
 
     const professor = await this.userService.findOneById(data.professor_id);
+    console.log(professor);
+
     if (!professor) throw new NotFoundException('Professor não encontrado.');
 
     await this.prismaService.monitor.create({

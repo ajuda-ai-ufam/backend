@@ -69,7 +69,6 @@ CREATE TABLE `monitor` (
     `student_id` INTEGER NOT NULL,
     `subject_id` INTEGER NOT NULL,
 
-    UNIQUE INDEX `monitor_student_id_key`(`student_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

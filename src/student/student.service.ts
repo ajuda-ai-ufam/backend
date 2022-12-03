@@ -37,7 +37,7 @@ export class StudentService {
     const user = await this.findOneById(id);
     if (!user) throw new ForbiddenException('Aluno não encontrado');
 
-    const monitor = await this.prisma.monitor.findUnique({
+    const monitor = await this.prisma.monitor.findFirst({
       where: { student_id: data.monitor_id },
     });
     if (!monitor) throw new ForbiddenException('Monitor não encontrado');

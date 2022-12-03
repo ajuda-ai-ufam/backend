@@ -169,7 +169,7 @@ export class UserService {
     const user = await this.prisma.user.create({
       data: {
         email: data.email,
-        name: data.name.toUpperCase(),
+        name: Validations.capitalizeName(data.name),
         password: await hashPassword(data.password),
         is_verified: false,
         type_user_id: 2,
@@ -205,7 +205,7 @@ export class UserService {
   }
 
   async findOneById(id: number) {
-    return this.prisma.user.findUnique({
+    return this.prisma.user.findFirst({
       where: { id },
     });
   }

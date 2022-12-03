@@ -16,7 +16,7 @@ export class SubjectService {
       },
     };
 
-    const data = await this.prisma.subject.findUnique({
+    const data = await this.prisma.subject.findFirst({
       where: { id },
       include: {
         SubjectResponsability: {
