@@ -26,29 +26,18 @@ export class MonitorService {
   async findAll(query: QueryPaginationDto): Promise<IResponsePaginate> {
     const monitors = await this.prismaService.monitor.findMany({
       include: {
-        student: { select: { user: true, course: true } },
+        student: {
+          select: {
+            user: { select: { name: true } },
+            course: { select: { name: true, code: true } },
+          },
+        },
         subject: true,
-        responsible_professor: { select: { user: true } },
+        responsible_professor: { select: { user: { select: { name: true } } } },
+        status: { select: { status: true } },
       },
     });
 
-    monitors.forEach((element) => {
-      delete element.student.user.email;
-      delete element.student.user.id;
-      delete element.student.user.is_verified;
-      delete element.student.user.type_user_id;
-      delete element.student.user.updated_at;
-      delete element.student.user.created_at;
-      delete element.student.user.password;
-      delete element.student.course.id;
-      delete element.responsible_professor.user.password;
-      delete element.responsible_professor.user.id;
-      delete element.responsible_professor.user.email;
-      delete element.responsible_professor.user.is_verified;
-      delete element.responsible_professor.user.type_user_id;
-      delete element.responsible_professor.user.updated_at;
-      delete element.responsible_professor.user.created_at;
-    });
     return pagination(monitors, query);
   }
 
