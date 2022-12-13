@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Monitor } from '@prisma/client';
+import { elementAt } from 'rxjs';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { pagination } from 'src/common/pagination';
@@ -25,10 +26,28 @@ export class MonitorService {
   async findAll(query: QueryPaginationDto): Promise<IResponsePaginate> {
     const monitors = await this.prismaService.monitor.findMany({
       include: {
-        student: true,
+        student: { select: { user: true, course: true } },
         subject: true,
-        responsible_professor: true,
+        responsible_professor: { select: { user: true } },
       },
+    });
+
+    monitors.forEach((element) => {
+      delete element.student.user.email;
+      delete element.student.user.id;
+      delete element.student.user.is_verified;
+      delete element.student.user.type_user_id;
+      delete element.student.user.updated_at;
+      delete element.student.user.created_at;
+      delete element.student.user.password;
+      delete element.student.course.id;
+      delete element.responsible_professor.user.password;
+      delete element.responsible_professor.user.id;
+      delete element.responsible_professor.user.email;
+      delete element.responsible_professor.user.is_verified;
+      delete element.responsible_professor.user.type_user_id;
+      delete element.responsible_professor.user.updated_at;
+      delete element.responsible_professor.user.created_at;
     });
     return pagination(monitors, query);
   }
