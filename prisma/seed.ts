@@ -62,7 +62,6 @@ async function main() {
         else return word.toLowerCase();
       })
       .join(' ');
-    console.log(subject.name);
     await prisma.subject.upsert({
       create: { ...subject, course_id: 1 },
       update: { ...subject, course_id: 1 },
