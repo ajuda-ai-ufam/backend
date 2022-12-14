@@ -64,6 +64,14 @@ model StatusMonitoring {
   @@map("status_monitoring")
 }
 
+model StatusResponsability {
+  id             Int                     @id @default(autoincrement())
+  status         String                  @db.VarChar(100)
+  Responsability SubjectResponsability[]
+
+  @@map("status_responsability")
+}
+
 model StatusScheduleMonitoring {
   id                 Int                  @id @default(autoincrement())
   status             String               @db.VarChar(100)
@@ -78,7 +86,7 @@ model Monitor {
   status                   StatusMonitoring     @relation(fields: [id_status], references: [id])
   responsible_professor_id Int
   responsible_professor    Teacher              @relation(fields: [responsible_professor_id], references: [user_id])
-  student_id               Int                  
+  student_id               Int
   student                  Student              @relation(fields: [student_id], references: [user_id])
   subject_id               Int
   subject                  Subject              @relation(fields: [subject_id], references: [id])
@@ -139,14 +147,15 @@ model Coordinator {
 }
 
 model SubjectResponsability {
-  id           Int      @id @default(autoincrement())
-  status       String   @default("Pendente")
-  updated_at   DateTime @updatedAt
-  created_at   DateTime @default(now())
+  id           Int                  @id @default(autoincrement())
+  id_status    Int                  @default(1)
+  status       StatusResponsability @relation(fields: [id_status], references: [id])
+  updated_at   DateTime             @updatedAt
+  created_at   DateTime             @default(now())
   professor_id Int
-  professor    Teacher  @relation(fields: [professor_id], references: [user_id])
+  professor    Teacher              @relation(fields: [professor_id], references: [user_id])
   subject_id   Int
-  subject      Subject  @relation(fields: [subject_id], references: [id])
+  subject      Subject              @relation(fields: [subject_id], references: [id])
 
   @@map("subject_responsability")
 }

@@ -20,6 +20,11 @@ const status_monitoring = [
   { status: 'Denunciado', id: 3 },
 ];
 
+const status_responsability = [
+  { status: 'Pendente', id: 1 },
+  { status: 'Aprovado', id: 2 },
+];
+
 const status_schedule_monitoring = [
   { status: 'Aguardando aprovação do monitor', id: 1 },
   { status: 'Confirmada', id: 2 },
@@ -107,6 +112,14 @@ async function main() {
 
   for (const status of status_schedule_monitoring) {
     await prisma.statusScheduleMonitoring.upsert({
+      create: status,
+      update: { status: status.status },
+      where: { id: status.id },
+    });
+  }
+
+  for (const status of status_responsability) {
+    await prisma.statusResponsability.upsert({
       create: status,
       update: { status: status.status },
       where: { id: status.id },
