@@ -1,3 +1,4 @@
+import { EmailService } from 'src/email/email.service';
 import {
   BadRequestException,
   ForbiddenException,
@@ -21,6 +22,7 @@ export class MonitorService {
     private readonly prismaService: PrismaService,
     private readonly subjectService: SubjectService,
     private readonly userService: UserService,
+    private readonly emailService: EmailService,
   ) {}
 
   async findAll(query: QueryPaginationDto): Promise<IResponsePaginate> {
@@ -69,9 +71,14 @@ export class MonitorService {
     if (!subject) throw new NotFoundException('Disciplina não encontrada.');
 
     const professor = await this.userService.findOneById(data.professor_id);
-    console.log(professor);
 
     if (!professor) throw new NotFoundException('Professor não encontrado.');
+
+    const email: string = professor.email;
+    const sub: string = process.env.SUBJECT_NEW_MONITORING;
+    const context = 'Você tem uma nova solicitação de monitoria.';
+
+    this.emailService.sendEmailM(email, sub, context);
 
     await this.prismaService.monitor.create({
       data: {

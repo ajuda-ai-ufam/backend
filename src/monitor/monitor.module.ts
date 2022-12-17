@@ -1,3 +1,4 @@
+import { EmailModule } from './../email/email.module';
 import { Module } from '@nestjs/common';
 import { MonitorService } from './monitor.service';
 import { MonitorController } from './monitor.controller';
@@ -12,7 +13,7 @@ import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 
 @Module({
   controllers: [MonitorController],
-  imports: [JwtModule],
+  imports: [JwtModule, EmailModule],
   providers: [
     MonitorService,
     PrismaService,
