@@ -39,14 +39,22 @@ export class MonitorController {
     return this.monitorService.findOne(+id);
   }
 
-  @Post('request/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
+  @Post('request/')
   async requestMonitoring(
-    @Param('id') id: string,
+    @Req() req: Request,
     @Body() body: RequestMonitoringDto,
   ) {
-    return this.monitorService.requestMonitoring(+id, body);
+    let token = req.headers.access_token;
+    token = token.toString().replace('Bearer ', '');
+    console.log(token);
+    const data_token = this.jwtService.decode(`${token}`);
+    return this.monitorService.requestMonitoring(+data_token.sub, body);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Patch('accept/:id_monitoring')
   async acceptMonitoring(
     @Req() req: Request,

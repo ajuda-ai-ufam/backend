@@ -102,6 +102,10 @@ export class MonitorService {
     if (!request_monitor)
       throw new NotFoundException('Solicitação não encontrada!');
 
+    const student = await this.userService.findOneById(
+      request_monitor.student_id,
+    );
+
     if (request_monitor.id_status == 2)
       throw new BadRequestException('Sua solicitacão ja foi aprovada.');
 
@@ -117,6 +121,12 @@ export class MonitorService {
       data: { id_status: 2 },
       where: { id: request_monitor.id },
     });
+
+    const email: string = student.email;
+    const sub: string = process.env.SUBJECT_NEW_MONITORING;
+    const context = 'Você tem foi aceito para ser monitor.';
+
+    this.emailService.sendEmailM(email, sub, context);
 
     return { message: 'Solicitacão aceita!' };
   }
