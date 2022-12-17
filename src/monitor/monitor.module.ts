@@ -7,9 +7,12 @@ import { UserService } from 'src/user/user.service';
 import { CourseService } from 'src/course/course.service';
 import { StudentService } from 'src/student/student.service';
 import { TeacherService } from 'src/teacher/teacher.service';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 
 @Module({
   controllers: [MonitorController],
+  imports: [JwtModule],
   providers: [
     MonitorService,
     PrismaService,
@@ -18,6 +21,7 @@ import { TeacherService } from 'src/teacher/teacher.service';
     CourseService,
     StudentService,
     TeacherService,
+    JwtStrategy,
   ],
 })
 export class MonitorModule {}

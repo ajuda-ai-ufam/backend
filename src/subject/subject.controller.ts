@@ -1,8 +1,6 @@
 import { SubjectDTO } from './dto/subject.dto';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Subject } from '@prisma/client';
-import { filter } from 'rxjs';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { SubjectService } from './subject.service';
