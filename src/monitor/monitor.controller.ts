@@ -37,8 +37,8 @@ export class MonitorController {
     return this.monitorService.findOne(+id);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  //@UseGuards(JwtAuthGuard)
+  //@ApiBearerAuth('access_token')
   @Post('request/')
   async requestMonitoring(
     @Req() req: Request,
