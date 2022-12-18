@@ -71,6 +71,8 @@ export class MonitorService {
       });
 
       return pagination(monitors, query);
+    } else {
+      throw new BadRequestException('Você não possui acesso.');
     }
   }
 
