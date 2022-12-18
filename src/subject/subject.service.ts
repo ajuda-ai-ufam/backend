@@ -19,7 +19,7 @@ export class SubjectService {
     };
 
     const data = await this.prisma.subject.findFirst({
-      where: { id },
+      where: { id: id },
       include: {
         SubjectResponsability: {
           select: {
@@ -43,16 +43,22 @@ export class SubjectService {
       },
     });
 
+    const approved_SubjectResponsability = [];
+    const approved_Monitores = [];
     if (!data) throw new NotFoundException('Disciplina não encontrada.');
 
-    // const filterlist = [];
-    // filtro acima e abaixo
-    // if (subject?.filter) {
-    //   data.SubjectResponsability.forEach((element) => {
-    //     if (element.status.id == filter) filterlist.push(element);
-    //   });
-    //   data.SubjectResponsability = filterlist;
-    // }
+    //somente professores aprovados
+    data.SubjectResponsability.forEach((element) => {
+      if (element.status.id == 2) approved_SubjectResponsability.push(element);
+    });
+
+    //somente monitores aprovados
+    data.Monitor.forEach((element) => {
+      if (element.status.id == 2) approved_Monitores.push(element);
+    });
+
+    data.SubjectResponsability = approved_SubjectResponsability;
+    data.Monitor = approved_Monitores;
 
     return data;
   }

@@ -121,7 +121,6 @@ export class MonitorService {
         where: { subject_id: data.subject_id, professor_id: data.professor_id },
       });
 
-    console.log(verify_professor);
     if (!verify_professor)
       throw new BadRequestException(
         'Este professor não é responsável por esta disciplina.',
@@ -147,10 +146,11 @@ export class MonitorService {
       );
 
     const email: string = professor.email;
-    const sub: string = process.env.SUBJECT_NEW_MONITORING;
-    const context = 'Você tem uma nova solicitação de monitoria.';
+    const sub: string = process.env.REQUEST_MONITORING;
+    const context = { student_name: user.name, subject_name: subject.name };
+    const template = 'request_monitor';
 
-    this.emailService.sendEmailM(email, sub, context);
+    this.emailService.sendEmailRequestMonitoring(email, sub, context, template);
 
     await this.prismaService.monitor.create({
       data: {
@@ -167,6 +167,11 @@ export class MonitorService {
 
     if (!teacher) throw new NotFoundException('Professor não encontrado.');
 
+    if (teacher.type_user_id == 1)
+      throw new BadRequestException(
+        'Você não tem permissão para aceitar solicitações.',
+      );
+
     const request_monitor = await this.prismaService.monitor.findFirst({
       where: { id: id_monitoring },
     });
@@ -178,16 +183,16 @@ export class MonitorService {
       request_monitor.student_id,
     );
 
-    if (request_monitor.id_status == 2)
-      throw new BadRequestException('Sua solicitacão ja foi aprovada.');
-
     if (
       request_monitor.responsible_professor_id != id_teacher &&
       teacher.type_user_id != 3
     )
       throw new BadRequestException(
-        'Você não tem permissão para aceitar esta monitoria.',
+        'Você não tem permissão para aceitar esta solicitação.',
       );
+
+    if (request_monitor.id_status == 2)
+      throw new BadRequestException('Sua solicitacão ja foi aprovada.');
 
     await this.prismaService.monitor.update({
       data: { id_status: 2 },
@@ -195,10 +200,10 @@ export class MonitorService {
     });
 
     const email: string = student.email;
-    const sub: string = process.env.SUBJECT_NEW_MONITORING;
-    const context = 'Você tem foi aceito para ser monitor.';
+    const sub: string = process.env.ACCEPT_MONITORING;
+    const template = 'accept_monitor';
 
-    this.emailService.sendEmailM(email, sub, context);
+    this.emailService.sendEmailAcceptMonitoring(email, sub, template);
 
     return { message: 'Solicitacão aceita!' };
   }

@@ -39,13 +39,13 @@ import { JwtService } from '@nestjs/jwt';
           pass: process.env.MAIL_AUTH_PASS,
         },
       },
-      // template: {
-      //   dir: join(__dirname.replace('src', 'email') + '/templates'),
-      //   adapter: new HandlebarsAdapter(),
-      //   options: {
-      //     strict: true,
-      //   },
-      // },
+      template: {
+        dir: join(__dirname.replace('src', 'email') + '/templates'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
     }),
     MonitorModule,
   ],
