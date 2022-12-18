@@ -15,6 +15,7 @@ import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
 import { AcceptMonitoringDto } from './dto/accept-monitoring.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
+import { query } from 'express';
 
 @Injectable()
 export class MonitorService {
@@ -25,22 +26,52 @@ export class MonitorService {
     private readonly emailService: EmailService,
   ) {}
 
-  async findAll(query: QueryPaginationDto): Promise<IResponsePaginate> {
-    const monitors = await this.prismaService.monitor.findMany({
-      include: {
-        student: {
-          select: {
-            user: { select: { name: true } },
-            course: { select: { name: true, code: true } },
-          },
-        },
-        subject: true,
-        responsible_professor: { select: { user: { select: { name: true } } } },
-        status: { select: { status: true } },
-      },
-    });
+  async findAll(
+    id: number,
+    query: QueryPaginationDto,
+  ): Promise<IResponsePaginate> {
+    const professor = await this.userService.findOneById(id);
 
-    return pagination(monitors, query);
+    if (!professor) throw new NotFoundException('Professor não encontrado.');
+
+    if (professor.type_user_id == 2) {
+      const monitors = await this.prismaService.monitor.findMany({
+        where: { responsible_professor_id: id },
+        include: {
+          student: {
+            select: {
+              user: { select: { name: true } },
+              course: { select: { name: true, code: true } },
+            },
+          },
+          subject: true,
+          responsible_professor: {
+            select: { user: { select: { name: true } } },
+          },
+          status: { select: { status: true } },
+        },
+      });
+
+      return pagination(monitors, query);
+    } else if (professor.type_user_id == 3) {
+      const monitors = await this.prismaService.monitor.findMany({
+        include: {
+          student: {
+            select: {
+              user: { select: { name: true } },
+              course: { select: { name: true, code: true } },
+            },
+          },
+          subject: true,
+          responsible_professor: {
+            select: { user: { select: { name: true } } },
+          },
+          status: { select: { status: true } },
+        },
+      });
+
+      return pagination(monitors, query);
+    }
   }
 
   async findOne(id: number): Promise<Monitor> {

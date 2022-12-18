@@ -1,3 +1,4 @@
+import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { ExtractJwt } from 'passport-jwt';
 import {
   Body,
@@ -28,8 +29,11 @@ export class MonitorController {
   ) {}
 
   @Get('all')
-  async findAll(@Query() query: QueryPaginationDto) {
-    return this.monitorService.findAll(query);
+  async findAll(@Req() req: Request, @Query() query: QueryPaginationDto) {
+    let token = req.headers.access_token;
+    token = token.toString().replace('Bearer ', '');
+    const data_token = this.jwtService.decode(`${token}`);
+    return this.monitorService.findAll(data_token.sub, query);
   }
 
   @Get(':id')
@@ -46,7 +50,6 @@ export class MonitorController {
   ) {
     let token = req.headers.access_token;
     token = token.toString().replace('Bearer ', '');
-    console.log(token);
     const data_token = this.jwtService.decode(`${token}`);
     return this.monitorService.requestMonitoring(+data_token.sub, body);
   }
