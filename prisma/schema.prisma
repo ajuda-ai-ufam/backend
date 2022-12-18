@@ -91,8 +91,22 @@ model Monitor {
   subject_id               Int
   subject                  Subject              @relation(fields: [subject_id], references: [id])
   ScheduleMonitoring       ScheduleMonitoring[]
+  AvailableTimes           AvailableTimes[]
 
   @@map("monitor")
+}
+
+model AvailableTimes {
+  id         Int      @id @default(autoincrement())
+  week_day   Int
+  start      String
+  end        String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  monitor_id Int
+  monitor    Monitor  @relation(fields: [monitor_id], references: [id])
+
+  @@map("available_times")
 }
 
 model Teacher {
