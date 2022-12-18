@@ -29,17 +29,14 @@ async function bootstrap() {
     .setDescription('Backend Super Monitoria')
     .setVersion('1.0')
     .addTag('Super Monitoria')
-    .addBearerAuth(
-      {
-        description: 'Please enter token in following format: Bearer <JWT>',
-        name: 'Authorization',
-        bearerFormat: 'Bearer',
-        scheme: 'Bearer',
-        type: 'http',
-        in: 'Header',
-      },
-      'access-token',
-    )
+    .addBearerAuth({
+      description: 'Please enter token in following format: Bearer <JWT>',
+      name: 'Authorization',
+      bearerFormat: 'Bearer',
+      scheme: 'Bearer',
+      type: 'http',
+      in: 'Header',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

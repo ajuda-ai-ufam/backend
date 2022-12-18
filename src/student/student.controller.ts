@@ -9,7 +9,7 @@ import { StudentService } from './student.service';
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Post('schedule-monitoring/:id')
   async scheduleMonitoring(
     @Param('id') id: number,

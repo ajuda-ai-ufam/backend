@@ -28,7 +28,7 @@ export class UserController {
 
   @ApiOperation({ description: 'Rota para listar todos os usuários.' })
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Get()
   async findOne(@Query('enrollment') enrollment: string) {
     return this.userService.findOneByEnrollment(enrollment);

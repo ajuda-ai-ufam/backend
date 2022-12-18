@@ -11,7 +11,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @ApiOperation({ description: 'Rota para listar todas as disciplinas.' })
   @Get()
   async findAll(
@@ -20,7 +20,7 @@ export class SubjectController {
     return await this.subjectService.findAll(query);
   }
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return await this.subjectService.listSubjects(id);

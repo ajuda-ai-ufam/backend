@@ -31,7 +31,7 @@ export class MonitorController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Get('all')
   async findAll(@Req() req: Request, @Query() query: QueryPaginationDto) {
     let token = req.headers.authorization;
@@ -41,14 +41,14 @@ export class MonitorController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.monitorService.findOne(+id);
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Post('request/')
   async requestMonitoring(
     @Req() req: Request,
@@ -61,7 +61,7 @@ export class MonitorController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Patch('accept/:id_monitoring')
   async acceptMonitoring(
     @Req() req: Request,
@@ -74,14 +74,14 @@ export class MonitorController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Post('accept/scheduled-monitoring/:id')
   async acceptScheduledMonitoring(@Param('id') id: string) {
     return this.monitorService.acceptScheduledMonitoring(+id);
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Post('register/availability/:user_id')
   async registerAvailability(
     @Param('user_id') userId: string,
@@ -91,7 +91,7 @@ export class MonitorController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Get('availability/:user_id')
   async getMonitorAvailability(@Param('user_id') userId: string) {
     return this.monitorService.getMonitorAvailability(+userId);

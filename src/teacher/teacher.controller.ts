@@ -11,7 +11,7 @@ import { TeacherService } from './teacher.service';
 export class TeacherController {
   constructor(private readonly teacherService: TeacherService) {}
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Get()
   async findAll(
     @Query() query: QueryPaginationDto,
@@ -19,7 +19,7 @@ export class TeacherController {
     return await this.teacherService.findAll(query);
   }
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  @ApiBearerAuth()
   @Post('assign-subject')
   async assignSubject(@Body() body: TeacherAssingDto) {
     return await this.teacherService.assignSubject(body);
