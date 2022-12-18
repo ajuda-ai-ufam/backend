@@ -62,7 +62,7 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Patch('accept/:id_monitoring')
+  @Patch('/:id_monitoring/accept')
   async acceptMonitoring(
     @Req() req: Request,
     @Param('id_monitoring') id_monitoring: number,

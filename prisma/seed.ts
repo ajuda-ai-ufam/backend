@@ -15,9 +15,11 @@ const courses = [
 ];
 
 const status_monitoring = [
-  { status: 'Aguardando aprovação do Professor', id: 1 },
-  { status: 'Aprovado', id: 2 },
-  { status: 'Denunciado', id: 3 },
+  { status: 'Pendente', id: 1 },
+  { status: 'Aprovada', id: 2 },
+  { status: 'Disponível', id: 3 },
+  { status: 'Finalizada', id: 4 },
+  { status: 'Rejeitada', id: 5 },
 ];
 
 const status_responsability = [
