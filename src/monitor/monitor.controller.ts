@@ -34,7 +34,7 @@ export class MonitorController {
   @ApiBearerAuth('access_token')
   @Get('all')
   async findAll(@Req() req: Request, @Query() query: QueryPaginationDto) {
-    let token = req.headers.access_token;
+    let token = req.headers.authorization;
     token = token.toString().replace('Bearer ', '');
     const data_token = this.jwtService.decode(`${token}`);
     return this.monitorService.findAll(data_token.sub, query);
@@ -54,7 +54,7 @@ export class MonitorController {
     @Req() req: Request,
     @Body() body: RequestMonitoringDto,
   ) {
-    let token = req.headers.access_token;
+    let token = req.headers.authorization;
     token = token.toString().replace('Bearer ', '');
     const data_token = this.jwtService.decode(`${token}`);
     return this.monitorService.requestMonitoring(+data_token.sub, body);
@@ -67,7 +67,7 @@ export class MonitorController {
     @Req() req: Request,
     @Param('id_monitoring') id_monitoring: number,
   ) {
-    let token = req.headers.access_token;
+    let token = req.headers.authorization;
     token = token.toString().replace('Bearer ', '');
     const data_token = this.jwtService.decode(`${token}`);
     return this.monitorService.acceptMonitoring(id_monitoring, data_token.sub);
