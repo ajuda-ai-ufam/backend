@@ -30,6 +30,8 @@ export class MonitorController {
     private jwtService: JwtService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Get('all')
   async findAll(@Req() req: Request, @Query() query: QueryPaginationDto) {
     let token = req.headers.access_token;
@@ -38,13 +40,15 @@ export class MonitorController {
     return this.monitorService.findAll(data_token.sub, query);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.monitorService.findOne(+id);
   }
 
-  //@UseGuards(JwtAuthGuard)
-  //@ApiBearerAuth('access_token')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Post('request/')
   async requestMonitoring(
     @Req() req: Request,
@@ -56,8 +60,8 @@ export class MonitorController {
     return this.monitorService.requestMonitoring(+data_token.sub, body);
   }
 
-  //@UseGuards(JwtAuthGuard)
-  //@ApiBearerAuth('access_token')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Patch('accept/:id_monitoring')
   async acceptMonitoring(
     @Req() req: Request,
@@ -69,8 +73,8 @@ export class MonitorController {
     return this.monitorService.acceptMonitoring(id_monitoring, data_token.sub);
   }
 
-  //@UseGuards(JwtAuthGuard)
-  //@ApiBearerAuth('access_token')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
   @Post('accept/scheduled-monitoring/:id')
   async acceptScheduledMonitoring(@Param('id') id: string) {
     return this.monitorService.acceptScheduledMonitoring(+id);

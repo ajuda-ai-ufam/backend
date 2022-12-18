@@ -7,7 +7,7 @@ import { CourseService } from './course.service';
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
-  @ApiOperation({description:"Rota para listar todos os cursos."})
+  @ApiOperation({ description: 'Rota para listar todos os cursos.' })
   @Get()
   findAll() {
     return this.courseService.findAll();
