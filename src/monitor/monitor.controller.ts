@@ -1,3 +1,4 @@
+import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { ExtractJwt } from 'passport-jwt';
 import {
   Body,
@@ -16,7 +17,6 @@ import { Request } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
-import { AcceptMonitoringDto } from './dto/accept-monitoring.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorService } from './monitor.service';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
@@ -31,8 +31,11 @@ export class MonitorController {
   ) {}
 
   @Get('all')
-  async findAll(@Query() query: QueryPaginationDto) {
-    return this.monitorService.findAll(query);
+  async findAll(@Req() req: Request, @Query() query: QueryPaginationDto) {
+    let token = req.headers.access_token;
+    token = token.toString().replace('Bearer ', '');
+    const data_token = this.jwtService.decode(`${token}`);
+    return this.monitorService.findAll(data_token.sub, query);
   }
 
   @Get(':id')
@@ -40,8 +43,8 @@ export class MonitorController {
     return this.monitorService.findOne(+id);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  //@UseGuards(JwtAuthGuard)
+  //@ApiBearerAuth('access_token')
   @Post('request/')
   async requestMonitoring(
     @Req() req: Request,
@@ -49,13 +52,12 @@ export class MonitorController {
   ) {
     let token = req.headers.access_token;
     token = token.toString().replace('Bearer ', '');
-    console.log(token);
     const data_token = this.jwtService.decode(`${token}`);
     return this.monitorService.requestMonitoring(+data_token.sub, body);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  //@UseGuards(JwtAuthGuard)
+  //@ApiBearerAuth('access_token')
   @Patch('accept/:id_monitoring')
   async acceptMonitoring(
     @Req() req: Request,
@@ -67,8 +69,8 @@ export class MonitorController {
     return this.monitorService.acceptMonitoring(id_monitoring, data_token.sub);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  //@UseGuards(JwtAuthGuard)
+  //@ApiBearerAuth('access_token')
   @Post('accept/scheduled-monitoring/:id')
   async acceptScheduledMonitoring(@Param('id') id: string) {
     return this.monitorService.acceptScheduledMonitoring(+id);
