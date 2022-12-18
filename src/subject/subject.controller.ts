@@ -18,11 +18,8 @@ export class SubjectController {
     return await this.subjectService.findAll(query);
   }
 
-  @Get('/details')
-  async findOne(
-    @Query() query: QueryPaginationDto,
-    @Query() subject: SubjectDTO,
-  ): Promise<IResponsePaginate> {
-    return await this.subjectService.listSubjects(query, subject);
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    return await this.subjectService.listSubjects(id);
   }
 }

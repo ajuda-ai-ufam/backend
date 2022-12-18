@@ -70,6 +70,27 @@ export class MonitorService {
     const subject = await this.subjectService.findOne(data.subject_id);
     if (!subject) throw new NotFoundException('Disciplina não encontrada.');
 
+    const subjectResponsability =
+      await this.prismaService.subjectResponsability.findMany({
+        where: { subject_id: data.subject_id },
+      });
+
+    if (!subjectResponsability)
+      throw new BadRequestException(
+        'Não há nenhum responsavel pela disciplina!',
+      );
+
+    const verify_professor =
+      await this.prismaService.subjectResponsability.findFirst({
+        where: { subject_id: data.subject_id, professor_id: data.professor_id },
+      });
+
+    console.log(verify_professor);
+    if (!verify_professor)
+      throw new BadRequestException(
+        'Este professor não é responsável por esta disciplina.',
+      );
+
     const professor = await this.userService.findOneById(data.professor_id);
 
     if (!professor) throw new NotFoundException('Professor não encontrado.');

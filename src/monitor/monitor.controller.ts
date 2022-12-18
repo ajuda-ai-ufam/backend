@@ -16,10 +16,8 @@ import { Request } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
-import { AcceptMonitoringDto } from './dto/accept-monitoring.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorService } from './monitor.service';
-import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 
 @ApiTags('Monitor')
 @Controller('monitor')
@@ -53,8 +51,8 @@ export class MonitorController {
     return this.monitorService.requestMonitoring(+data_token.sub, body);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  //@UseGuards(JwtAuthGuard)
+  //@ApiBearerAuth('access_token')
   @Patch('accept/:id_monitoring')
   async acceptMonitoring(
     @Req() req: Request,
@@ -66,8 +64,8 @@ export class MonitorController {
     return this.monitorService.acceptMonitoring(id_monitoring, data_token.sub);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access_token')
+  //@UseGuards(JwtAuthGuard)
+  //@ApiBearerAuth('access_token')
   @Post('accept/scheduled-monitoring/:id')
   async acceptScheduledMonitoring(@Param('id') id: string) {
     return this.monitorService.acceptScheduledMonitoring(+id);

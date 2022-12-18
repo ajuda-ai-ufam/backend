@@ -11,13 +11,7 @@ import { SubjectDTO } from './dto/subject.dto';
 export class SubjectService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async listSubjects(
-    query: QueryPaginationDto,
-    subject: SubjectDTO,
-  ): Promise<IResponsePaginate> {
-    console.log(subject);
-    const id = Number(subject.id);
-
+  async listSubjects(id: number) {
     const selecUserData = {
       select: {
         user: { select: { id: true, name: true, email: true } },
@@ -60,7 +54,7 @@ export class SubjectService {
     //   data.SubjectResponsability = filterlist;
     // }
 
-    return pagination([data], query);
+    return data;
   }
 
   async findOne(id: number): Promise<Subject> {
