@@ -20,6 +20,7 @@ import { AcceptMonitoringDto } from './dto/accept-monitoring.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorService } from './monitor.service';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
+import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 
 @ApiTags('Monitor')
 @Controller('monitor')
@@ -71,5 +72,22 @@ export class MonitorController {
   @Post('accept/scheduled-monitoring/:id')
   async acceptScheduledMonitoring(@Param('id') id: string) {
     return this.monitorService.acceptScheduledMonitoring(+id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
+  @Post('register/availability/:user_id')
+  async registerAvailability(
+    @Param('user_id') userId: string,
+    @Body() body: MonitorAvailabilityDto,
+  ) {
+    return this.monitorService.registerAvailability(+userId, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
+  @Get('availability/:user_id')
+  async getMonitorAvailability(@Param('user_id') userId: string) {
+    return this.monitorService.getMonitorAvailability(+userId);
   }
 }

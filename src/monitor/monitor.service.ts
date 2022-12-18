@@ -15,6 +15,8 @@ import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
 import { AcceptMonitoringDto } from './dto/accept-monitoring.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
+import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
+import * as moment from 'moment';
 
 @Injectable()
 export class MonitorService {
@@ -53,6 +55,7 @@ export class MonitorService {
         subject: true,
         responsible_professor: true,
         ScheduleMonitoring: true,
+        AvailableTimes: true,
       },
     });
     if (!monitor) {
@@ -158,5 +161,58 @@ export class MonitorService {
     });
 
     return { message: 'Agendamento aceito!' };
+  }
+
+  async registerAvailability(userId: number, data: MonitorAvailabilityDto) {
+    const monitor = await this.prismaService.monitor.findFirst({
+      where: {
+        student_id: userId,
+        id_status: 2,
+      },
+    });
+
+    if (!monitor) throw new NotFoundException('Monitor não encontrado');
+
+    if (!data.availability.length)
+      throw new BadRequestException('Nenhum horário informado');
+
+    data.availability.forEach((day) => {
+      if (day.weekDay < 0 || day.weekDay > 6)
+        throw new BadRequestException('Dia da semana inválido');
+      day.hours.forEach((hour) => {
+        const start = moment(hour.start, 'HH:mm');
+        const end = moment(hour.end, 'HH:mm');
+        if (start.isSameOrAfter(end))
+          throw new BadRequestException(
+            'Horário de início deve ser menor que o horário de fim',
+          );
+      });
+    });
+
+    data.availability.forEach((day) => {
+      day.hours.forEach(async (hour) => {
+        try {
+          await this.prismaService.availableTimes.create({
+            data: {
+              week_day: day.weekDay,
+              start: hour.start,
+              end: hour.end,
+              monitor_id: userId,
+            },
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    });
+
+    return { message: 'Disponibilidade registrada!' };
+  }
+
+  getMonitorAvailability(userId: number) {
+    return this.prismaService.availableTimes.findMany({
+      where: { monitor_id: userId },
+      orderBy: { week_day: 'asc' },
+    });
   }
 }
