@@ -82,12 +82,14 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Post('register/availability/:user_id')
+  @Post('availability')
   async registerAvailability(
-    @Param('user_id') userId: string,
+    @Req() req: Request,
     @Body() body: MonitorAvailabilityDto,
   ) {
-    return this.monitorService.registerAvailability(+userId, body);
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const dataToken = this.jwtService.decode(`${token}`);
+    return this.monitorService.registerAvailability(+dataToken.sub, body);
   }
 
   @UseGuards(JwtAuthGuard)
