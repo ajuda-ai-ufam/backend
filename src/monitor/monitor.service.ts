@@ -18,6 +18,7 @@ import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 import * as moment from 'moment';
 import { query } from 'express';
+import { serialize } from 'v8';
 
 @Injectable()
 export class MonitorService {
@@ -32,10 +33,11 @@ export class MonitorService {
     id: number,
     query: QueryPaginationDto,
   ): Promise<IResponsePaginate> {
+    const new_monitors = [];
+
     const professor = await this.userService.findOneById(id);
 
     if (!professor) throw new NotFoundException('Professor não encontrado.');
-
     if (professor.type_user_id == 2) {
       const monitors = await this.prismaService.monitor.findMany({
         where: { responsible_professor_id: id },
@@ -54,7 +56,20 @@ export class MonitorService {
         },
       });
 
-      return pagination(monitors, query);
+      monitors.forEach((element) => {
+        if (
+          element.student.user.name
+            .toLowerCase()
+            .includes(query.search.toString().toLowerCase()) ||
+          element.responsible_professor.user.name
+            .toLowerCase()
+            .includes(query.search.toString().toLowerCase())
+        ) {
+          new_monitors.push(element);
+        }
+      });
+
+      return pagination(new_monitors, query);
     } else if (professor.type_user_id == 3) {
       const monitors = await this.prismaService.monitor.findMany({
         include: {
@@ -71,8 +86,19 @@ export class MonitorService {
           status: { select: { status: true } },
         },
       });
-
-      return pagination(monitors, query);
+      monitors.forEach((element) => {
+        if (
+          element.student.user.name
+            .toLowerCase()
+            .includes(query.search.toString().toLowerCase()) ||
+          element.responsible_professor.user.name
+            .toLowerCase()
+            .includes(query.search.toString().toLowerCase())
+        ) {
+          new_monitors.push(element);
+        }
+      });
+      return pagination(new_monitors, query);
     } else {
       throw new BadRequestException('Você não possui acesso.');
     }
