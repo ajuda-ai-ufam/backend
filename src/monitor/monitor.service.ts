@@ -55,21 +55,24 @@ export class MonitorService {
           status: { select: { status: true } },
         },
       });
+      if (query.search) {
+        monitors.forEach((element) => {
+          if (
+            element.student.user.name
+              .toLowerCase()
+              .includes(query.search.toString().toLowerCase()) ||
+            element.responsible_professor.user.name
+              .toLowerCase()
+              .includes(query.search.toString().toLowerCase())
+          ) {
+            new_monitors.push(element);
+          }
+        });
 
-      monitors.forEach((element) => {
-        if (
-          element.student.user.name
-            .toLowerCase()
-            .includes(query.search.toString().toLowerCase()) ||
-          element.responsible_professor.user.name
-            .toLowerCase()
-            .includes(query.search.toString().toLowerCase())
-        ) {
-          new_monitors.push(element);
-        }
-      });
-
-      return pagination(new_monitors, query);
+        return pagination(new_monitors, query);
+      } else {
+        return pagination(monitors, query);
+      }
     } else if (professor.type_user_id == 3) {
       const monitors = await this.prismaService.monitor.findMany({
         include: {
@@ -86,19 +89,24 @@ export class MonitorService {
           status: { select: { status: true } },
         },
       });
-      monitors.forEach((element) => {
-        if (
-          element.student.user.name
-            .toLowerCase()
-            .includes(query.search.toString().toLowerCase()) ||
-          element.responsible_professor.user.name
-            .toLowerCase()
-            .includes(query.search.toString().toLowerCase())
-        ) {
-          new_monitors.push(element);
-        }
-      });
-      return pagination(new_monitors, query);
+      if (query.search) {
+        monitors.forEach((element) => {
+          if (
+            element.student.user.name
+              .toLowerCase()
+              .includes(query.search.toString().toLowerCase()) ||
+            element.responsible_professor.user.name
+              .toLowerCase()
+              .includes(query.search.toString().toLowerCase())
+          ) {
+            new_monitors.push(element);
+          }
+        });
+
+        return pagination(new_monitors, query);
+      } else {
+        return pagination(monitors, query);
+      }
     } else {
       throw new BadRequestException('Você não possui acesso.');
     }
