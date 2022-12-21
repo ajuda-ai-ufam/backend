@@ -38,6 +38,9 @@ export class SubjectService {
               },
             },
             status: { select: { id: true, status: true } },
+            responsible_professor: {
+              select: { user: selecUserData.select.user },
+            },
           },
         },
       },
