@@ -72,7 +72,6 @@ async function main() {
   }
 
   for (const subject of subjects_cc) {
-<<<<<<< HEAD
     subject.name = subject.name
       .split(' ')
       .map((word) => {
@@ -81,8 +80,6 @@ async function main() {
         else return word.toLowerCase();
       })
       .join(' ');
-=======
->>>>>>> f5ee865 (Development (#19))
     await prisma.subject.upsert({
       create: { ...subject, course_id: 2 },
       update: { ...subject, course_id: 2 },
