@@ -273,8 +273,13 @@ export class MonitorService {
       if (day.weekDay < 0 || day.weekDay > 6)
         throw new BadRequestException('Dia da semana inválido');
       day.hours.forEach((hour) => {
+        const hourRegex = /^([0-1]?[\d]|2[0-3]):[0-5][\d]$/;
+        if (!hourRegex.test(hour.start) || !hourRegex.test(hour.end))
+          throw new BadRequestException('Formato de hora inválido');
         const start = moment(hour.start, 'HH:mm');
         const end = moment(hour.end, 'HH:mm');
+        if (!start.isValid() || !end.isValid())
+          throw new BadRequestException('Horário inválido');
         if (start.isSameOrAfter(end))
           throw new BadRequestException(
             'Horário de início deve ser menor que o horário de fim',
