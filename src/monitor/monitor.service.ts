@@ -282,6 +282,8 @@ export class MonitorService {
       });
     });
 
+    await this.clearMonitorAvailability(monitor);
+
     data.availability.forEach((day) => {
       day.hours.forEach(async (hour) => {
         try {
@@ -302,7 +304,13 @@ export class MonitorService {
     return { message: 'Disponibilidade registrada!' };
   }
 
-  getMonitorAvailability(userId: number) {
+  async clearMonitorAvailability(monitor: Monitor) {
+    await this.prismaService.availableTimes.deleteMany({
+      where: { monitor_id: monitor.id },
+    });
+  }
+
+  async getMonitorAvailability(userId: number) {
     return this.prismaService.availableTimes.findMany({
       where: { monitor_id: userId },
       orderBy: { week_day: 'asc' },
