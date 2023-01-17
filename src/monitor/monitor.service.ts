@@ -242,11 +242,23 @@ export class MonitorService {
     return { message: 'Solicitacão aceita!' };
   }
 
-  async acceptScheduledMonitoring(schedule_id: number) {
+  // verificar se já existe um agendamento aceito para o mesmo horário
+
+  async acceptScheduledMonitoring(schedule_id: number, user_id: number) {
     const schedule = await this.prismaService.scheduleMonitoring.findUnique({
       where: { id: schedule_id },
     });
     if (!schedule) throw new NotFoundException('Agendamento não encontrado');
+
+    if (schedule.id_status != 1)
+      throw new BadRequestException(
+        'Não é mais possível aceitar este agendamento',
+      );
+
+    if (schedule.monitor_id != user_id)
+      throw new ForbiddenException(
+        'Você não tem permissão para aceitar este agendamento',
+      );
 
     await this.prismaService.scheduleMonitoring.update({
       data: { id_status: 2 },
@@ -260,7 +272,6 @@ export class MonitorService {
     const monitor = await this.prismaService.monitor.findFirst({
       where: {
         student_id: userId,
-        id_status: 2,
       },
     });
 
@@ -297,7 +308,7 @@ export class MonitorService {
               week_day: day.weekDay,
               start: hour.start,
               end: hour.end,
-              monitor_id: userId,
+              monitor_id: monitor.id,
             },
           });
         } catch (error) {
