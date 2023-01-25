@@ -62,6 +62,19 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @Patch('/:id_monitoring/refuse')
+  async refuseMonitoring(
+    @Req() req: Request,
+    @Param('id_monitoring') id_monitoring: number,
+  ) {
+    let token = req.headers.authorization;
+    token = token.toString().replace('Bearer ', '');
+    const data_token = this.jwtService.decode(`${token}`);
+    return this.monitorService.refuseMonitoring(id_monitoring, data_token.sub);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch('/:id_monitoring/accept')
   async acceptMonitoring(
     @Req() req: Request,
