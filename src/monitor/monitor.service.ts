@@ -228,6 +228,9 @@ export class MonitorService {
     if (request_monitor.id_status == 2)
       throw new BadRequestException('Sua solicitacão ja foi aprovada.');
 
+    if (request_monitor.id_status == 5)
+      throw new BadRequestException('Sua solicitacão ja foi recusada.');
+
     await this.prismaService.monitor.update({
       data: { id_status: 2 },
       where: { id: request_monitor.id },
