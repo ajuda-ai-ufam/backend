@@ -327,8 +327,16 @@ export class MonitorService {
   }
 
   async getMonitorAvailability(userId: number) {
+    const monitor = await this.prismaService.monitor.findFirst({
+      where: {
+        student_id: userId,
+      },
+    });
+
+    if (!monitor) throw new NotFoundException('Monitor não encontrado');
+
     return this.prismaService.availableTimes.findMany({
-      where: { monitor_id: userId },
+      where: { monitor_id: monitor.id },
       orderBy: { week_day: 'asc' },
     });
   }
