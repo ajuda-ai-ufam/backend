@@ -228,6 +228,9 @@ export class MonitorService {
     if (request_monitor.id_status == 2)
       throw new BadRequestException('Sua solicitacão ja foi aprovada.');
 
+    if (request_monitor.id_status == 5)
+      throw new BadRequestException('Sua solicitacão ja foi recusada.');
+
     await this.prismaService.monitor.update({
       data: { id_status: 2 },
       where: { id: request_monitor.id },
@@ -242,11 +245,69 @@ export class MonitorService {
     return { message: 'Solicitacão aceita!' };
   }
 
-  async acceptScheduledMonitoring(schedule_id: number) {
+  async refuseMonitoring(id_monitoring: number, id_teacher: number) {
+    const teacher = await this.userService.findOneById(id_teacher);
+
+    if (!teacher) throw new NotFoundException('Professor não encontrado.');
+
+    if (teacher.type_user_id == 1)
+      throw new BadRequestException(
+        'Você não tem permissão para recusar solicitações.',
+      );
+
+    const request_monitor = await this.prismaService.monitor.findFirst({
+      where: { id: id_monitoring },
+    });
+
+    if (!request_monitor)
+      throw new NotFoundException('Solicitação não encontrada!');
+
+    // const student = await this.userService.findOneById(
+    //   request_monitor.student_id,
+    // );
+
+    if (
+      request_monitor.responsible_professor_id != id_teacher &&
+      teacher.type_user_id != 3
+    )
+      throw new BadRequestException(
+        'Você não tem permissão para recusar esta solicitação.',
+      );
+
+    if (request_monitor.id_status == 5)
+      throw new BadRequestException('Sua solicitacão ja foi recusada.');
+
+    await this.prismaService.monitor.update({
+      data: { id_status: 5 },
+      where: { id: request_monitor.id },
+    });
+
+    // const email: string = student.email;
+    // const sub: string = process.env.ACCEPT_MONITORING;
+    // const template = 'accept_monitor';
+
+    // this.emailService.sendEmailAcceptMonitoring(email, sub, template);
+
+    return { message: 'Solicitacão recusada!' };
+  }
+
+  // verificar se já existe um agendamento aceito para o mesmo horário
+
+  async acceptScheduledMonitoring(schedule_id: number, user_id: number) {
     const schedule = await this.prismaService.scheduleMonitoring.findUnique({
       where: { id: schedule_id },
     });
     if (!schedule) throw new NotFoundException('Agendamento não encontrado');
+
+    if (schedule.id_status != 1)
+      throw new BadRequestException(
+        'Não é mais possível aceitar este agendamento',
+      );
+
+    if (schedule.monitor_id != user_id)
+      throw new ForbiddenException(
+        'Você não tem permissão para aceitar este agendamento',
+      );
 
     await this.prismaService.scheduleMonitoring.update({
       data: { id_status: 2 },
@@ -260,7 +321,6 @@ export class MonitorService {
     const monitor = await this.prismaService.monitor.findFirst({
       where: {
         student_id: userId,
-        id_status: 2,
       },
     });
 
@@ -273,14 +333,21 @@ export class MonitorService {
       if (day.weekDay < 0 || day.weekDay > 6)
         throw new BadRequestException('Dia da semana inválido');
       day.hours.forEach((hour) => {
+        const hourRegex = /^([0-1]?[\d]|2[0-3]):[0-5][\d]$/;
+        if (!hourRegex.test(hour.start) || !hourRegex.test(hour.end))
+          throw new BadRequestException('Formato de hora inválido');
         const start = moment(hour.start, 'HH:mm');
         const end = moment(hour.end, 'HH:mm');
+        if (!start.isValid() || !end.isValid())
+          throw new BadRequestException('Horário inválido');
         if (start.isSameOrAfter(end))
           throw new BadRequestException(
             'Horário de início deve ser menor que o horário de fim',
           );
       });
     });
+
+    await this.clearMonitorAvailability(monitor);
 
     data.availability.forEach((day) => {
       day.hours.forEach(async (hour) => {
@@ -290,7 +357,7 @@ export class MonitorService {
               week_day: day.weekDay,
               start: hour.start,
               end: hour.end,
-              monitor_id: userId,
+              monitor_id: monitor.id,
             },
           });
         } catch (error) {
@@ -302,9 +369,23 @@ export class MonitorService {
     return { message: 'Disponibilidade registrada!' };
   }
 
-  getMonitorAvailability(userId: number) {
+  async clearMonitorAvailability(monitor: Monitor) {
+    await this.prismaService.availableTimes.deleteMany({
+      where: { monitor_id: monitor.id },
+    });
+  }
+
+  async getMonitorAvailability(userId: number) {
+    const monitor = await this.prismaService.monitor.findFirst({
+      where: {
+        student_id: userId,
+      },
+    });
+
+    if (!monitor) throw new NotFoundException('Monitor não encontrado.');
+
     return this.prismaService.availableTimes.findMany({
-      where: { monitor_id: userId },
+      where: { monitor_id: monitor.id },
       orderBy: { week_day: 'asc' },
     });
   }

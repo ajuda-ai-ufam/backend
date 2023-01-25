@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ScheduleMonitoringDto {
-  @ApiProperty()
-  monitor_id: number;
+  @ApiProperty({
+    example: '2023-01-20 10:00:00',
+  })
+  start: string;
 
-  @ApiProperty()
-  start: Date;
-
-  @ApiProperty()
-  end: Date;
+  @ApiProperty({
+    example: '2023-01-20 11:00:00',
+  })
+  end: string;
 }

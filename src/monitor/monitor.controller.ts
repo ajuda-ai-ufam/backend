@@ -62,6 +62,19 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @Patch('/:id_monitoring/refuse')
+  async refuseMonitoring(
+    @Req() req: Request,
+    @Param('id_monitoring') id_monitoring: number,
+  ) {
+    let token = req.headers.authorization;
+    token = token.toString().replace('Bearer ', '');
+    const data_token = this.jwtService.decode(`${token}`);
+    return this.monitorService.refuseMonitoring(id_monitoring, data_token.sub);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch('/:id_monitoring/accept')
   async acceptMonitoring(
     @Req() req: Request,
@@ -75,9 +88,17 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Post('accept/scheduled-monitoring/:id')
-  async acceptScheduledMonitoring(@Param('id') id: string) {
-    return this.monitorService.acceptScheduledMonitoring(+id);
+  @Post('accept/scheduled-monitoring/:scheduled_monitoring_id')
+  async acceptScheduledMonitoring(
+    @Req() req: Request,
+    @Param('scheduled_monitoring_id') scheduled_monitoring_id: string,
+  ) {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const payload = this.jwtService.decode(token);
+    return this.monitorService.acceptScheduledMonitoring(
+      +scheduled_monitoring_id,
+      payload.sub,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
