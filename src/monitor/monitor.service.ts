@@ -242,6 +242,52 @@ export class MonitorService {
     return { message: 'Solicitacão aceita!' };
   }
 
+  async refuseMonitoring(id_monitoring: number, id_teacher: number) {
+    const teacher = await this.userService.findOneById(id_teacher);
+
+    if (!teacher) throw new NotFoundException('Professor não encontrado.');
+
+    if (teacher.type_user_id == 1)
+      throw new BadRequestException(
+        'Você não tem permissão para recusar solicitações.',
+      );
+
+    const request_monitor = await this.prismaService.monitor.findFirst({
+      where: { id: id_monitoring },
+    });
+
+    if (!request_monitor)
+      throw new NotFoundException('Solicitação não encontrada!');
+
+    // const student = await this.userService.findOneById(
+    //   request_monitor.student_id,
+    // );
+
+    if (
+      request_monitor.responsible_professor_id != id_teacher &&
+      teacher.type_user_id != 3
+    )
+      throw new BadRequestException(
+        'Você não tem permissão para recusar esta solicitação.',
+      );
+
+    if (request_monitor.id_status == 5)
+      throw new BadRequestException('Sua solicitacão ja foi recusada.');
+
+    await this.prismaService.monitor.update({
+      data: { id_status: 5 },
+      where: { id: request_monitor.id },
+    });
+
+    // const email: string = student.email;
+    // const sub: string = process.env.ACCEPT_MONITORING;
+    // const template = 'accept_monitor';
+
+    // this.emailService.sendEmailAcceptMonitoring(email, sub, template);
+
+    return { message: 'Solicitacão recusada!' };
+  }
+
   // verificar se já existe um agendamento aceito para o mesmo horário
 
   async acceptScheduledMonitoring(schedule_id: number, user_id: number) {
