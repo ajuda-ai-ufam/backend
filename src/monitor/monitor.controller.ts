@@ -42,7 +42,7 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Get(':user_id')
+  @Get('/schedules/:user_id')
   async findOne(@Param('user_id') user_id: string) {
     return this.monitorService.findOne(+user_id);
   }

@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ScheduleMonitoringDto } from './dto/schedule-monitoring.dto';
@@ -26,5 +34,12 @@ export class StudentController {
     const payload = this.jwtService.decode(token);
     const student_id = payload.sub as number;
     return this.studentService.scheduleMonitoring(student_id, monitor_id, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('/schedules/:user_id')
+  async findOne(@Param('user_id') user_id: string) {
+    return this.studentService.findOne(+user_id);
   }
 }

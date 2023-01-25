@@ -39,19 +39,23 @@ export class StudentService {
     data: ScheduleMonitoringDto,
   ) {
     const user = await this.findOneById(student_id);
-    if (!user) throw new ForbiddenException('Aluno não encontrado');
+    if (!user) throw new ForbiddenException('Aluno não encontrado.');
 
     const monitor = await this.prisma.monitor.findFirst({
       where: { student_id: monitor_id },
     });
-    if (!monitor) throw new ForbiddenException('Monitor não encontrado');
+    if (!monitor) throw new ForbiddenException('Monitor não encontrado.');
 
-    if (monitor.id_status !== 3)
-      throw new PreconditionFailedException('Monitor não disponível');
+    if (
+      monitor.id_status == 5 ||
+      monitor.id_status == 1 ||
+      monitor.id_status == 4
+    )
+      throw new PreconditionFailedException('Monitor não disponível.');
 
     if (user.user_id === monitor.student_id)
       throw new PreconditionFailedException(
-        'Não foi possível agendar a monitoria, aluno e monitor são o mesmo usuário',
+        'Não foi possível agendar a monitoria, aluno e monitor são o mesmo usuário.',
       );
 
     data.start = moment(data.start).format('YYYY-MM-DDTHH:mm:ssZ');
@@ -85,7 +89,7 @@ export class StudentService {
 
     if (sameDay.length === 0)
       throw new PreconditionFailedException(
-        'Monitor não disponível nas datas selecionadas',
+        'Monitor não disponível nas datas selecionadas.',
       );
 
     sameDay.forEach((item) => {
@@ -121,5 +125,24 @@ export class StudentService {
       where: { monitor_id },
       orderBy: { week_day: 'asc' },
     });
+  }
+
+  async findOne(user_id: number) {
+    const student = await this.prisma.scheduleMonitoring.findMany({
+      where: {
+        student_id: user_id,
+      },
+      include: {
+        student: true,
+        status: true,
+        monitor: true,
+      },
+    });
+
+    if (!student) {
+      throw new NotFoundException('Monitor nao encontrado.');
+    }
+
+    return student;
   }
 }

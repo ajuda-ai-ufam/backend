@@ -22,8 +22,6 @@ export class UserService {
   ) {}
 
   async createUserStudent(data: StudentCreateDTO) {
-    console.log(data);
-
     const list_data_user = [
       data.confirm_password,
       data.email,

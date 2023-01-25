@@ -38,6 +38,21 @@ export class EmailService {
     });
   }
 
+  async sendEmailRefuseMonitoring(
+    email: string,
+    subject: string,
+    template: string,
+  ) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: subject,
+      text: process.env.REFUSE_MONITORING,
+      template: `${template}.hbs`,
+      context: {},
+    });
+  }
+
   async sendEmail(
     email: string,
     subject: string,
