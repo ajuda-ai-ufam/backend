@@ -112,10 +112,10 @@ export class MonitorService {
     }
   }
 
-  async findOne(id: number): Promise<Monitor> {
-    const monitor = await this.prismaService.monitor.findUnique({
+  async findOne(user_id: number): Promise<Monitor> {
+    const monitor = await this.prismaService.monitor.findFirst({
       where: {
-        id,
+        student_id: user_id,
       },
       include: {
         student: true,
