@@ -379,7 +379,7 @@ export class MonitorService {
       },
     });
 
-    if (!monitor) throw new NotFoundException('Monitor não encontrado');
+    if (!monitor) throw new NotFoundException('Monitor não encontrado.');
 
     return this.prismaService.availableTimes.findMany({
       where: { monitor_id: monitor.id },
