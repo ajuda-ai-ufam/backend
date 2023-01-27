@@ -112,27 +112,27 @@ export class MonitorService {
     }
   }
 
-  async findOne(user_id: number) {
-    const monitor = await this.prismaService.monitor.findMany({
-      where: {
-        student_id: user_id,
-      },
-      include: {
-        student: true,
-        status: true,
-        subject: true,
-        responsible_professor: true,
-        ScheduleMonitoring: true,
-        AvailableTimes: true,
-      },
-    });
+  // async findOne(user_id: number) {
+  //   const monitor = await this.prismaService.monitor.findMany({
+  //     where: {
+  //       student_id: user_id,
+  //     },
+  //     include: {
+  //       student: true,
+  //       status: true,
+  //       subject: true,
+  //       responsible_professor: true,
+  //       ScheduleMonitoring: true,
+  //       AvailableTimes: true,
+  //     },
+  //   });
 
-    if (!monitor) {
-      throw new NotFoundException('Monitor nao encontrado.');
-    }
+  //   if (!monitor) {
+  //     throw new NotFoundException('Monitor nao encontrado.');
+  //   }
 
-    return monitor;
-  }
+  //   return monitor;
+  // }
 
   async requestMonitoring(user_id: number, data: RequestMonitoringDto) {
     const user = await this.userService.findOneById(user_id);

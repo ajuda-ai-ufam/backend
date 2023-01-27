@@ -1,3 +1,4 @@
+import { elementAt } from 'rxjs';
 import {
   BadRequestException,
   ForbiddenException,
@@ -128,21 +129,33 @@ export class StudentService {
   }
 
   async findOne(user_id: number) {
-    const student = await this.prisma.scheduleMonitoring.findMany({
+    const monitor = await this.prisma.monitor.findFirst({
       where: {
         student_id: user_id,
       },
       include: {
         student: true,
-        status: true,
-        monitor: true,
       },
     });
 
-    if (!student) {
-      throw new NotFoundException('Monitor nao encontrado.');
-    }
+    const schedule = await this.prisma.scheduleMonitoring.findMany({
+      where: {
+        OR: [{ student_id: user_id }, { monitor_id: monitor?.id }],
+      },
+      include: {
+        monitor: true,
+        student: true,
+      },
+    });
 
-    return student;
+    if (!schedule) throw new NotFoundException('Agendamentos nao encontrados.');
+
+    schedule.forEach((element) => {
+      console.log(element);
+      if (monitor?.student_id == user_id) element['is_monitoring'] = true;
+      else element['is_monitoring'] = false;
+    });
+
+    return schedule;
   }
 }
