@@ -151,7 +151,6 @@ export class StudentService {
     if (!schedule) throw new NotFoundException('Agendamentos nao encontrados.');
 
     schedule.forEach((element) => {
-      console.log(element);
       if (element.monitor.id == monitor?.id) element['is_monitoring'] = true;
       else element['is_monitoring'] = false;
     });
