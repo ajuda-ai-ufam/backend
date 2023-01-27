@@ -143,19 +143,17 @@ export class StudentService {
         OR: [{ student_id: user_id }, { monitor_id: monitor?.id }],
       },
       include: {
-        monitor: { select: { student: { select: { course: true } } } },
-        student: { select: { course: true } },
+        monitor: { include: { student: { include: { course: true } } } },
+        student: { include: { course: true } },
       },
     });
 
-    console.log(schedule);
-
     if (!schedule) throw new NotFoundException('Agendamentos nao encontrados.');
 
-    // schedule.forEach((element) => {
-    //   if (element.monitor.id == monitor?.id) element['is_monitoring'] = true;
-    //   else element['is_monitoring'] = false;
-    // });
+    schedule.forEach((element) => {
+      if (element.monitor.id == monitor?.id) element['is_monitoring'] = true;
+      else element['is_monitoring'] = false;
+    });
 
     return schedule;
   }
