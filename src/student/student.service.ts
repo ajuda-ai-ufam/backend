@@ -152,7 +152,7 @@ export class StudentService {
 
     schedule.forEach((element) => {
       console.log(element);
-      if (monitor?.student_id == user_id) element['is_monitoring'] = true;
+      if (element.monitor.id == monitor?.id) element['is_monitoring'] = true;
       else element['is_monitoring'] = false;
     });
 
