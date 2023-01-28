@@ -1,3 +1,4 @@
+import { elementAt } from 'rxjs';
 import {
   BadRequestException,
   ForbiddenException,
@@ -39,19 +40,26 @@ export class StudentService {
     data: ScheduleMonitoringDto,
   ) {
     const user = await this.findOneById(student_id);
-    if (!user) throw new ForbiddenException('Aluno não encontrado');
+    if (!user) throw new ForbiddenException('Aluno não encontrado.');
 
     const monitor = await this.prisma.monitor.findFirst({
       where: { student_id: monitor_id },
     });
-    if (!monitor) throw new ForbiddenException('Monitor não encontrado');
+    if (!monitor) throw new ForbiddenException('Monitor não encontrado.');
+
+    if (
+      monitor.id_status == 5 ||
+      monitor.id_status == 1 ||
+      monitor.id_status == 4
+    )
+      throw new PreconditionFailedException('Monitor não disponível.');
 
     if (monitor.id_status !== 3)
       throw new PreconditionFailedException('Monitor não disponível');
 
     if (user.user_id === monitor.student_id)
       throw new PreconditionFailedException(
-        'Não foi possível agendar a monitoria, aluno e monitor são o mesmo usuário',
+        'Não foi possível agendar a monitoria, aluno e monitor são o mesmo usuário.',
       );
 
     data.start = moment(data.start).format('YYYY-MM-DDTHH:mm:ssZ');
@@ -85,7 +93,7 @@ export class StudentService {
 
     if (sameDay.length === 0)
       throw new PreconditionFailedException(
-        'Monitor não disponível nas datas selecionadas',
+        'Monitor não disponível nas datas selecionadas.',
       );
 
     sameDay.forEach((item) => {
@@ -121,5 +129,35 @@ export class StudentService {
       where: { monitor_id },
       orderBy: { week_day: 'asc' },
     });
+  }
+
+  async findOne(user_id: number) {
+    const monitor = await this.prisma.monitor.findFirst({
+      where: {
+        student_id: user_id,
+      },
+      include: {
+        student: true,
+      },
+    });
+
+    const schedule = await this.prisma.scheduleMonitoring.findMany({
+      where: {
+        OR: [{ student_id: user_id }, { monitor_id: monitor?.id }],
+      },
+      include: {
+        monitor: { include: { student: { include: { course: true } } } },
+        student: { include: { course: true } },
+      },
+    });
+
+    if (!schedule) throw new NotFoundException('Agendamentos nao encontrados.');
+
+    schedule.forEach((element) => {
+      if (element.monitor.id == monitor?.id) element['is_monitoring'] = true;
+      else element['is_monitoring'] = false;
+    });
+
+    return schedule;
   }
 }

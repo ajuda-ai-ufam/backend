@@ -40,12 +40,12 @@ export class MonitorController {
     return this.monitorService.findAll(data_token.sub, query);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.monitorService.findOne(+id);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth()
+  // @Get('/schedules/:user_id')
+  // async findOne(@Param('user_id') user_id: string) {
+  //   return this.monitorService.findOne(+user_id);
+  // }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

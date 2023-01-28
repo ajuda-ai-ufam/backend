@@ -112,24 +112,27 @@ export class MonitorService {
     }
   }
 
-  async findOne(id: number): Promise<Monitor> {
-    const monitor = await this.prismaService.monitor.findUnique({
-      where: {
-        id,
-      },
-      include: {
-        student: true,
-        subject: true,
-        responsible_professor: true,
-        ScheduleMonitoring: true,
-        AvailableTimes: true,
-      },
-    });
-    if (!monitor) {
-      throw new NotFoundException('Monitor não encontrado');
-    }
-    return monitor;
-  }
+  // async findOne(user_id: number) {
+  //   const monitor = await this.prismaService.monitor.findMany({
+  //     where: {
+  //       student_id: user_id,
+  //     },
+  //     include: {
+  //       student: true,
+  //       status: true,
+  //       subject: true,
+  //       responsible_professor: true,
+  //       ScheduleMonitoring: true,
+  //       AvailableTimes: true,
+  //     },
+  //   });
+
+  //   if (!monitor) {
+  //     throw new NotFoundException('Monitor nao encontrado.');
+  //   }
+
+  //   return monitor;
+  // }
 
   async requestMonitoring(user_id: number, data: RequestMonitoringDto) {
     const user = await this.userService.findOneById(user_id);
@@ -262,9 +265,9 @@ export class MonitorService {
     if (!request_monitor)
       throw new NotFoundException('Solicitação não encontrada!');
 
-    // const student = await this.userService.findOneById(
-    //   request_monitor.student_id,
-    // );
+    const student = await this.userService.findOneById(
+      request_monitor.student_id,
+    );
 
     if (
       request_monitor.responsible_professor_id != id_teacher &&
@@ -282,11 +285,11 @@ export class MonitorService {
       where: { id: request_monitor.id },
     });
 
-    // const email: string = student.email;
-    // const sub: string = process.env.ACCEPT_MONITORING;
-    // const template = 'accept_monitor';
+    const email: string = student.email;
+    const sub: string = process.env.REFUSE_MONITORING;
+    const template = 'refuse_monitor';
 
-    // this.emailService.sendEmailAcceptMonitoring(email, sub, template);
+    this.emailService.sendEmailRefuseMonitoring(email, sub, template);
 
     return { message: 'Solicitacão recusada!' };
   }
