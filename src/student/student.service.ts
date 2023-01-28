@@ -54,6 +54,9 @@ export class StudentService {
     )
       throw new PreconditionFailedException('Monitor não disponível.');
 
+    if (monitor.id_status !== 3)
+      throw new PreconditionFailedException('Monitor não disponível');
+
     if (user.user_id === monitor.student_id)
       throw new PreconditionFailedException(
         'Não foi possível agendar a monitoria, aluno e monitor são o mesmo usuário.',
