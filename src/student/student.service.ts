@@ -10,7 +10,6 @@ import { PrismaService } from 'src/database/prisma.service';
 import { ScheduleMonitoringDto } from './dto/schedule-monitoring.dto';
 import { StudentDTO } from './dto/student.dto';
 import * as moment from 'moment';
-import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { pagination } from 'src/common/pagination';
 import { SchedulesDto } from './dto/schedules.dto';
 
@@ -163,7 +162,7 @@ export class StudentService {
     const schedule = await this.prisma.scheduleMonitoring.findMany({
       where: {
         OR: orStatement,
-        AND: [{ id_status: Number(query.status) }],
+        AND: [{ id_status: Number(query.status) || undefined }],
       },
       include: {
         monitor: { include: { student: studentInclude } },
