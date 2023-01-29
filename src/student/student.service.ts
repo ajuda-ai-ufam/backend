@@ -10,6 +10,8 @@ import { PrismaService } from 'src/database/prisma.service';
 import { ScheduleMonitoringDto } from './dto/schedule-monitoring.dto';
 import { StudentDTO } from './dto/student.dto';
 import * as moment from 'moment';
+import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
+import { pagination } from 'src/common/pagination';
 
 @Injectable()
 export class StudentService {
@@ -131,13 +133,22 @@ export class StudentService {
     });
   }
 
-  async findOne(user_id: number) {
+  async listSchedules(user_id: number, query: QueryPaginationDto) {
+    const studentInclude = {
+      include: {
+        course: true,
+        user: {
+          select: { name: true },
+        },
+      },
+    };
+
     const monitor = await this.prisma.monitor.findFirst({
       where: {
         student_id: user_id,
       },
       include: {
-        student: true,
+        student: studentInclude,
       },
     });
 
@@ -146,8 +157,8 @@ export class StudentService {
         OR: [{ student_id: user_id }, { monitor_id: monitor?.id }],
       },
       include: {
-        monitor: { include: { student: { include: { course: true } } } },
-        student: { include: { course: true } },
+        monitor: { include: { student: studentInclude } },
+        student: studentInclude,
       },
     });
 
@@ -158,6 +169,6 @@ export class StudentService {
       else element['is_monitoring'] = false;
     });
 
-    return schedule;
+    return pagination(schedule, query);
   }
 }
