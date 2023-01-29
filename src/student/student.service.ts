@@ -10,6 +10,9 @@ import { PrismaService } from 'src/database/prisma.service';
 import { ScheduleMonitoringDto } from './dto/schedule-monitoring.dto';
 import { StudentDTO } from './dto/student.dto';
 import * as moment from 'moment';
+import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
+import { pagination } from 'src/common/pagination';
+import { SchedulesDto } from './dto/schedules.dto';
 
 @Injectable()
 export class StudentService {
@@ -131,33 +134,50 @@ export class StudentService {
     });
   }
 
-  async findOne(user_id: number) {
+  async listSchedules(user_id: number, query: SchedulesDto) {
+    const studentInclude = {
+      include: {
+        course: true,
+        user: {
+          select: { name: true },
+        },
+      },
+    };
+
     const monitor = await this.prisma.monitor.findFirst({
       where: {
         student_id: user_id,
       },
       include: {
-        student: true,
+        student: studentInclude,
       },
     });
 
+    let orStatement = [{ student_id: user_id }, { monitor_id: monitor?.id }];
+    if (query.eventType === 'monitor') {
+      orStatement = [{ monitor_id: monitor?.id }];
+    } else if (query.eventType === 'student') {
+      orStatement = [{ student_id: user_id }];
+    }
+
     const schedule = await this.prisma.scheduleMonitoring.findMany({
       where: {
-        OR: [{ student_id: user_id }, { monitor_id: monitor?.id }],
+        OR: orStatement,
+        AND: [{ id_status: Number(query.status) }],
       },
       include: {
-        monitor: { include: { student: { include: { course: true } } } },
-        student: { include: { course: true } },
+        monitor: { include: { student: studentInclude } },
+        student: studentInclude,
       },
     });
 
     if (!schedule) throw new NotFoundException('Agendamentos nao encontrados.');
 
     schedule.forEach((element) => {
-      if (element.monitor.id == monitor?.id) element['is_monitoring'] = true;
+      if (element.monitor_id == monitor?.id) element['is_monitoring'] = true;
       else element['is_monitoring'] = false;
     });
 
-    return schedule;
+    return pagination(schedule, query);
   }
 }
