@@ -12,6 +12,7 @@ import { StudentDTO } from './dto/student.dto';
 import * as moment from 'moment';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { pagination } from 'src/common/pagination';
+import { SchedulesDto } from './dto/schedules.dto';
 
 @Injectable()
 export class StudentService {
@@ -133,7 +134,7 @@ export class StudentService {
     });
   }
 
-  async listSchedules(user_id: number, query: QueryPaginationDto) {
+  async listSchedules(user_id: number, query: SchedulesDto) {
     const studentInclude = {
       include: {
         course: true,
@@ -152,9 +153,17 @@ export class StudentService {
       },
     });
 
+    let orStatement = [{ student_id: user_id }, { monitor_id: monitor?.id }];
+    if (query.eventType === 'monitor') {
+      orStatement = [{ monitor_id: monitor?.id }];
+    } else if (query.eventType === 'student') {
+      orStatement = [{ student_id: user_id }];
+    }
+
     const schedule = await this.prisma.scheduleMonitoring.findMany({
       where: {
-        OR: [{ student_id: user_id }, { monitor_id: monitor?.id }],
+        OR: orStatement,
+        AND: [{ id_status: Number(query.status) }],
       },
       include: {
         monitor: { include: { student: studentInclude } },
@@ -165,7 +174,7 @@ export class StudentService {
     if (!schedule) throw new NotFoundException('Agendamentos nao encontrados.');
 
     schedule.forEach((element) => {
-      if (element.monitor.id == monitor?.id) element['is_monitoring'] = true;
+      if (element.monitor_id == monitor?.id) element['is_monitoring'] = true;
       else element['is_monitoring'] = false;
     });
 

@@ -12,8 +12,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { ScheduleMonitoringDto } from './dto/schedule-monitoring.dto';
+import { SchedulesDto } from './dto/schedules.dto';
 import { StudentService } from './student.service';
 
 @ApiTags('Students')
@@ -41,7 +41,7 @@ export class StudentController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get('/schedules')
-  async findOne(@Req() req: Request, @Query() query: QueryPaginationDto) {
+  async findOne(@Req() req: Request, @Query() query: SchedulesDto) {
     let token = req.headers.authorization;
     token = token.toString().replace('Bearer ', '');
     const data_token = this.jwtService.decode(`${token}`);
