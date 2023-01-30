@@ -103,6 +103,21 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @Post('refuse/scheduled-monitoring/:scheduled_monitoring_id')
+  async refuseScheduledMonitoring(
+    @Req() req: Request,
+    @Param('scheduled_monitoring_id') scheduled_monitoring_id: string,
+  ) {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const payload = this.jwtService.decode(token);
+    return this.monitorService.refuseScheduledMonitoring(
+      +scheduled_monitoring_id,
+      payload.sub,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post('availability')
   async registerAvailability(
     @Req() req: Request,
