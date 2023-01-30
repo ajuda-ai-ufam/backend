@@ -165,7 +165,7 @@ export class StudentService {
         AND: [{ id_status: Number(query.status) || undefined }],
       },
       include: {
-        monitor: { include: { student: studentInclude } },
+        monitor: { include: { student: studentInclude, subject: true } },
         student: studentInclude,
       },
     });
