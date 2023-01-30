@@ -299,6 +299,7 @@ export class MonitorService {
   async acceptScheduledMonitoring(schedule_id: number, user_id: number) {
     const schedule = await this.prismaService.scheduleMonitoring.findUnique({
       where: { id: schedule_id },
+      include: { monitor: true },
     });
     if (!schedule) throw new NotFoundException('Agendamento não encontrado');
 
@@ -307,7 +308,7 @@ export class MonitorService {
         'Não é mais possível aceitar este agendamento',
       );
 
-    if (schedule.monitor_id != user_id)
+    if (schedule.monitor.student_id != user_id)
       throw new ForbiddenException(
         'Você não tem permissão para aceitar este agendamento',
       );
