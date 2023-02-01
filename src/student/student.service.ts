@@ -1,4 +1,3 @@
-import { elementAt } from 'rxjs';
 import {
   BadRequestException,
   ForbiddenException,
@@ -45,7 +44,7 @@ export class StudentService {
     if (!user) throw new ForbiddenException('Aluno não encontrado.');
 
     const monitor = await this.prisma.monitor.findFirst({
-      where: { student_id: monitor_id },
+      where: { id: monitor_id },
     });
     if (!monitor) throw new ForbiddenException('Monitor não encontrado.');
 
