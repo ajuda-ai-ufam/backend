@@ -6,19 +6,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Monitor } from '@prisma/client';
-import { elementAt } from 'rxjs';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { pagination } from 'src/common/pagination';
 import { PrismaService } from 'src/database/prisma.service';
 import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
-import { AcceptMonitoringDto } from './dto/accept-monitoring.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 import * as moment from 'moment';
-import { query } from 'express';
-import { serialize } from 'v8';
 
 @Injectable()
 export class MonitorService {
@@ -277,8 +273,10 @@ export class MonitorService {
         'Você não tem permissão para recusar esta solicitação.',
       );
 
-    if (request_monitor.id_status == 5)
-      throw new BadRequestException('Sua solicitacão ja foi recusada.');
+    if (request_monitor.id_status != 1)
+      throw new BadRequestException(
+        'Esta solicitacão não pode ser recusada,somente se estiver Pendente.',
+      );
 
     await this.prismaService.monitor.update({
       data: { id_status: 5 },
@@ -299,6 +297,7 @@ export class MonitorService {
   async acceptScheduledMonitoring(schedule_id: number, user_id: number) {
     const schedule = await this.prismaService.scheduleMonitoring.findUnique({
       where: { id: schedule_id },
+      include: { monitor: true },
     });
     if (!schedule) throw new NotFoundException('Agendamento não encontrado');
 
@@ -307,7 +306,7 @@ export class MonitorService {
         'Não é mais possível aceitar este agendamento',
       );
 
-    if (schedule.monitor_id != user_id)
+    if (schedule.monitor.student_id != user_id)
       throw new ForbiddenException(
         'Você não tem permissão para aceitar este agendamento',
       );
@@ -320,10 +319,36 @@ export class MonitorService {
     return { message: 'Agendamento aceito!' };
   }
 
+  async refuseScheduledMonitoring(schedule_id: number, user_id: number) {
+    const schedule = await this.prismaService.scheduleMonitoring.findUnique({
+      where: { id: schedule_id },
+      include: { monitor: true },
+    });
+    if (!schedule) throw new NotFoundException('Agendamento não encontrado');
+
+    if (schedule.id_status != 1)
+      throw new BadRequestException(
+        'Não é mais possível rejeitar este agendamento',
+      );
+
+    if (schedule.monitor.student_id != user_id)
+      throw new ForbiddenException(
+        'Você não tem permissão para rejeitar este agendamento',
+      );
+
+    await this.prismaService.scheduleMonitoring.update({
+      data: { id_status: 3 },
+      where: { id: schedule_id },
+    });
+
+    return { message: 'Agendamento rejeitado!' };
+  }
+
   async registerAvailability(userId: number, data: MonitorAvailabilityDto) {
     const monitor = await this.prismaService.monitor.findFirst({
       where: {
-        student_id: userId,
+        OR: [{ id_status: 2 }, { id_status: 3 }],
+        AND: { student_id: userId },
       },
     });
 
@@ -369,7 +394,18 @@ export class MonitorService {
       });
     });
 
+    if (monitor.id_status == 2) await this.updateStatusMonitor(monitor.id);
+
     return { message: 'Disponibilidade registrada!' };
+  }
+
+  async updateStatusMonitor(id: number) {
+    return await this.prismaService.monitor.update({
+      data: {
+        id_status: 3,
+      },
+      where: { id: id },
+    });
   }
 
   async clearMonitorAvailability(monitor: Monitor) {
@@ -378,10 +414,10 @@ export class MonitorService {
     });
   }
 
-  async getMonitorAvailability(userId: number) {
+  async getMonitorAvailability(monitorId: number) {
     const monitor = await this.prismaService.monitor.findFirst({
       where: {
-        student_id: userId,
+        id: monitorId,
       },
     });
 

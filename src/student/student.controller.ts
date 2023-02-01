@@ -1,4 +1,3 @@
-
 import {
   Body,
   Controller,
@@ -9,13 +8,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ScheduleMonitoringDto } from './dto/schedule-monitoring.dto';
+import { SchedulesDto } from './dto/schedules.dto';
 import { StudentService } from './student.service';
-import { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 
 @ApiTags('Students')
 @Controller('student')
@@ -42,10 +41,10 @@ export class StudentController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get('/schedules')
-  async findOne(@Req() req: Request, @Query() query: QueryPaginationDto) {
+  async findOne(@Req() req: Request, @Query() query: SchedulesDto) {
     let token = req.headers.authorization;
     token = token.toString().replace('Bearer ', '');
     const data_token = this.jwtService.decode(`${token}`);
-    return this.studentService.findOne(+data_token.sub);
+    return this.studentService.listSchedules(+data_token.sub, query);
   }
 }

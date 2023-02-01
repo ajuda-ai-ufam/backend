@@ -1,11 +1,9 @@
-import { elementAt } from 'rxjs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Subject } from '@prisma/client';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { pagination } from 'src/common/pagination';
 import { PrismaService } from 'src/database/prisma.service';
-import { SubjectDTO } from './dto/subject.dto';
 
 @Injectable()
 export class SubjectService {
@@ -29,6 +27,7 @@ export class SubjectService {
         },
         Monitor: {
           select: {
+            id: true,
             student: {
               select: {
                 user: selecUserData.select.user,
@@ -55,9 +54,9 @@ export class SubjectService {
       if (element.status.id == 2) approved_SubjectResponsability.push(element);
     });
 
-    //somente monitores aprovados
+    //somente monitores disponíveis
     data.Monitor.forEach((element) => {
-      if (element.status.id == 2) approved_Monitores.push(element);
+      if (element.status.id == 3) approved_Monitores.push(element);
     });
 
     data.SubjectResponsability = approved_SubjectResponsability;
@@ -104,10 +103,44 @@ export class SubjectService {
   }
 
   async findAll(query: QueryPaginationDto): Promise<IResponsePaginate> {
+    const selecUserData = {
+      select: {
+        user: { select: { id: true, name: true, email: true } },
+      },
+    };
+
     const data = await this.prisma.subject.findMany({
       where: {
         name: {
           contains: query.search,
+        },
+      },
+      include: {
+        SubjectResponsability: {
+          select: {
+            professor: selecUserData,
+            status: { select: { id: true, status: true } },
+          },
+        },
+        Monitor: {
+          select: {
+            id: true,
+            student: {
+              select: {
+                user: selecUserData.select.user,
+                course: {
+                  select: { id: true, name: true },
+                },
+              },
+            },
+            status: { select: { id: true, status: true } },
+            responsible_professor: {
+              select: { user: selecUserData.select.user },
+            },
+          },
+          where: {
+            id_status: 3,
+          },
         },
       },
     });
