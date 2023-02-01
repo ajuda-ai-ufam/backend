@@ -1,5 +1,3 @@
-import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
-import { ExtractJwt } from 'passport-jwt';
 import {
   Body,
   Controller,
@@ -7,7 +5,6 @@ import {
   Param,
   Patch,
   Post,
-  Put,
   Query,
   Req,
   UseGuards,
@@ -19,7 +16,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorService } from './monitor.service';
-import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 
 @ApiTags('Monitor')
@@ -130,8 +126,8 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Get('availability/:user_id')
-  async getMonitorAvailability(@Param('user_id') userId: string) {
-    return this.monitorService.getMonitorAvailability(+userId);
+  @Get('availability/:monitorId')
+  async getMonitorAvailability(@Param('monitorId') monitorId: string) {
+    return this.monitorService.getMonitorAvailability(+monitorId);
   }
 }

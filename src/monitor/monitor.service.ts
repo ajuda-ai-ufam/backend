@@ -6,19 +6,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Monitor } from '@prisma/client';
-import { elementAt } from 'rxjs';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { pagination } from 'src/common/pagination';
 import { PrismaService } from 'src/database/prisma.service';
 import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
-import { AcceptMonitoringDto } from './dto/accept-monitoring.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 import * as moment from 'moment';
-import { query } from 'express';
-import { serialize } from 'v8';
 
 @Injectable()
 export class MonitorService {
@@ -416,10 +412,10 @@ export class MonitorService {
     });
   }
 
-  async getMonitorAvailability(userId: number) {
+  async getMonitorAvailability(monitorId: number) {
     const monitor = await this.prismaService.monitor.findFirst({
       where: {
-        student_id: userId,
+        id: monitorId,
       },
     });
 
