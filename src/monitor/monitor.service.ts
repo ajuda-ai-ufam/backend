@@ -273,8 +273,10 @@ export class MonitorService {
         'Você não tem permissão para recusar esta solicitação.',
       );
 
-    if (request_monitor.id_status == 5)
-      throw new BadRequestException('Sua solicitacão ja foi recusada.');
+    if (request_monitor.id_status != 1)
+      throw new BadRequestException(
+        'Esta solicitacão não pode ser recusada,somente se estiver Pendente.',
+      );
 
     await this.prismaService.monitor.update({
       data: { id_status: 5 },
