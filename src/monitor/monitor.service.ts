@@ -396,7 +396,18 @@ export class MonitorService {
       });
     });
 
+    if (monitor.id_status == 2) await this.updateStatusMonitor(monitor.id);
+
     return { message: 'Disponibilidade registrada!' };
+  }
+
+  async updateStatusMonitor(id: number) {
+    return await this.prismaService.monitor.update({
+      data: {
+        id_status: 3,
+      },
+      where: { id: id },
+    });
   }
 
   async clearMonitorAvailability(monitor: Monitor) {
