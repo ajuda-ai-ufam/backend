@@ -349,7 +349,8 @@ export class MonitorService {
   async registerAvailability(userId: number, data: MonitorAvailabilityDto) {
     const monitor = await this.prismaService.monitor.findFirst({
       where: {
-        student_id: userId,
+        OR: [{ id_status: 2 }, { id_status: 3 }],
+        AND: { student_id: userId },
       },
     });
 
