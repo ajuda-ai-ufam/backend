@@ -56,7 +56,8 @@ export class SubjectService {
 
     //somente monitores disponíveis
     data.Monitor.forEach((element) => {
-      if (element.status.id == 3) approved_Monitores.push(element);
+      if (element.status.id == 3 || element.status.id == 2)
+        approved_Monitores.push(element);
     });
 
     data.SubjectResponsability = approved_SubjectResponsability;
