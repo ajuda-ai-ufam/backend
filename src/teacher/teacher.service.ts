@@ -74,6 +74,7 @@ export class TeacherService {
         data: {
           professor_id: professor_id,
           subject_id: subject_id,
+          id_status: 2,
         },
       });
     }
