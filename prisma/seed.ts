@@ -31,7 +31,8 @@ const status_schedule_monitoring = [
   { status: 'Aguardando aprovação do monitor', id: 1 },
   { status: 'Confirmada', id: 2 },
   { status: 'Cancelada', id: 3 },
-  { status: 'Vencida', id: 4 },
+  { status: 'Realizada', id: 4 },
+  { status: 'Não realizada', id: 5 },
 ];
 
 const type_user = [
