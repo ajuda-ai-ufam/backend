@@ -17,6 +17,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { join } from 'path';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { JwtService } from '@nestjs/jwt';
+import { SchedulesModule } from './schedules/schedules.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { JwtService } from '@nestjs/jwt';
       },
     }),
     MonitorModule,
+    SchedulesModule,
   ],
   controllers: [AppController],
   providers: [
