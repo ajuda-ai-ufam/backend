@@ -21,38 +21,46 @@ export class ListSchedulesCommand {
         gte: query.startDate,
         lte: query.endDate,
       },
-      OR: [
+      AND: [
         {
-          student: {
-            enrollment: query.studentEnrollment,
-          },
-        },
-        {
-          monitor: {
-            student: {
-              enrollment: query.studentEnrollment,
-            },
-          },
-        },
-        {
-          student: {
-            user: {
-              name: {
-                contains: query.studentName,
+          OR: [
+            {
+              student: {
+                enrollment: query.studentEnrollment,
               },
             },
-          },
-        },
-        {
-          monitor: {
-            student: {
-              user: {
-                name: {
-                  contains: query.studentName,
+            {
+              monitor: {
+                student: {
+                  enrollment: query.studentEnrollment,
                 },
               },
             },
-          },
+          ],
+        },
+        {
+          OR: [
+            {
+              student: {
+                user: {
+                  name: {
+                    contains: query.studentName,
+                  },
+                },
+              },
+            },
+            {
+              monitor: {
+                student: {
+                  user: {
+                    name: {
+                      contains: query.studentName,
+                    },
+                  },
+                },
+              },
+            },
+          ],
         },
       ],
       monitor: {
