@@ -16,11 +16,13 @@ import {
 import { Request } from 'express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
+import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
 import { ListEndingSchedulesCommand } from './commands/list-ending-schedules.command';
 import { ListSchedulesCommand } from './commands/list-schedules.command';
 import { ListEndingSchedulesResponse } from './dto/list-ending-schedules.response.dto';
 import { ListSchedulesQueryParams } from './dto/list-schedules.request.dto';
 import { ListSchedulesResponse } from './dto/list-schedules.response.dto';
+import { ProfessorNotAuthorizedException } from './utils/exceptions';
 
 @Controller('schedules')
 @ApiTags('Schedules')
@@ -55,22 +57,32 @@ export class SchedulesController {
     @Req() req: Request,
     @Query() query: ListSchedulesQueryParams,
   ): Promise<ListSchedulesResponse> {
-    let token = req.headers.authorization;
-    token = token.toString().replace('Bearer ', '');
-    const payload = this.jwtService.decode(`${token}`);
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
 
-    if (
-      payload['type_user']['type'] === Role.Professor &&
-      (query.responsibleIds || query.responsibleIds?.length > 0)
-    ) {
-      throw new UnauthorizedException({
-        error: {
-          message: 'Você não tem permissão para performar esta ação',
-        },
-      });
+    const responsibleIds =
+      typeof query.responsibleIds === 'number'
+        ? [query.responsibleIds]
+        : query.responsibleIds;
+
+    const subjectIds =
+      typeof query.subjectIds === 'number'
+        ? [query.subjectIds]
+        : query.subjectIds;
+
+    try {
+      return await this.listSchedulesCommand.execute(
+        { ...query, responsibleIds, subjectIds },
+        user.sub,
+        user.type_user.type,
+      );
+    } catch (error) {
+      if (error instanceof ProfessorNotAuthorizedException) {
+        throw new UnauthorizedException({ error: { message: error.message } });
+      }
+
+      throw error;
     }
-
-    return await this.listSchedulesCommand.execute(query);
   }
 
   @ApiBearerAuth()

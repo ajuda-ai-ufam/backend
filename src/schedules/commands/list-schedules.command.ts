@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { Role } from 'src/auth/enums/role.enum';
 import { PrismaService } from 'src/database/prisma.service';
 import { ListSchedulesQueryParams } from '../dto/list-schedules.request.dto';
 import { ListSchedulesResponse } from '../dto/list-schedules.response.dto';
+import { ProfessorNotAuthorizedException } from '../utils/exceptions';
 import { ScheduleFactory } from '../utils/schedule.factory';
 import scheduleSelectPrismaSQL from '../utils/select-schedule.prisma-sql';
 
@@ -11,7 +13,15 @@ export class ListSchedulesCommand {
 
   async execute(
     query: ListSchedulesQueryParams,
+    userId: number,
+    userRole: Role,
   ): Promise<ListSchedulesResponse> {
+    if (userRole === Role.Professor && query.responsibleIds?.length) {
+      throw new ProfessorNotAuthorizedException();
+    }
+
+    const professorIdList = userRole === Role.Professor ? [userId] : [];
+
     const take = query.pageSize || 10;
     const skip = query.page ? (query.page - 1) * take : 0;
 
@@ -65,7 +75,9 @@ export class ListSchedulesCommand {
       ],
       monitor: {
         responsible_professor_id: {
-          in: query.responsibleIds,
+          in: query.responsibleIds
+            ? [...query.responsibleIds, ...professorIdList]
+            : professorIdList,
         },
         subject_id: {
           in: query.subjectIds,
