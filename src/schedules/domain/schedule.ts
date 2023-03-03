@@ -1,35 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Subject } from 'src/subject/domain/subject';
+import { User } from 'src/user/domain/user';
 import { ScheduleStatus } from '../utils/schedules.enum';
-
-class User {
-  @ApiProperty({ type: Number })
-  id: number;
-
-  @ApiProperty({ type: String })
-  name: string;
-
-  @ApiProperty({ type: String })
-  email: string;
-}
-
-class Course {
-  @ApiProperty({ type: Number })
-  id: number;
-
-  @ApiProperty({ type: String })
-  name: string;
-}
-
-class Subject {
-  @ApiProperty({ type: Number })
-  id: number;
-
-  @ApiProperty({ type: String })
-  name: string;
-
-  @ApiProperty({ type: Course })
-  course: Course;
-}
 
 class Student extends User {
   @ApiProperty({ type: String })
