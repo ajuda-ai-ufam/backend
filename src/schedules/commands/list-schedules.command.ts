@@ -16,11 +16,14 @@ export class ListSchedulesCommand {
     userId: number,
     userRole: Role,
   ): Promise<ListSchedulesResponse> {
-    if (userRole === Role.Professor && query.responsibleIds?.length) {
-      throw new ProfessorNotAuthorizedException();
-    }
+    const responsibleIds = query.responsibleIds || [];
+    if (userRole === Role.Professor) {
+      if (responsibleIds.length) {
+        throw new ProfessorNotAuthorizedException();
+      }
 
-    const professorIdList = userRole === Role.Professor ? [userId] : [];
+      responsibleIds.push(userId);
+    }
 
     const take = query.pageSize || 10;
     const skip = query.page ? (query.page - 1) * take : 0;
@@ -75,9 +78,7 @@ export class ListSchedulesCommand {
       ],
       monitor: {
         responsible_professor_id: {
-          in: query.responsibleIds
-            ? [...query.responsibleIds, ...professorIdList]
-            : professorIdList,
+          in: responsibleIds.length ? responsibleIds : undefined,
         },
         subject_id: {
           in: query.subjectIds,
