@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import {
-  IsDate,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Length,
-} from 'class-validator';
+import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ScheduleStatus } from '../utils/schedules.enum';
 
 export class ListSchedulesQueryParams {
@@ -91,10 +85,7 @@ export class ListSchedulesQueryParams {
     required: false,
     description: 'Busca pela matrícula dos alunos e monitores participantes',
     type: String,
-    maxLength: 8,
-    minLength: 8,
   })
-  @Length(8, 8)
   @IsString()
   @IsOptional()
   studentEnrollment: string;
