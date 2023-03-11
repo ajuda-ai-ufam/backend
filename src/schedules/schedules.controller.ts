@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -10,7 +11,6 @@ import {
   PreconditionFailedException,
   Query,
   Req,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -58,11 +58,11 @@ export class SchedulesController {
     description: 'Filtro com sucesso',
   })
   @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
+    status: HttpStatus.FORBIDDEN,
     description: 'Você não tem autorização para performar esta ação.',
   })
   @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
+    status: HttpStatus.UNAUTHORIZED,
     description: 'Não foi encontrado um token de autenticação válido.',
   })
   @ApiResponse({
@@ -94,7 +94,7 @@ export class SchedulesController {
       );
     } catch (error) {
       if (error instanceof ProfessorNotAuthorizedException) {
-        throw new UnauthorizedException({ error: { message: error.message } });
+        throw new ForbiddenException({ error: { message: error.message } });
       }
 
       throw error;
@@ -112,11 +112,11 @@ export class SchedulesController {
     description: 'Lista de agendamentos para finalizar',
   })
   @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
+    status: HttpStatus.FORBIDDEN,
     description: 'Você não tem autorização para performar esta ação.',
   })
   @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
+    status: HttpStatus.UNAUTHORIZED,
     description: 'Não foi encontrado um token de autenticação válido.',
   })
   @ApiResponse({
@@ -143,11 +143,11 @@ export class SchedulesController {
     description: 'Alteração realizada',
   })
   @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
+    status: HttpStatus.FORBIDDEN,
     description: 'Apenas o monitor do agendamento pode realizar esta ação.',
   })
   @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
+    status: HttpStatus.UNAUTHORIZED,
     description: 'Não foi encontrado um token de autenticação válido.',
   })
   @ApiResponse({
@@ -182,7 +182,7 @@ export class SchedulesController {
       }
 
       if (error instanceof NotTheScheduleMonitorException) {
-        throw new UnauthorizedException(error.message);
+        throw new ForbiddenException(error.message);
       }
 
       if (error instanceof ScheduleNotFoundException) {

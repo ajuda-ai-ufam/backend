@@ -25,7 +25,7 @@ export class RolesGuard implements CanActivate {
 
     const authToken = context.switchToHttp().getRequest().headers.authorization;
     if (!authToken) {
-      throw new ForbiddenException({
+      throw new UnauthorizedException({
         error: {
           message: 'Não foi encontrado um token de autenticação válido.',
         },
@@ -38,7 +38,7 @@ export class RolesGuard implements CanActivate {
         (role) => role === (payload['type_user']['type'] as unknown as Role),
       )
     ) {
-      throw new UnauthorizedException({
+      throw new ForbiddenException({
         error: {
           message: 'Você não tem autorização para performar esta ação.',
         },
