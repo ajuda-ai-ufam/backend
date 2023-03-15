@@ -19,6 +19,13 @@ export class NotTheScheduleMonitorException extends Error {
   }
 }
 
+export class NotTheScheduleParticipantException extends Error {
+  constructor() {
+    super();
+    this.message = 'Apenas um dos participantes do agendamento pode realizar esta ação.';
+  }
+}
+
 export class ProfessorNotAuthorizedException extends Error {
   constructor() {
     super();

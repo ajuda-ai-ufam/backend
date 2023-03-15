@@ -24,6 +24,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
 import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
 import { ParamIdDto } from 'src/common/dto/param-id.dto';
+import { CancelScheduleCommand } from './commands/cancel-schedule.command';
 import { EndScheduleCommand } from './commands/end-schedule.command';
 import { ListEndingSchedulesCommand } from './commands/list-ending-schedules.command';
 import { ListSchedulesCommand } from './commands/list-schedules.command';
@@ -35,6 +36,7 @@ import {
   InvalidScheduleStatusException,
   NotFinalizedScheduleException,
   NotTheScheduleMonitorException,
+  NotTheScheduleParticipantException,
   ProfessorNotAuthorizedException,
   ScheduleNotFoundException,
 } from './utils/exceptions';
@@ -43,6 +45,7 @@ import {
 @ApiTags('Schedules')
 export class SchedulesController {
   constructor(
+    private readonly cancelScheduleCommand: CancelScheduleCommand,
     private readonly endScheduleCommand: EndScheduleCommand,
     private readonly listSchedulesCommand: ListSchedulesCommand,
     private readonly listEndingSchedulesCommand: ListEndingSchedulesCommand,
@@ -187,6 +190,45 @@ export class SchedulesController {
 
       if (error instanceof ScheduleNotFoundException) {
         throw new NotFoundException(error.message);
+      }
+
+      throw error;
+    }
+  }
+
+  @ApiBearerAuth()
+  @Roles(Role.Student)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post(':id/cancel')
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Agendamento cancelado.',
+  })
+  async cancelSchedule(
+    @Req() req: Request,
+    @Param() param: ParamIdDto,
+  ): Promise<void> {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    try {
+      return await this.cancelScheduleCommand.execute(
+        Number(param.id),
+        user.sub,
+      );
+    } catch (error) {
+      if (error instanceof ScheduleNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      if (
+        error instanceof NotTheScheduleParticipantException
+      ) {
+        throw new ForbiddenException(error.message);
+      }
+
+      if (error instanceof InvalidScheduleStatusException) {
+        throw new PreconditionFailedException(error.message);
       }
 
       throw error;

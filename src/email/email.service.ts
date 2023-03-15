@@ -53,6 +53,22 @@ export class EmailService {
     });
   }
 
+  async sendEmailCancelMonitoring(
+    email: string,
+    subject: string,
+    context: any,
+    template: string,
+  ) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: subject,
+      text: subject,
+      template: `${template}.hbs`,
+      context,
+    });
+  }
+
   async sendEmail(
     email: string,
     subject: string,
