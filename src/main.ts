@@ -9,11 +9,6 @@ import * as https from 'https';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync('./secrets/key.pem', 'utf8'),
-    cert: fs.readFileSync('./secrets/server.crt', 'utf8'),
-  };
-
   const server = express();
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
@@ -45,7 +40,14 @@ async function bootstrap() {
 
   await app.init();
 
-  http.createServer(server).listen(process.env.PORT_HTTP);
-  https.createServer(httpsOptions, server).listen(process.env.PORT_HTTPS);
+  if (process.env.NODE_ENV === 'production') {
+    const httpsOptions = {
+      key: fs.readFileSync('./secrets/key.pem', 'utf8'),
+      cert: fs.readFileSync('./secrets/server.crt', 'utf8'),
+    };
+    https.createServer(httpsOptions, server).listen(process.env.PORT_HTTPS);
+  } else {
+    http.createServer(server).listen(process.env.PORT_HTTP);
+  }
 }
 bootstrap();
