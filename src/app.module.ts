@@ -41,7 +41,9 @@ import { SchedulesModule } from './schedules/schedules.module';
         },
       },
       template: {
-        dir: join(__dirname.replace('src', 'email') + '/templates'),
+        dir: join(
+          __dirname.slice(0, __dirname.length - 4) + '/email/templates',
+        ),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
