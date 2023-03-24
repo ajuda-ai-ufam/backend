@@ -6,21 +6,21 @@ import { PrismaService } from 'src/database/prisma.service';
 import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
 import { CourseService } from 'src/course/course.service';
-import { StudentService } from 'src/student/student.service';
 import { TeacherService } from 'src/teacher/teacher.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
+import { StudentModule } from 'src/student/student.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   controllers: [MonitorController],
-  imports: [JwtModule, EmailModule],
+  imports: [JwtModule, EmailModule, StudentModule, UserModule],
   providers: [
     MonitorService,
     PrismaService,
     SubjectService,
     UserService,
     CourseService,
-    StudentService,
     TeacherService,
     JwtStrategy,
   ],
