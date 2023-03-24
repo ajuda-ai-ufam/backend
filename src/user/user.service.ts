@@ -5,7 +5,8 @@ import {
 } from '@nestjs/common';
 import { CourseService } from 'src/course/course.service';
 import { PrismaService } from 'src/database/prisma.service';
-import { StudentService } from 'src/student/student.service';
+import { CreateStudentCommand } from 'src/student/commands/create-student.command';
+import { FindEnrollmentCommand } from 'src/student/commands/find-enrollment.command';
 import { TeacherService } from 'src/teacher/teacher.service';
 import { hashPassword } from 'src/utils/bcrypt';
 import { Validations } from 'src/utils/validations';
@@ -16,9 +17,10 @@ import { TeacherCreateDTO } from './dto/teacher-create.dto';
 export class UserService {
   constructor(
     private prisma: PrismaService,
-    private readonly courseService: CourseService,
-    private readonly studentService: StudentService,
-    private readonly teacherService: TeacherService,
+    private courseService: CourseService,
+    private createStudentCommand: CreateStudentCommand,
+    private findEnrollmentCommand: FindEnrollmentCommand,
+    private teacherService: TeacherService,
   ) {}
 
   async createUserStudent(data: StudentCreateDTO) {
@@ -92,7 +94,7 @@ export class UserService {
     if (!Validations.validateWhatsapp(data.whatsapp))
       throw new BadRequestException('Número do Whatsapp inválido.');
 
-    const user_enrollment = await this.studentService.findEnrollment(
+    const user_enrollment = await this.findEnrollmentCommand.execute(
       data.enrollment,
     );
 
@@ -121,7 +123,7 @@ export class UserService {
       linkedin: data.linkedin,
     };
 
-    await this.studentService.create(student_object);
+    await this.createStudentCommand.execute(student_object);
 
     return { status: 201, message: 'Cadastrado com sucesso!' };
   }
