@@ -14,9 +14,9 @@ import { SchedulesController } from './schedules.controller';
     EndScheduleCommand,
     ListSchedulesCommand,
     ListEndingSchedulesCommand,
-    PrismaService,
     JwtService,
-    EmailService
+    EmailService,
+    PrismaService
   ],
   exports: [],
   controllers: [SchedulesController],
