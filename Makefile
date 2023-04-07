@@ -36,6 +36,10 @@ db-start:
 db-migrate:
 	@docker-compose exec ${API_SERVICE_NAME} npx prisma migrate dev
 
+.PHONY: db-migrate-create
+db-migrate-create:
+	@docker-compose exec ${API_SERVICE_NAME} npx prisma migrate dev --name ${NAME}
+
 .PHONY: db-seed
 db-seed:
 	@docker-compose exec ${API_SERVICE_NAME} node dist/prisma/seed.js
