@@ -1,4 +1,3 @@
-import { EmailService } from 'src/email/email.service';
 import {
   BadRequestException,
   ForbiddenException,
@@ -6,15 +5,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Monitor } from '@prisma/client';
-import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
-import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
-import { pagination } from 'src/common/pagination';
+import * as moment from 'moment';
 import { PrismaService } from 'src/database/prisma.service';
+import { EmailService } from 'src/email/email.service';
 import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
-import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
-import * as moment from 'moment';
+import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 
 @Injectable()
 export class MonitorService {
@@ -24,112 +21,6 @@ export class MonitorService {
     private readonly userService: UserService,
     private readonly emailService: EmailService,
   ) {}
-
-  async findAll(
-    id: number,
-    query: QueryPaginationDto,
-  ): Promise<IResponsePaginate> {
-    const new_monitors = [];
-
-    const professor = await this.userService.findOneById(id);
-
-    if (!professor) throw new NotFoundException('Professor não encontrado.');
-    if (professor.type_user_id == 2) {
-      const monitors = await this.prismaService.monitor.findMany({
-        where: { responsible_professor_id: id },
-        include: {
-          student: {
-            select: {
-              user: { select: { name: true } },
-              course: { select: { name: true, code: true } },
-            },
-          },
-          subject: true,
-          responsible_professor: {
-            select: { user: { select: { name: true } } },
-          },
-          status: { select: { status: true } },
-        },
-      });
-      if (query.search) {
-        monitors.forEach((element) => {
-          if (
-            element.student.user.name
-              .toLowerCase()
-              .includes(query.search.toString().toLowerCase()) ||
-            element.responsible_professor.user.name
-              .toLowerCase()
-              .includes(query.search.toString().toLowerCase())
-          ) {
-            new_monitors.push(element);
-          }
-        });
-
-        return pagination(new_monitors, query);
-      } else {
-        return pagination(monitors, query);
-      }
-    } else if (professor.type_user_id == 3) {
-      const monitors = await this.prismaService.monitor.findMany({
-        include: {
-          student: {
-            select: {
-              user: { select: { name: true } },
-              course: { select: { name: true, code: true } },
-            },
-          },
-          subject: true,
-          responsible_professor: {
-            select: { user: { select: { name: true } } },
-          },
-          status: { select: { status: true } },
-        },
-      });
-      if (query.search) {
-        monitors.forEach((element) => {
-          if (
-            element.student.user.name
-              .toLowerCase()
-              .includes(query.search.toString().toLowerCase()) ||
-            element.responsible_professor.user.name
-              .toLowerCase()
-              .includes(query.search.toString().toLowerCase())
-          ) {
-            new_monitors.push(element);
-          }
-        });
-
-        return pagination(new_monitors, query);
-      } else {
-        return pagination(monitors, query);
-      }
-    } else {
-      throw new BadRequestException('Você não possui acesso.');
-    }
-  }
-
-  // async findOne(user_id: number) {
-  //   const monitor = await this.prismaService.monitor.findMany({
-  //     where: {
-  //       student_id: user_id,
-  //     },
-  //     include: {
-  //       student: true,
-  //       status: true,
-  //       subject: true,
-  //       responsible_professor: true,
-  //       ScheduleMonitoring: true,
-  //       AvailableTimes: true,
-  //     },
-  //   });
-
-  //   if (!monitor) {
-  //     throw new NotFoundException('Monitor nao encontrado.');
-  //   }
-
-  //   return monitor;
-  // }
-
   async requestMonitoring(user_id: number, data: RequestMonitoringDto) {
     const user = await this.userService.findOneById(user_id);
     if (!user) throw new NotFoundException('Usuário não encontrado.');

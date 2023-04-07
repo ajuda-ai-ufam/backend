@@ -11,6 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { StudentModule } from 'src/student/student.module';
 import { UserModule } from 'src/user/user.module';
+import { ListMonitorsCommand } from './commands/list-monitors.command';
 
 @Module({
   controllers: [MonitorController],
@@ -23,6 +24,7 @@ import { UserModule } from 'src/user/user.module';
     CourseService,
     TeacherService,
     JwtStrategy,
+    ListMonitorsCommand,
   ],
 })
 export class MonitorModule {}

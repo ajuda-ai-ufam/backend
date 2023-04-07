@@ -13,35 +13,34 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorService } from './monitor.service';
 import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
+import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
+import { ListMonitorsQueryParams } from './dto/list-monitors.request.dto';
+import { ListMonitorsCommand } from './commands/list-monitors.command';
 
 @ApiTags('Monitor')
 @Controller('monitor')
 export class MonitorController {
   constructor(
     private readonly monitorService: MonitorService,
+    private readonly listMonitorsCommand: ListMonitorsCommand,
     private jwtService: JwtService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get('all')
-  async findAll(@Req() req: Request, @Query() query: QueryPaginationDto) {
-    let token = req.headers.authorization;
-    token = token.toString().replace('Bearer ', '');
-    const data_token = this.jwtService.decode(`${token}`);
-    return this.monitorService.findAll(data_token.sub, query);
+  async findAll(@Req() req: Request, @Query() query: ListMonitorsQueryParams) {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+    return this.listMonitorsCommand.execute(
+      user.sub,
+      user.type_user.type,
+      query,
+    );
   }
-
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth()
-  // @Get('/schedules/:user_id')
-  // async findOne(@Param('user_id') user_id: string) {
-  //   return this.monitorService.findOne(+user_id);
-  // }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
