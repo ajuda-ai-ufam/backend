@@ -23,8 +23,13 @@ services:
         env_file: ./.env
         ports:
             - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
-        command: npm start
+        command: npm run start:dev
+        restart: unless-stopped
+        volumes:
+            - .:/usr/src/app
+            - node_modules:/usr/src/app/node_modules
 
 volumes:
     mysql:
     mysql_config:
+    node_modules:
