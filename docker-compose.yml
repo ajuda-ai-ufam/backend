@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+    super_backend:
+        container_name: super_api
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: production
+        env_file: ./.env
+        ports: 
+            - $PORT_HTTPS:$PORT_HTTPS
+        command: npm run start:prod

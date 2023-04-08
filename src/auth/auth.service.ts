@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { comparePassword } from 'src/utils/bcrypt';
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
+import { JWTUser } from './interfaces/jwt-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +34,7 @@ export class AuthService {
 
   async login(data: LoginDto) {
     const user = await this.validateUser(data.email, data.password);
-    const payload = {
+    const payload: JWTUser = {
       sub: user.id,
       username: user.username,
       type_user: user.type_user,

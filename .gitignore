@@ -3,8 +3,7 @@
 /node_modules
 /secrets
 *.env
-docker-compose.yml
-Dockerfile
+!.example.env
 
 # Logs
 logs

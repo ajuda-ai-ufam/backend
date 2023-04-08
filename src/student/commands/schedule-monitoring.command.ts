@@ -2,45 +2,31 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
   PreconditionFailedException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/database/prisma.service';
-import { ScheduleMonitoringDto } from './dto/schedule-monitoring.dto';
-import { StudentDTO } from './dto/student.dto';
 import * as moment from 'moment';
-import { pagination } from 'src/common/pagination';
-import { SchedulesDto } from './dto/schedules.dto';
+import { PrismaService } from 'src/database/prisma.service';
+import { ScheduleMonitoringDto } from '../dto/schedule-monitoring.dto';
+import { FindOneByIdCommand } from './find-one-by-id.command';
+import { GetMonitorAvailabilityCommand } from './get-monitor-availability.command';
 
 @Injectable()
-export class StudentService {
-  constructor(private readonly prisma: PrismaService) {}
+export class ScheduleMonitoringCommand {
+  constructor(
+    private prisma: PrismaService,
+    private readonly findOneByIdCommand: FindOneByIdCommand,
+    private readonly getMonitorAvailabilityCommand: GetMonitorAvailabilityCommand,
+  ) {}
 
-  async create(data: StudentDTO) {
-    const student = await this.prisma.student.create({ data: data });
-    return student;
-  }
-
-  async findEnrollment(enrollment: string) {
-    const user_enrollment = await this.prisma.student.findFirst({
-      where: { enrollment: enrollment },
-    });
-    return user_enrollment;
-  }
-
-  async findOneById(id: number) {
-    const user_student = await this.prisma.student.findUnique({
-      where: { user_id: id },
-    });
-    return user_student;
-  }
-
-  async scheduleMonitoring(
+  /**
+   * TODO: Resolve Promise<any> return type
+   */
+  async execute(
     student_id: number,
     monitor_id: number,
     data: ScheduleMonitoringDto,
-  ) {
-    const user = await this.findOneById(student_id);
+  ): Promise<any> {
+    const user = await this.findOneByIdCommand.execute(student_id);
     if (!user) throw new ForbiddenException('Aluno não encontrado.');
 
     const monitor = await this.prisma.monitor.findFirst({
@@ -85,7 +71,7 @@ export class StudentService {
       end_minute < 10 ? '0' + end_minute : end_minute
     }`;
 
-    const monitorAvailability = await this.getMonitorAvailability(monitor.id);
+    const monitorAvailability = await this.getMonitorAvailabilityCommand.execute(monitor.id);
 
     const sameDay = monitorAvailability.filter(
       (item) =>
@@ -123,59 +109,5 @@ export class StudentService {
       },
     });
     return { message: 'Monitoria agendada com sucesso' };
-  }
-
-  async getMonitorAvailability(monitor_id: number) {
-    return this.prisma.availableTimes.findMany({
-      where: { monitor_id },
-      orderBy: { week_day: 'asc' },
-    });
-  }
-
-  async listSchedules(user_id: number, query: SchedulesDto) {
-    const studentInclude = {
-      include: {
-        course: true,
-        user: {
-          select: { name: true },
-        },
-      },
-    };
-
-    const monitor = await this.prisma.monitor.findFirst({
-      where: {
-        student_id: user_id,
-      },
-      include: {
-        student: studentInclude,
-      },
-    });
-
-    let orStatement = [{ student_id: user_id }, { monitor_id: monitor?.id }];
-    if (query.eventType === 'monitor') {
-      orStatement = [{ monitor_id: monitor?.id }];
-    } else if (query.eventType === 'student') {
-      orStatement = [{ student_id: user_id }];
-    }
-
-    const schedule = await this.prisma.scheduleMonitoring.findMany({
-      where: {
-        OR: orStatement,
-        AND: [{ id_status: Number(query.status) || undefined }],
-      },
-      include: {
-        monitor: { include: { student: studentInclude, subject: true } },
-        student: studentInclude,
-      },
-    });
-
-    if (!schedule) throw new NotFoundException('Agendamentos nao encontrados.');
-
-    schedule.forEach((element) => {
-      if (element.monitor_id == monitor?.id) element['is_monitoring'] = true;
-      else element['is_monitoring'] = false;
-    });
-
-    return pagination(schedule, query);
   }
 }

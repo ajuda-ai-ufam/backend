@@ -2,11 +2,11 @@ import { PrismaClient } from '@prisma/client';
 import * as csvToJson from 'convert-csv-to-json';
 
 const subjects_es = csvToJson
-  .fieldDelimiter(',')
+  .fieldDelimiter(';')
   .getJsonFromCsv('prisma/disciplinas_es.csv');
 
 const subjects_cc = csvToJson
-  .fieldDelimiter(',')
+  .fieldDelimiter(';')
   .getJsonFromCsv('prisma/disciplinas_cc.csv');
 
 const courses = [
@@ -31,7 +31,8 @@ const status_schedule_monitoring = [
   { status: 'Aguardando aprovação do monitor', id: 1 },
   { status: 'Confirmada', id: 2 },
   { status: 'Cancelada', id: 3 },
-  { status: 'Vencida', id: 4 },
+  { status: 'Realizada', id: 4 },
+  { status: 'Não realizada', id: 5 },
 ];
 
 const type_user = [
@@ -54,38 +55,37 @@ async function main() {
       where: { code: course.code },
     });
   }
+  console.log('Courses seeded.');
+
+  const formatSubjectName = (name: string) =>
+    name
+      .split(' ')
+      .map((word) =>
+        word === 'II' || word === 'III' || word === 'IV' || word === 'VI'
+          ? word
+          : (word[0]?.toUpperCase() || '') + word.slice(1).toLowerCase(),
+      )
+      .join(' ');
 
   for (const subject of subjects_es) {
-    subject.name = subject.name
-      .split(' ')
-      .map((word) => {
-        if (word.length > 2)
-          return word[0].toUpperCase() + word.slice(1).toLowerCase();
-        else return word.toLowerCase();
-      })
-      .join(' ');
+    subject.name = formatSubjectName(subject.name);
     await prisma.subject.upsert({
       create: { ...subject, course_id: 1 },
       update: { ...subject, course_id: 1 },
       where: { code: subject.code },
     });
   }
+  console.log('ES subjects seeded.');
 
   for (const subject of subjects_cc) {
-    subject.name = subject.name
-      .split(' ')
-      .map((word) => {
-        if (word.length > 2)
-          return word[0].toUpperCase() + word.slice(1).toLowerCase();
-        else return word.toLowerCase();
-      })
-      .join(' ');
+    subject.name = formatSubjectName(subject.name);
     await prisma.subject.upsert({
       create: { ...subject, course_id: 2 },
       update: { ...subject, course_id: 2 },
       where: { code: subject.code },
     });
   }
+  console.log('CC subjects seeded.');
 
   for (const type of type_user) {
     await prisma.typeUser.upsert({
@@ -94,6 +94,7 @@ async function main() {
       where: { id: type.id },
     });
   }
+  console.log('User types seeded.');
 
   for (const type of type_code) {
     await prisma.typeCode.upsert({
@@ -102,6 +103,7 @@ async function main() {
       where: { id: type.id },
     });
   }
+  console.log('Code types seeded.');
 
   for (const status of status_monitoring) {
     await prisma.statusMonitoring.upsert({
@@ -110,6 +112,7 @@ async function main() {
       where: { id: status.id },
     });
   }
+  console.log('Monitor status seeded.');
 
   for (const status of status_schedule_monitoring) {
     await prisma.statusScheduleMonitoring.upsert({
@@ -118,6 +121,7 @@ async function main() {
       where: { id: status.id },
     });
   }
+  console.log('Schedule monitoring status seeded.');
 
   for (const status of status_responsability) {
     await prisma.statusResponsability.upsert({
@@ -126,6 +130,7 @@ async function main() {
       where: { id: status.id },
     });
   }
+  console.log('Subject responsability status seeded.');
 }
 
 main()
