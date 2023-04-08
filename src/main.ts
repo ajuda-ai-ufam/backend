@@ -40,7 +40,7 @@ async function bootstrap() {
 
   await app.init();
 
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'staging') {
     const httpsOptions = {
       key: fs.readFileSync('./secrets/key.pem', 'utf8'),
       cert: fs.readFileSync('./secrets/server.crt', 'utf8'),

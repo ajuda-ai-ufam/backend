@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+    super_backend:
+        container_name: super_api_stg
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: staging
+        env_file: ./.env
+        ports: 
+            - $PORT_HTTPS:$PORT_HTTPS
+        command: npm run start:prod
+
+volumes:
+    mysql_config:
+    node_modules:
