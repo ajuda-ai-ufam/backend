@@ -22,12 +22,13 @@ services:
             target: development
         env_file: ./.env
         ports:
-            - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+            - $HTTP_PORT:$HTTP_PORT
         command: npm run start:dev
         restart: unless-stopped
         volumes:
             - .:/usr/src/app
             - node_modules:/usr/src/app/node_modules
+        command: npm start
 
 volumes:
     mysql:

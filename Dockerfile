@@ -17,7 +17,7 @@ RUN npm ci --production
 COPY . ./
 RUN npx prisma generate
 RUN npm run build
-ENV NODE_ENV=production
+ENV NODE_ENV=staging
 EXPOSE 8080
 
 

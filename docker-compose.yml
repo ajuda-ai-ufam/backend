@@ -22,7 +22,7 @@ services:
             target: production
         env_file: ./.env
         ports: 
-            - $PORT_HTTPS:$PORT_HTTPS
+            - $HTTP_PORT:$HTTP_PORT
         command: npm run start:prod
 
 volumes:

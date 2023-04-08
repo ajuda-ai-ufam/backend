@@ -45,9 +45,9 @@ async function bootstrap() {
       key: fs.readFileSync('./secrets/key.pem', 'utf8'),
       cert: fs.readFileSync('./secrets/server.crt', 'utf8'),
     };
-    https.createServer(httpsOptions, server).listen(process.env.PORT_HTTPS);
+    https.createServer(httpsOptions, server).listen(process.env.HTTPS_PORT);
   } else {
-    http.createServer(server).listen(process.env.PORT_HTTP);
+    http.createServer(server).listen(process.env.HTTP_PORT);
   }
 }
 bootstrap();
