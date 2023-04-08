@@ -32,3 +32,25 @@ export class QueryPaginationDto {
   })
   search: string;
 }
+
+class PaginationMeta {
+  @ApiProperty({ type: Number })
+  page: number;
+
+  @ApiProperty({ type: Number })
+  pageSize: number;
+
+  @ApiProperty({ type: Number })
+  totalItems: number;
+
+  @ApiProperty({ type: Number })
+  totalPages: number;
+}
+
+export class PaginationResponse<T> {
+  @ApiProperty()
+  data: T[];
+
+  @ApiProperty({ type: PaginationMeta })
+  meta: PaginationMeta;
+}
