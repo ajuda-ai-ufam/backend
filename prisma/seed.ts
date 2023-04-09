@@ -23,8 +23,9 @@ const status_monitoring = [
 ];
 
 const status_responsability = [
-  { status: 'Pendente', id: 1 },
-  { status: 'Aprovado', id: 2 },
+  { status: 'Finalizada', id: 1 },
+  { status: 'Pendente', id: 2 },
+  { status: 'Aprovado', id: 3 },
 ];
 
 const status_schedule_monitoring = [
