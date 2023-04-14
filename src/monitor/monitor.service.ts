@@ -70,7 +70,7 @@ export class MonitorService {
       );
 
     const email: string = professor.email;
-    const sub: string = process.env.REQUEST_MONITORING;
+    const sub = 'Você recebeu uma nova solicitação!';
     const context = { student_name: user.name, subject_name: subject.name };
     const template = 'request_monitor';
 
@@ -127,7 +127,7 @@ export class MonitorService {
     });
 
     const email: string = student.email;
-    const sub: string = process.env.ACCEPT_MONITORING;
+    const sub = 'Você foi aceito!';
     const template = 'accept_monitor';
 
     this.emailService.sendEmailAcceptMonitoring(email, sub, template);
@@ -175,7 +175,7 @@ export class MonitorService {
     });
 
     const email: string = student.email;
-    const sub: string = process.env.REFUSE_MONITORING;
+    const sub = 'Obrigado por tentar...';
     const template = 'refuse_monitor';
 
     this.emailService.sendEmailRefuseMonitoring(email, sub, template);

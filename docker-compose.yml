@@ -1,12 +1,31 @@
 version: '3.8'
 services:
+    super_mysqldb:
+        image: mysql/mysql-server:8.0.23
+        container_name: super_db_prod
+        env_file: ./.env
+        environment: 
+            MYSQL_TCP_PORT: $MYSQL_DOCKER_PORT
+            MYSQL_DATABASE: $MYSQL_DATABASE
+            MYSQL_ROOT_HOST: "%"
+        ports: 
+            - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
+        volumes:
+            - mysql_prod:/var/lib/mysql
+            - mysql_config_prod:/etc/mysql
+
     super_backend:
-        container_name: super_api
+        container_name: super_api_prod
         build:
             context: .
             dockerfile: Dockerfile
             target: production
         env_file: ./.env
         ports: 
-            - $PORT_HTTPS:$PORT_HTTPS
+            - $HTTP_PORT:$HTTP_PORT
         command: npm run start:prod
+
+volumes:
+    mysql_prod:
+    mysql_config_prod:
+    node_modules:

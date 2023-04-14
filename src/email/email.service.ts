@@ -14,7 +14,7 @@ export class EmailService {
       to: email,
       from: process.env.MAIL_AUTH_USER,
       subject: subject,
-      text: process.env.REQUEST_MONITORING,
+      text: subject,
       template: `${template}.hbs`,
       context: {
         student_name: message.student_name,
@@ -32,7 +32,7 @@ export class EmailService {
       to: email,
       from: process.env.MAIL_AUTH_USER,
       subject: subject,
-      text: process.env.ACCEPT_MONITORING,
+      text: subject,
       template: `${template}.hbs`,
       context: {},
     });
@@ -47,7 +47,7 @@ export class EmailService {
       to: email,
       from: process.env.MAIL_AUTH_USER,
       subject: subject,
-      text: process.env.REFUSE_MONITORING,
+      text: subject,
       template: `${template}.hbs`,
       context: {},
     });

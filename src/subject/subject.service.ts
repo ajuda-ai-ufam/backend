@@ -21,6 +21,7 @@ export class SubjectService {
       include: {
         SubjectResponsability: {
           select: {
+            id: true,
             professor: selecUserData,
             status: { select: { id: true, status: true } },
           },
@@ -78,6 +79,7 @@ export class SubjectService {
       include: {
         SubjectResponsability: {
           select: {
+            id: true,
             professor: selecUserData,
             status: { select: { id: true, status: true } },
           },
@@ -119,6 +121,7 @@ export class SubjectService {
       include: {
         SubjectResponsability: {
           select: {
+            id: true,
             professor: selecUserData,
             status: { select: { id: true, status: true } },
           },

@@ -166,6 +166,7 @@ model SubjectResponsability {
   status       StatusResponsability @relation(fields: [id_status], references: [id])
   updated_at   DateTime             @updatedAt
   created_at   DateTime             @default(now())
+  end_date     DateTime?            
   professor_id Int
   professor    Teacher              @relation(fields: [professor_id], references: [user_id])
   subject_id   Int

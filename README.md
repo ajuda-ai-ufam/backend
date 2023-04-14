@@ -48,13 +48,32 @@ We use Makefile commands to run our scripts:
   make db-seed
   ```
 
+## Staging
+
+- Run API on production mode:
+  ```bash
+  make deploy-stg
+  ```
+  - Make sure you are on `staging` branch.
+  - Make sure the `.env` file has the staging environment values.
+
+- See running API logs:
+  ```bash
+  make logs
+  ```
+
+- Create a bash terminal inside the API container:
+  ```bash
+  make shell
+  ```
+
 ## Production
 
-- Run an API on production mode:
+- Run API on production mode:
   ```bash
-  make deploy
+  make deploy-prod
   ```
-  - Make sure you are on `development`, `staging` ou `master` branch.
+  - Make sure you are on `master` branch.
   - Make sure the `.env` file has the production environment values.
 
 - See running API logs:
