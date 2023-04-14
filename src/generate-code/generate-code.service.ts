@@ -73,7 +73,7 @@ export class GenerateCodeService {
     const date = new Date();
 
     const date_expired = new Date(
-      date.getTime() + Number(process.env.EXPIRED_IN) * 60000,
+      date.getTime() + Number(process.env.CODE_EXPIRATION_TIME_IN_MIN) * 60000,
     );
 
     const code = Math.floor(Math.random() * 100000) + 999999;
@@ -87,12 +87,12 @@ export class GenerateCodeService {
 
     if (type_id == 2) {
       email = user.email;
-      subject = process.env.SUBJECT_PASSWORD;
+      subject = 'Atualizar senha';
       context = String(code).slice(0, 6);
       template = 'miss_password';
     } else {
       email = user.email;
-      subject = process.env.SUBJECT_VERIFY_USER;
+      subject = 'Verificação de Email';
       context = String(code).slice(0, 6);
       template = 'code_confirm_login';
     }
@@ -107,7 +107,7 @@ export class GenerateCodeService {
     if (codes_exists) {
       const date_validade_before_of_generate = new Date(
         codes_exists.created_at.getTime() +
-          Number(process.env.EXPIRED_IN_AGAIN) * 60000,
+          Number(process.env.TIME_TO_RESEND_CODE_IN_MIN) * 60000,
       );
 
       if (
@@ -115,7 +115,7 @@ export class GenerateCodeService {
         codes_exists.type_id == type_id
       )
         throw new BadRequestException(
-          `Você possui um código ativo,so pode ser gerado outro após ${process.env.MESSAGE_IN_AGAIN}`,
+          `Você possui um código ativo e só poderá gerar outro após ${process.env.TIME_TO_RESEND_CODE_IN_MIN} minuto(s)`,
         );
       else {
         await this.prisma.verification_Code.create({
