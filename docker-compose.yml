@@ -11,8 +11,8 @@ services:
         ports: 
             - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
         volumes:
-            - mysql:/var/lib/mysql
-            - mysql_config:/etc/mysql
+            - mysql_prod:/var/lib/mysql
+            - mysql_config_prod:/etc/mysql
 
     super_backend:
         container_name: super_api_prod
@@ -26,6 +26,6 @@ services:
         command: npm run start:prod
 
 volumes:
-    mysql:
-    mysql_config:
+    mysql_prod:
+    mysql_config_prod:
     node_modules:

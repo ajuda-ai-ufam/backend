@@ -10,7 +10,3 @@ services:
         ports: 
             - $HTTPS_PORT:$HTTPS_PORT
         command: npm run start:prod
-
-volumes:
-    mysql_config:
-    node_modules:
