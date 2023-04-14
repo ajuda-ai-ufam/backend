@@ -27,14 +27,14 @@ export class Schedule {
   status: ScheduleStatus;
 
   @ApiProperty({ type: Monitor })
-  monitor: Monitor;
+  monitor?: Monitor;
 
   @ApiProperty({ type: Student })
-  student: Student;
+  student?: Student;
 
   @ApiProperty({ type: User })
-  responsibleProfessor: User;
+  responsibleProfessor?: User;
 
   @ApiProperty({ type: Subject })
-  subject: Subject;
+  subject?: Subject;
 }
