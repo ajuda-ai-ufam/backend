@@ -52,9 +52,9 @@ db-shell:
 .PHONY: deploy-stg
 deploy-stg: down
 	git pull origin staging && \
-	@docker-compose -f ${STG_DOCKER_COMPOSE_FILE} up --build --remove-orphans -d
+	docker-compose -f ${STG_DOCKER_COMPOSE_FILE} up --build --remove-orphans -d
 
 .PHONY: deploy-prod
 deploy-prod: down
 	git pull origin master && \
-	@docker-compose -f ${PROD_DOCKER_COMPOSE_FILE} up --build --remove-orphans -d
+	docker-compose -f ${PROD_DOCKER_COMPOSE_FILE} up --build --remove-orphans -d
