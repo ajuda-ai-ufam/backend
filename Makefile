@@ -2,6 +2,7 @@ API_SERVICE_NAME=super_backend
 DB_SERVICE_NAME=super_mysqldb
 
 DEV_DOCKER_COMPOSE_FILE=docker-compose.dev.yml
+STG_DOCKER_COMPOSE_FILE=docker-compose.staging.yml
 PROD_DOCKER_COMPOSE_FILE=docker-compose.yml
 
 .PHONY: up
@@ -48,8 +49,12 @@ db-seed:
 db-shell:
 	@docker-compose exec -it ${DB_SERVICE_NAME} mysql -uroot -proot -D ufam-dev
 
-.PHONY: deploy
-deploy: down
-	git pull && \
-	docker-compose -f ${PROD_DOCKER_COMPOSE_FILE} up --build --remove-orphans -d && \
-	echo "Deploy concluded successfuly"
+.PHONY: deploy-stg
+deploy-stg: down
+	git pull origin staging && \
+	@docker-compose -f ${STG_DOCKER_COMPOSE_FILE} up --build --remove-orphans -d
+
+.PHONY: deploy-prod
+deploy-prod: down
+	git pull origin master && \
+	@docker-compose -f ${PROD_DOCKER_COMPOSE_FILE} up --build --remove-orphans -d
