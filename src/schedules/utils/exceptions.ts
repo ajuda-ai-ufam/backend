@@ -12,6 +12,13 @@ export class NotFinalizedScheduleException extends Error {
   }
 }
 
+export class OverdueScheduleException extends Error {
+  constructor() {
+    super();
+    this.message = `Já passou do horário de início do agendamento.`;
+  }
+}
+
 export class NotTheScheduleMonitorException extends Error {
   constructor() {
     super();
@@ -22,7 +29,8 @@ export class NotTheScheduleMonitorException extends Error {
 export class NotTheScheduleParticipantException extends Error {
   constructor() {
     super();
-    this.message = 'Apenas um dos participantes do agendamento pode realizar esta ação.';
+    this.message =
+      'Apenas um dos participantes do agendamento pode realizar esta ação.';
   }
 }
 
