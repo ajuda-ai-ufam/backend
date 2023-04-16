@@ -83,6 +83,7 @@ model StatusScheduleMonitoring {
 model Monitor {
   id                       Int                  @id @default(autoincrement())
   id_status                Int                  @default(1)
+  end_date                 DateTime?            
   status                   StatusMonitoring     @relation(fields: [id_status], references: [id])
   responsible_professor_id Int
   responsible_professor    Teacher              @relation(fields: [responsible_professor_id], references: [user_id])
