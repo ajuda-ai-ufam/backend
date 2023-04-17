@@ -13,5 +13,5 @@ export class Subject {
   code?: string;
 
   @ApiProperty({ type: Course })
-  course: Course;
+  course?: Course;
 }
