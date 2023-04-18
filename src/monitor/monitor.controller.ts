@@ -1,10 +1,16 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
+  PreconditionFailedException,
   Query,
   Req,
   UseGuards,
@@ -19,12 +25,21 @@ import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
 import { ListMonitorsQueryParams } from './dto/list-monitors.request.dto';
 import { ListMonitorsCommand } from './commands/list-monitors.command';
+import { AcceptScheduleCommand } from './commands/accept-schedule.command';
+import {
+  InvalidScheduleStatusException,
+  NotTheScheduleMonitorException,
+  OverdueScheduleException,
+  ScheduleNotFoundException,
+} from 'src/schedules/utils/exceptions';
+import { MonitorTimeAlreadyScheduledException } from 'src/student/utils/exceptions';
 
 @ApiTags('Monitor')
 @Controller('monitor')
 export class MonitorController {
   constructor(
     private readonly monitorService: MonitorService,
+    private readonly acceptScheduleCommand: AcceptScheduleCommand,
     private readonly listMonitorsCommand: ListMonitorsCommand,
     private jwtService: JwtService,
   ) {}
@@ -83,17 +98,42 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Post('accept/scheduled-monitoring/:scheduled_monitoring_id')
+  @Post('accept/scheduled-monitoring/:scheduleId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async acceptScheduledMonitoring(
     @Req() req: Request,
-    @Param('scheduled_monitoring_id') scheduled_monitoring_id: string,
+    @Param('scheduleId') scheduleId: number,
   ) {
     const token = req.headers.authorization.toString().replace('Bearer ', '');
-    const payload = this.jwtService.decode(token);
-    return this.monitorService.acceptScheduledMonitoring(
-      +scheduled_monitoring_id,
-      payload.sub,
-    );
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    try {
+      return await this.acceptScheduleCommand.execute(
+        user.sub,
+        Number(scheduleId),
+      );
+    } catch (error) {
+      if (error instanceof ScheduleNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      if (error instanceof NotTheScheduleMonitorException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      if (error instanceof InvalidScheduleStatusException) {
+        throw new BadRequestException(error.message);
+      }
+
+      if (
+        error instanceof MonitorTimeAlreadyScheduledException ||
+        error instanceof OverdueScheduleException
+      ) {
+        throw new PreconditionFailedException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)

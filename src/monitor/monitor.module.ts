@@ -12,11 +12,13 @@ import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { StudentModule } from 'src/student/student.module';
 import { UserModule } from 'src/user/user.module';
 import { ListMonitorsCommand } from './commands/list-monitors.command';
+import { AcceptScheduleCommand } from './commands/accept-schedule.command';
 
 @Module({
   controllers: [MonitorController],
   imports: [JwtModule, EmailModule, StudentModule, UserModule],
   providers: [
+    AcceptScheduleCommand,
     MonitorService,
     PrismaService,
     SubjectService,
