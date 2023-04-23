@@ -39,3 +39,10 @@ export class MonitorTimeAlreadyScheduledException extends Error {
     this.message = `Monitor já possui um agendamento confirmado no horário solicitado`;
   }
 }
+
+export class StudentTimeAlreadyScheduledException extends Error {
+  constructor(status: string) {
+    super();
+    this.message = `Aluno já possui um agendamento com status '${status}' no horário solicitado`;
+  }
+}

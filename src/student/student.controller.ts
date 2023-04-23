@@ -27,6 +27,7 @@ import {
   MonitorTimeAlreadyScheduledException,
   NotAnAvailableTimeException,
   SameStudentException,
+  StudentTimeAlreadyScheduledException,
 } from './utils/exceptions';
 
 @ApiTags('Students')
@@ -71,7 +72,8 @@ export class StudentController {
         error instanceof MonitorStatusNotAvailableException ||
         error instanceof MonitorStatusNotAvailableException ||
         error instanceof NotAnAvailableTimeException ||
-        error instanceof MonitorTimeAlreadyScheduledException
+        error instanceof MonitorTimeAlreadyScheduledException ||
+        error instanceof StudentTimeAlreadyScheduledException
       ) {
         throw new PreconditionFailedException(error.message);
       }
