@@ -11,6 +11,7 @@ import {
   MonitorTimeAlreadyScheduledException,
   NotAnAvailableTimeException,
   SameStudentException,
+  StudentTimeAlreadyScheduledException,
 } from '../utils/exceptions';
 import { Schedule } from 'src/schedules/domain/schedule';
 
@@ -47,7 +48,9 @@ export class ScheduleMonitoringCommand {
 
     await this.checkAvailability(monitorId, start, end);
 
-    await this.checkConfirmedSchedules(monitorId, start, end);
+    await this.checkMonitorConfirmedSchedules(monitorId, start, end);
+
+    await this.checkStudentSchedules(userId, start, end);
 
     const newSchedule = await this.prisma.scheduleMonitoring.create({
       data: {
@@ -93,7 +96,7 @@ export class ScheduleMonitoringCommand {
       throw new NotAnAvailableTimeException();
   }
 
-  private async checkConfirmedSchedules(
+  private async checkMonitorConfirmedSchedules(
     monitorId: number,
     start: Date,
     end: Date,
@@ -132,5 +135,54 @@ export class ScheduleMonitoringCommand {
     });
 
     if (conflitingSchedule) throw new MonitorTimeAlreadyScheduledException();
+  }
+
+  private async checkStudentSchedules(
+    studentId: number,
+    start: Date,
+    end: Date,
+  ) {
+    const conflitingSchedule = await this.prisma.scheduleMonitoring.findFirst({
+      include: {
+        status: true,
+      },
+      where: {
+        student_id: studentId,
+        id_status: {
+          in: [ScheduleStatus.CONFIRMED, ScheduleStatus.WAITING_APPROVAL],
+        },
+        OR: [
+          {
+            start: {
+              lte: start,
+            },
+            end: {
+              gt: start,
+            },
+          },
+          {
+            start: {
+              lt: end,
+            },
+            end: {
+              gte: end,
+            },
+          },
+          {
+            start: {
+              gte: start,
+            },
+            end: {
+              lte: end,
+            },
+          },
+        ],
+      },
+    });
+
+    if (conflitingSchedule)
+      throw new StudentTimeAlreadyScheduledException(
+        conflitingSchedule.status.status,
+      );
   }
 }
