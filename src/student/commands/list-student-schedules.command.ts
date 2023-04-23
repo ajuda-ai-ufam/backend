@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { pagination } from 'src/common/pagination';
 import { PrismaService } from 'src/database/prisma.service';
+import { MonitorStatus } from 'src/monitor/utils/monitor.enum';
 import { SchedulesDto } from '../dto/schedules.dto';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class ListStudentSchedulesCommand {
     const monitor = await this.prisma.monitor.findFirst({
       where: {
         student_id: user_id,
+        id_status: MonitorStatus.AVAILABLE,
       },
       include: {
         student: studentInclude,
@@ -34,14 +36,15 @@ export class ListStudentSchedulesCommand {
     }
 
     const today = new Date();
-    today.setHours(0,0,0,0);
+    const AMT_OFFSET = -4;
+    today.setHours(today.getHours() + AMT_OFFSET);
+    today.setHours(0, 0, 0, 0);
+
     const schedules = await this.prisma.scheduleMonitoring.findMany({
       where: {
         OR: orStatement,
-        AND: [
-          { id_status: Number(query.status) || undefined },
-          { start: { gte: today.toISOString() } },
-        ],
+        id_status: Number(query.status) || undefined,
+        start: { gte: today.toISOString() },
       },
       include: {
         monitor: { include: { student: studentInclude, subject: true } },
@@ -49,7 +52,7 @@ export class ListStudentSchedulesCommand {
       },
       orderBy: {
         start: 'asc',
-      }
+      },
     });
 
     if (!schedules)
