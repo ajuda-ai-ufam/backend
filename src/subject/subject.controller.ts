@@ -46,7 +46,7 @@ export class SubjectController {
   @ApiBearerAuth()
   @Get(':id')
   async findOne(@Param('id') id: number) {
-    return await this.subjectService.listSubjects(id);
+    return await this.subjectService.findSubjectById(id);
   }
 
   @UseGuards(JwtAuthGuard)
