@@ -221,9 +221,7 @@ export class SchedulesController {
         throw new NotFoundException(error.message);
       }
 
-      if (
-        error instanceof NotTheScheduleParticipantException
-      ) {
+      if (error instanceof NotTheScheduleParticipantException) {
         throw new ForbiddenException(error.message);
       }
 

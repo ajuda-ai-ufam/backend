@@ -21,9 +21,6 @@ import { UserModule } from 'src/user/user.module';
     EmailService,
     SubjectService,
   ],
-  imports: [
-    StudentModule,
-    UserModule,
-  ],
+  imports: [StudentModule, UserModule],
 })
 export class GenerateCodeModule {}
