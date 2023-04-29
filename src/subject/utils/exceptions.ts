@@ -1,5 +1,3 @@
-import { Monitor } from "@prisma/client";
-
 export class ResponsabilityNotFoundException extends Error {
   constructor() {
     super();

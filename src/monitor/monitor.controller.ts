@@ -17,15 +17,16 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorService } from './monitor.service';
 import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
 import { ListMonitorsQueryParams } from './dto/list-monitors.request.dto';
-import { ListMonitorsCommand } from './commands/list-monitors.command';
 import { AcceptScheduleCommand } from './commands/accept-schedule.command';
+import { EndMonitoringCommand } from './commands/end-monitoring.command';
+import { ListMonitorsCommand } from './commands/list-monitors.command';
 import {
   InvalidScheduleStatusException,
   NotTheScheduleMonitorException,
@@ -33,6 +34,9 @@ import {
   ScheduleNotFoundException,
 } from 'src/schedules/utils/exceptions';
 import { MonitorTimeAlreadyScheduledException } from 'src/student/utils/exceptions';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
+import { InvalidMonitoringStatusException as InvalidMonitoringStatusException, MonitoringNotFoundException, NotTheResponsibleProfessorException } from './utils/exceptions';
 
 @ApiTags('Monitor')
 @Controller('monitor')
@@ -41,6 +45,7 @@ export class MonitorController {
     private readonly monitorService: MonitorService,
     private readonly acceptScheduleCommand: AcceptScheduleCommand,
     private readonly listMonitorsCommand: ListMonitorsCommand,
+    private readonly endMonitoringCommand: EndMonitoringCommand,
     private jwtService: JwtService,
   ) {}
 
@@ -168,5 +173,40 @@ export class MonitorController {
   @Get('availability/:monitorId')
   async getMonitorAvailability(@Param('monitorId') monitorId: string) {
     return this.monitorService.getMonitorAvailability(+monitorId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Roles(Role.Professor, Role.Coordinator)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Atualiza o status de uma monitoria para 4 (finalizada)',
+  })
+  @Patch(':monitorId/end')
+  async endMonitoring(
+    @Req() req: Request,
+    @Param('monitorId') monitorId: string,
+  ) {
+    try {
+      const token = req.headers.authorization.toString().replace('Bearer ', '');
+      const user = this.jwtService.decode(token) as JWTUser;
+      return await this.endMonitoringCommand.execute(+monitorId, user.sub, user.type_user.type);
+    } catch (error) {
+      if (error instanceof MonitoringNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      if (
+        error instanceof NotTheResponsibleProfessorException
+      ) {
+        throw new ForbiddenException(error.message);
+      }
+
+      if (error instanceof InvalidMonitoringStatusException) {
+        throw new PreconditionFailedException(error.message);
+      }
+
+      throw error;
+    }
   }
 }
