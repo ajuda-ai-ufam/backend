@@ -19,6 +19,7 @@ export class EmailService {
       context: {
         student_name: message.student_name,
         subject_name: message.subject_name,
+        front_end_base_url: process.env.FRONT_END_BASE_URL,
       },
     });
   }
@@ -34,7 +35,9 @@ export class EmailService {
       subject: subject,
       text: subject,
       template: `${template}.hbs`,
-      context: {},
+      context: {
+        front_end_base_url: process.env.FRONT_END_BASE_URL,
+      },
     });
   }
 
@@ -49,7 +52,9 @@ export class EmailService {
       subject: subject,
       text: subject,
       template: `${template}.hbs`,
-      context: {},
+      context: {
+        front_end_base_url: process.env.FRONT_END_BASE_URL,
+      },
     });
   }
 
