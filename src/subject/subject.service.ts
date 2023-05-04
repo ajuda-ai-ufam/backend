@@ -9,7 +9,7 @@ import { PrismaService } from 'src/database/prisma.service';
 export class SubjectService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async listSubjects(id: number) {
+  async findSubjectById(id: number) {
     const selecUserData = {
       select: {
         user: { select: { id: true, name: true, email: true } },
@@ -32,6 +32,9 @@ export class SubjectService {
             student: {
               select: {
                 user: selecUserData.select.user,
+                linkedin: true,
+                contact_email: true,
+                whatsapp: true,
                 course: {
                   select: { id: true, name: true },
                 },
