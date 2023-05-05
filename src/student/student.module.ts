@@ -8,6 +8,7 @@ import { GetMonitorAvailabilityCommand } from './commands/get-monitor-availabili
 import { ListStudentSchedulesCommand } from './commands/list-student-schedules.command';
 import { ScheduleMonitoringCommand } from './commands/schedule-monitoring.command';
 import { StudentController } from './student.controller';
+import { EmailService } from 'src/email/email.service';
 
 @Module({
   imports: [JwtModule],
@@ -20,6 +21,7 @@ import { StudentController } from './student.controller';
     ListStudentSchedulesCommand,
     ScheduleMonitoringCommand,
     PrismaService,
+    EmailService,
   ],
   exports: [CreateStudentCommand, FindEnrollmentCommand],
 })
