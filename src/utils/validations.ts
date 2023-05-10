@@ -15,7 +15,8 @@ export class Validations {
   }
 
   static validateEmail(email: string) {
-    const re = /^([\w.]{3,20})@icomp.ufam.edu.br$/gm;
+    const re =
+      /^([\w.]{3,20})@(icomp\.ufam\.edu\.br|ufam\.edu\.br|super\.ufam\.edu\.br)$/gm;
     return re.test(email);
   }
 
