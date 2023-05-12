@@ -25,6 +25,7 @@ import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
 import { ListMonitorsQueryParams } from './dto/list-monitors.request.dto';
 import { AcceptScheduleCommand } from './commands/accept-schedule.command';
+import { RefuseScheduledMonitoringCommand } from './commands/refuse-scheduled-monitoring.command';
 import { EndMonitoringCommand } from './commands/end-monitoring.command';
 import { ListMonitorsCommand } from './commands/list-monitors.command';
 import {
@@ -40,6 +41,8 @@ import {
   InvalidMonitoringStatusException as InvalidMonitoringStatusException,
   MonitoringNotFoundException,
   NotTheResponsibleProfessorException,
+  ScheduleNotPendingException,
+  ScheduledMonitoringNotFoundException,
 } from './utils/exceptions';
 
 @ApiTags('Monitor')
@@ -47,6 +50,7 @@ import {
 export class MonitorController {
   constructor(
     private readonly monitorService: MonitorService,
+    private readonly refuseScheduledMonitoringCommand: RefuseScheduledMonitoringCommand,
     private readonly acceptScheduleCommand: AcceptScheduleCommand,
     private readonly listMonitorsCommand: ListMonitorsCommand,
     private readonly endMonitoringCommand: EndMonitoringCommand,
@@ -154,10 +158,27 @@ export class MonitorController {
   ) {
     const token = req.headers.authorization.toString().replace('Bearer ', '');
     const payload = this.jwtService.decode(token);
-    return this.monitorService.refuseScheduledMonitoring(
-      +scheduled_monitoring_id,
-      payload.sub,
-    );
+
+    try {
+      return await this.refuseScheduledMonitoringCommand.execute(
+        +scheduled_monitoring_id,
+        payload.sub,
+      );
+    } catch (error) {
+      if (error instanceof ScheduledMonitoringNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      if (error instanceof ScheduleNotPendingException) {
+        throw new BadRequestException(error.message);
+      }
+
+      if (error instanceof NotTheScheduleMonitorException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)
