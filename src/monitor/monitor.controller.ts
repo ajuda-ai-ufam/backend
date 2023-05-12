@@ -36,7 +36,11 @@ import {
 import { MonitorTimeAlreadyScheduledException } from 'src/student/utils/exceptions';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
-import { InvalidMonitoringStatusException as InvalidMonitoringStatusException, MonitoringNotFoundException, NotTheResponsibleProfessorException } from './utils/exceptions';
+import {
+  InvalidMonitoringStatusException as InvalidMonitoringStatusException,
+  MonitoringNotFoundException,
+  NotTheResponsibleProfessorException,
+} from './utils/exceptions';
 
 @ApiTags('Monitor')
 @Controller('monitor')
@@ -190,15 +194,17 @@ export class MonitorController {
     try {
       const token = req.headers.authorization.toString().replace('Bearer ', '');
       const user = this.jwtService.decode(token) as JWTUser;
-      return await this.endMonitoringCommand.execute(+monitorId, user.sub, user.type_user.type);
+      return await this.endMonitoringCommand.execute(
+        +monitorId,
+        user.sub,
+        user.type_user.type,
+      );
     } catch (error) {
       if (error instanceof MonitoringNotFoundException) {
         throw new NotFoundException(error.message);
       }
 
-      if (
-        error instanceof NotTheResponsibleProfessorException
-      ) {
+      if (error instanceof NotTheResponsibleProfessorException) {
         throw new ForbiddenException(error.message);
       }
 

@@ -1,5 +1,3 @@
-import { MonitorStatus } from "./monitor.enum";
-
 export class MonitoringNotFoundException extends Error {
   constructor() {
     super();

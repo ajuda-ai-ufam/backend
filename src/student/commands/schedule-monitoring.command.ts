@@ -82,7 +82,12 @@ export class ScheduleMonitoringCommand {
       };
       const template = 'schedule_monitoring';
 
-      this.emailService.sendEmailScheduleMonitoring(email, sub, context, template);
+      this.emailService.sendEmailScheduleMonitoring(
+        email,
+        sub,
+        context,
+        template,
+      );
     }
 
     return ScheduleFactory.createFromPrisma(newSchedule);

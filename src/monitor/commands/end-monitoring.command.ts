@@ -32,10 +32,6 @@ export class EndMonitoringCommand {
       throw new MonitoringNotFoundException();
     }
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-
     if (
       userRole !== Role.Coordinator &&
       userId !== monitoring.responsible_professor_id
