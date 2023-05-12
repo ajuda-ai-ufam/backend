@@ -58,7 +58,7 @@ export class TeacherService {
           where: {
             subject_id: body.subject_id,
             professor_id: professor_id,
-            id_status: { not: SubjectResponsabilityStatus.FINISHED }
+            id_status: { not: SubjectResponsabilityStatus.FINISHED },
           },
         });
       if (subject_responsability)

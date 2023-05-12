@@ -4,14 +4,10 @@ import { StudentDTO } from '../dto/student.dto';
 
 @Injectable()
 export class CreateStudentCommand {
-
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async execute(data: StudentDTO): Promise<StudentDTO> {
     const student = await this.prisma.student.create({ data: data });
     return student;
   }
-
 }

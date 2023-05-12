@@ -1,8 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
-export class TypeUserDTO{
-
-    @ApiProperty()
-    type: string
-
+export class TypeUserDTO {
+  @ApiProperty()
+  type: string;
 }
