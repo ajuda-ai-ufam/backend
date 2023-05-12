@@ -1,4 +1,3 @@
-import { LocalAuthGuard } from './../auth/guards/local-auth.guard';
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';

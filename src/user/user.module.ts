@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
-import { PrismaService } from '../database/prisma.service';
 import { CourseService } from 'src/course/course.service';
-import { TeacherService } from 'src/teacher/teacher.service';
-import { SubjectService } from 'src/subject/subject.service';
-import { CreateStudentCommand } from 'src/student/commands/create-student.command';
-import { FindEnrollmentCommand } from 'src/student/commands/find-enrollment.command';
 import { StudentModule } from 'src/student/student.module';
+import { SubjectService } from 'src/subject/subject.service';
+import { TeacherService } from 'src/teacher/teacher.service';
+import { PrismaService } from '../database/prisma.service';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
 
 @Module({
   controllers: [UserController],
@@ -18,9 +16,7 @@ import { StudentModule } from 'src/student/student.module';
     CourseService,
     SubjectService,
   ],
-  imports: [
-    StudentModule,
-  ],
+  imports: [StudentModule],
   exports: [UserService],
 })
 export class UserModule {}

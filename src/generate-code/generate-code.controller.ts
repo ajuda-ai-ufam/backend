@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CodeDTO } from './dto/generate-code.dto';
 import { VerifyCodeDTO } from './dto/verify-code.dto';

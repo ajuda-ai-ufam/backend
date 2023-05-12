@@ -15,8 +15,8 @@ export class CourseService {
     });
   }
 
-  async findCourseId(id : number){
-    const course_id = await this.prisma.course.findFirst({where : {id : id}});
+  async findCourseId(id: number) {
+    const course_id = await this.prisma.course.findFirst({ where: { id: id } });
     return course_id;
   }
 }

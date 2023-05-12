@@ -183,31 +183,6 @@ export class MonitorService {
     return { message: 'Solicitacão recusada!' };
   }
 
-  async refuseScheduledMonitoring(schedule_id: number, user_id: number) {
-    const schedule = await this.prismaService.scheduleMonitoring.findUnique({
-      where: { id: schedule_id },
-      include: { monitor: true },
-    });
-    if (!schedule) throw new NotFoundException('Agendamento não encontrado');
-
-    if (schedule.id_status != 1)
-      throw new BadRequestException(
-        'Não é mais possível rejeitar este agendamento',
-      );
-
-    if (schedule.monitor.student_id != user_id)
-      throw new ForbiddenException(
-        'Você não tem permissão para rejeitar este agendamento',
-      );
-
-    await this.prismaService.scheduleMonitoring.update({
-      data: { id_status: 3 },
-      where: { id: schedule_id },
-    });
-
-    return { message: 'Agendamento rejeitado!' };
-  }
-
   async registerAvailability(userId: number, data: MonitorAvailabilityDto) {
     const monitor = await this.prismaService.monitor.findFirst({
       where: {
