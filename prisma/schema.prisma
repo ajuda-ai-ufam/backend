@@ -180,6 +180,7 @@ model ScheduleMonitoring {
   id         Int                      @id @default(autoincrement())
   start      DateTime
   end        DateTime
+  description String?                 @db.VarChar(500)   
   id_status  Int                      @default(1)
   status     StatusScheduleMonitoring @relation(fields: [id_status], references: [id])
   student_id Int
