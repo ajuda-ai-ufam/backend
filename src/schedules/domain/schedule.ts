@@ -26,6 +26,9 @@ export class Schedule {
   @ApiProperty({ type: ScheduleStatus })
   status: ScheduleStatus;
 
+  @ApiProperty({ type: String })
+  description?: string;
+
   @ApiProperty({ type: Monitor })
   monitor?: Monitor;
 
