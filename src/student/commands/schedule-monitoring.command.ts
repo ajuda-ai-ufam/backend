@@ -28,7 +28,7 @@ export class ScheduleMonitoringCommand {
     monitorId: number,
     data: ScheduleMonitoringDto,
   ): Promise<Schedule> {
-    const { start, end } = data;
+    const { start, end, description } = data;
     const now = new Date();
     const AMT_OFFSET = -4;
     now.setHours(now.getHours() + AMT_OFFSET);
@@ -61,8 +61,9 @@ export class ScheduleMonitoringCommand {
       data: {
         student_id: userId,
         monitor_id: monitorId,
-        start: start,
-        end: end,
+        start,
+        end,
+        description,
       },
     });
 
