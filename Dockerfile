@@ -4,7 +4,7 @@ COPY package*.json ./
 RUN apt-get update && apt-get install -y openssl
 
 FROM base as production
-RUN npm ci --production
+RUN npm ci --omit=dev
 COPY . ./
 RUN npx prisma generate
 RUN npm run build
@@ -13,7 +13,7 @@ EXPOSE 3003
 
 
 FROM base as staging
-RUN npm ci --production
+RUN npm ci --omit=dev
 COPY . ./
 RUN npx prisma generate
 RUN npm run build

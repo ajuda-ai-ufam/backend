@@ -11,7 +11,6 @@ import { ScheduleStatus } from '../utils/schedules.enum';
 
 @Injectable()
 export class CancelScheduleCommand {
-
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
@@ -34,7 +33,7 @@ export class CancelScheduleCommand {
     }
 
     let recipientUser;
-    let senderUser;    
+    let senderUser;
     if (schedule.monitor.student_id === userId) {
       recipientUser = schedule.student.user;
       senderUser = schedule.monitor.student.user;
@@ -45,7 +44,7 @@ export class CancelScheduleCommand {
       } else {
         throw new NotTheScheduleParticipantException();
       }
-    } 
+    }
 
     if (schedule.id_status !== ScheduleStatus.CONFIRMED) {
       throw new InvalidScheduleStatusException(schedule.status.status);
@@ -60,10 +59,13 @@ export class CancelScheduleCommand {
     // send emails
     this.sendSenderEmail(senderUser, recipientUser, schedule);
     this.sendRecipientEmail(recipientUser, senderUser, schedule);
-    
   }
 
-  async sendSenderEmail(user: User, recipient: User, schedule: ScheduleMonitoring) {
+  async sendSenderEmail(
+    user: User,
+    recipient: User,
+    schedule: ScheduleMonitoring,
+  ) {
     const email: string = user.email;
     const sub: string = process.env.CANCEL_MONITORING_SENDER;
     const context = {
@@ -81,7 +83,11 @@ export class CancelScheduleCommand {
     );
   }
 
-  async sendRecipientEmail(user: User, sender: User, schedule: ScheduleMonitoring) {
+  async sendRecipientEmail(
+    user: User,
+    sender: User,
+    schedule: ScheduleMonitoring,
+  ) {
     const email: string = user.email;
     const sub: string = process.env.CANCEL_MONITORING_RECIPIENT;
     const context = {
@@ -98,6 +104,5 @@ export class CancelScheduleCommand {
       context,
       template,
     );
-  } 
-
+  }
 }

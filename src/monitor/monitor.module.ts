@@ -13,12 +13,17 @@ import { StudentModule } from 'src/student/student.module';
 import { UserModule } from 'src/user/user.module';
 import { ListMonitorsCommand } from './commands/list-monitors.command';
 import { AcceptScheduleCommand } from './commands/accept-schedule.command';
+import { RefuseScheduledMonitoringCommand } from './commands/refuse-scheduled-monitoring.command';
+import { EndMonitoringCommand } from './commands/end-monitoring.command';
 
 @Module({
   controllers: [MonitorController],
   imports: [JwtModule, EmailModule, StudentModule, UserModule],
   providers: [
     AcceptScheduleCommand,
+    EndMonitoringCommand,
+    ListMonitorsCommand,
+    RefuseScheduledMonitoringCommand,
     MonitorService,
     PrismaService,
     SubjectService,
@@ -26,7 +31,6 @@ import { AcceptScheduleCommand } from './commands/accept-schedule.command';
     CourseService,
     TeacherService,
     JwtStrategy,
-    ListMonitorsCommand,
   ],
 })
 export class MonitorModule {}

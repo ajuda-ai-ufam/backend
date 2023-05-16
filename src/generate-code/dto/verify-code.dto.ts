@@ -1,13 +1,12 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
-export class VerifyCodeDTO{
-    
-    @ApiProperty()
-    code: string;
+export class VerifyCodeDTO {
+  @ApiProperty()
+  code: string;
 
-    @ApiProperty()
-    email: string;
+  @ApiProperty()
+  email: string;
 
-    @ApiProperty()
-    type_code: number;
+  @ApiProperty()
+  type_code: number;
 }

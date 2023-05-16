@@ -58,6 +58,23 @@ export class EmailService {
     });
   }
 
+  async sendEmailRefuseScheduledMonitoring(
+    email: string,
+    subject: string,
+    template: string,
+  ) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: subject,
+      text: subject,
+      template: `${template}.hbs`,
+      context: {
+        front_end_base_url: process.env.FRONT_END_BASE_URL,
+      },
+    });
+  }
+
   async sendEmailCancelMonitoring(
     email: string,
     subject: string,
@@ -71,6 +88,25 @@ export class EmailService {
       text: subject,
       template: `${template}.hbs`,
       context,
+    });
+  }
+
+  async sendEmailScheduleMonitoring(
+    email: string,
+    subject: string,
+    context: any,
+    template: string,
+  ) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: subject,
+      text: subject,
+      template: `${template}.hbs`,
+      context: {
+        ...context,
+        front_end_base_url: process.env.FRONT_END_BASE_URL,
+      },
     });
   }
 

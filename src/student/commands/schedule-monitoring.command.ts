@@ -14,17 +14,21 @@ import {
   StudentTimeAlreadyScheduledException,
 } from '../utils/exceptions';
 import { Schedule } from 'src/schedules/domain/schedule';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class ScheduleMonitoringCommand {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   async execute(
     userId: number,
     monitorId: number,
     data: ScheduleMonitoringDto,
   ): Promise<Schedule> {
-    const { start, end } = data;
+    const { start, end, description } = data;
     const now = new Date();
     const AMT_OFFSET = -4;
     now.setHours(now.getHours() + AMT_OFFSET);
@@ -37,6 +41,7 @@ export class ScheduleMonitoringCommand {
       throw new InvalidDateException();
 
     const monitor = await this.prisma.monitor.findFirst({
+      include: { student: { include: { user: true } } },
       where: { id: monitorId },
     });
     if (!monitor) throw new MonitorNotFoundException();
@@ -56,10 +61,35 @@ export class ScheduleMonitoringCommand {
       data: {
         student_id: userId,
         monitor_id: monitorId,
-        start: start,
-        end: end,
+        start,
+        end,
+        description,
       },
     });
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (newSchedule) {
+      const email = monitor.student.contact_email;
+      const sub = 'Um aluno pediu sua ajuda!';
+      const context = {
+        status: 'Pendente',
+        name: user.name,
+        date: start.toLocaleDateString('pt-BR'),
+        start: start.toLocaleTimeString('pt-BR').slice(0, 5),
+        end: end.toLocaleTimeString('pt-BR').slice(0, 5),
+      };
+      const template = 'schedule_monitoring';
+
+      this.emailService.sendEmailScheduleMonitoring(
+        email,
+        sub,
+        context,
+        template,
+      );
+    }
 
     return ScheduleFactory.createFromPrisma(newSchedule);
   }

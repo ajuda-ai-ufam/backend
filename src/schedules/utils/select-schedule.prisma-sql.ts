@@ -22,6 +22,7 @@ const scheduleSelectPrismaSQL = {
   id_status: true,
   start: true,
   end: true,
+  description: true,
   ...studentSelect,
   monitor: {
     select: {
