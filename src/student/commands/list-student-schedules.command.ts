@@ -8,7 +8,7 @@ import { SchedulesDto } from '../dto/schedules.dto';
 export class ListStudentSchedulesCommand {
   constructor(private prisma: PrismaService) {}
 
-  async execute(user_id: number, query: SchedulesDto): Promise<any> {
+  async execute(userId: number, query: SchedulesDto): Promise<any> {
     const studentInclude = {
       include: {
         course: true,
@@ -18,21 +18,24 @@ export class ListStudentSchedulesCommand {
       },
     };
 
-    const monitor = await this.prisma.monitor.findFirst({
+    const monitorings = await this.prisma.monitor.findMany({
       where: {
-        student_id: user_id,
-        id_status: MonitorStatus.AVAILABLE,
+        student_id: userId,
+        id_status: { in: [MonitorStatus.AVAILABLE, MonitorStatus.DONE] },
       },
       include: {
         student: studentInclude,
       },
     });
 
-    let orStatement = [{ student_id: user_id }, { monitor_id: monitor?.id }];
-    if (query.eventType === 'monitor') {
-      orStatement = [{ monitor_id: monitor?.id }];
-    } else if (query.eventType === 'student') {
-      orStatement = [{ student_id: user_id }];
+    let orStatement = [
+      { student_id: userId },
+      { monitor_id: { in: monitorings.map((monitor) => monitor.id) } },
+    ];
+    if (query.eventType === 'student') {
+      orStatement = [orStatement[0]];
+    } else if (query.eventType === 'monitor') {
+      orStatement = [orStatement[1]];
     }
 
     const today = new Date();
@@ -55,12 +58,14 @@ export class ListStudentSchedulesCommand {
       },
     });
 
-    if (!schedules)
+    if (!schedules) {
       throw new NotFoundException('Agendamentos nao encontrados.');
+    }
 
-    schedules.forEach((element) => {
-      if (element.monitor_id == monitor?.id) element['is_monitoring'] = true;
-      else element['is_monitoring'] = false;
+    schedules.forEach((schedule) => {
+      if (schedule.monitor.student_id === userId)
+        schedule['is_monitoring'] = true;
+      else schedule['is_monitoring'] = false;
     });
 
     return pagination(schedules, query);
