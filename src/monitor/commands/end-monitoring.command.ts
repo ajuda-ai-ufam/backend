@@ -6,11 +6,16 @@ import {
   MonitoringNotFoundException,
   NotTheResponsibleProfessorException,
 } from '../utils/exceptions';
+import { RefuseScheduledMonitoringCommand } from './refuse-scheduled-monitoring.command';
 import { Role } from 'src/auth/enums/role.enum';
+import { ScheduleStatus } from 'src/schedules/utils/schedules.enum';
 
 @Injectable()
 export class EndMonitoringCommand {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly refuseScheduledMonitoringCommand: RefuseScheduledMonitoringCommand,
+  ) {}
 
   async execute(
     monitorId: number,
@@ -46,6 +51,20 @@ export class EndMonitoringCommand {
     ) {
       throw new InvalidMonitoringStatusException(monitoring.status.status);
     }
+
+    const schedules = await this.prisma.scheduleMonitoring.findMany({
+      where: {
+        monitor_id: monitorId,
+        id_status: ScheduleStatus.WAITING_APPROVAL,
+      },
+    });
+
+    schedules.forEach(async (schedule) => {
+      await this.refuseScheduledMonitoringCommand.execute(
+        schedule.id,
+        monitoring.student_id,
+      );
+    });
 
     await this.prisma.monitor.update({
       where: { id: monitorId },
