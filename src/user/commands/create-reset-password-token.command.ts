@@ -3,9 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/database/prisma.service';
 import { EmailService } from 'src/email/email.service';
 import {
-  ValidResetPasswordTokenFoundException,
-  UserNotVerifiedException,
   UserNotFoundException,
+  ValidResetPasswordTokenFoundException,
 } from 'src/user/utils/exceptions';
 import { VerificationCodeType } from 'src/user/utils/verification-code.enum';
 import { JWTRecoverToken } from '../utils/jwt-recover.interface';
@@ -27,10 +26,6 @@ export class CreateResetPasswordTokenCommand {
 
     if (!user) {
       throw new UserNotFoundException();
-    }
-
-    if (!user.is_verified) {
-      throw new UserNotVerifiedException();
     }
 
     const code = await this.prisma.verification_Code.findFirst({

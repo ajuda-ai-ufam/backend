@@ -20,7 +20,6 @@ import { ResetPasswordTokenRequestBody } from './dto/reset-password-token.reques
 import { CreateResetPasswordTokenCommand } from './commands/create-reset-password-token.command';
 import {
   ValidResetPasswordTokenFoundException,
-  UserNotVerifiedException,
   UserNotFoundException,
 } from 'src/user/utils/exceptions';
 
@@ -65,10 +64,7 @@ export class UserController {
         throw new NotFoundException(error.message);
       }
 
-      if (
-        error instanceof ValidResetPasswordTokenFoundException ||
-        error instanceof UserNotVerifiedException
-      ) {
+      if (error instanceof ValidResetPasswordTokenFoundException) {
         throw new PreconditionFailedException(error.message);
       }
 
