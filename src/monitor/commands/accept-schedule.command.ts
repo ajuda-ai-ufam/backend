@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
+import { EmailService } from 'src/email/email.service';
 import {
   InvalidScheduleStatusException,
   NotTheScheduleMonitorException,
@@ -11,12 +12,15 @@ import { MonitorTimeAlreadyScheduledException } from 'src/student/utils/exceptio
 
 @Injectable()
 export class AcceptScheduleCommand {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   async execute(userId: number, scheduleId: number): Promise<void> {
-    const schedule = await this.prismaService.scheduleMonitoring.findUnique({
+    const schedule = await this.prisma.scheduleMonitoring.findUnique({
       where: { id: scheduleId },
-      include: { monitor: true, status: true },
+      include: { monitor: true, status: true, student: true },
     });
     if (!schedule) throw new ScheduleNotFoundException();
 
@@ -37,10 +41,23 @@ export class AcceptScheduleCommand {
       schedule.end,
     );
 
-    await this.prismaService.scheduleMonitoring.update({
+    await this.prisma.scheduleMonitoring.update({
       data: { id_status: ScheduleStatus.CONFIRMED },
       where: { id: schedule.id },
     });
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    this.emailService.sendAcceptedScheduleEmail(
+      schedule.student.contact_email,
+      'Confirmado',
+      user.name,
+      schedule.start.toLocaleDateString('pt-BR'),
+      schedule.start.toLocaleTimeString('pt-BR').slice(0, 5),
+      schedule.end.toLocaleTimeString('pt-BR').slice(0, 5),
+    );
   }
 
   private async checkConfirmedSchedules(
@@ -48,39 +65,38 @@ export class AcceptScheduleCommand {
     start: Date,
     end: Date,
   ) {
-    const conflitingSchedule =
-      await this.prismaService.scheduleMonitoring.findFirst({
-        where: {
-          monitor_id: monitorId,
-          id_status: ScheduleStatus.CONFIRMED,
-          OR: [
-            {
-              start: {
-                lte: start,
-              },
-              end: {
-                gt: start,
-              },
+    const conflitingSchedule = await this.prisma.scheduleMonitoring.findFirst({
+      where: {
+        monitor_id: monitorId,
+        id_status: ScheduleStatus.CONFIRMED,
+        OR: [
+          {
+            start: {
+              lte: start,
             },
-            {
-              start: {
-                lt: end,
-              },
-              end: {
-                gte: end,
-              },
+            end: {
+              gt: start,
             },
-            {
-              start: {
-                gte: start,
-              },
-              end: {
-                lte: end,
-              },
+          },
+          {
+            start: {
+              lt: end,
             },
-          ],
-        },
-      });
+            end: {
+              gte: end,
+            },
+          },
+          {
+            start: {
+              gte: start,
+            },
+            end: {
+              lte: end,
+            },
+          },
+        ],
+      },
+    });
 
     if (conflitingSchedule) throw new MonitorTimeAlreadyScheduledException();
   }
