@@ -110,6 +110,20 @@ export class EmailService {
     });
   }
 
+  async sendEmailResetPassword(email: string, token: string) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: 'Recuperação de senha',
+      text: 'Recuperação de senha',
+      template: `email_reset_password_token.hbs`,
+      context: {
+        token,
+        frontEndBaseUrl: process.env.FRONT_END_BASE_URL,
+      },
+    });
+  }
+
   async sendEmail(
     email: string,
     subject: string,
