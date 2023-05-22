@@ -38,10 +38,8 @@ export class RefuseScheduledMonitoringCommand {
     });
 
     const email = schedule.student.contact_email;
-    const sub = 'Nós sentimos muito...';
-    const template = 'refused_scheduled_monitoring';
 
-    this.emailService.sendEmailRefuseScheduledMonitoring(email, sub, template);
+    this.emailService.sendEmailRefuseScheduledMonitoring(email);
 
     return { message: 'Agendamento rejeitado!' };
   }
