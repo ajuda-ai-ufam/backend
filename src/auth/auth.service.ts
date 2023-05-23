@@ -21,7 +21,7 @@ export class AuthService {
 
     if (user && (await comparePassword(password, user.password))) {
       if (!user.is_verified)
-        throw new ForbiddenException('Usuário não verificado.');
+        throw new ForbiddenException('Usuário(a) não verificado(a).');
       return {
         id: user.id,
         username: user.name,
@@ -29,7 +29,7 @@ export class AuthService {
         type_user: user.type_user,
       };
     }
-    throw new UnauthorizedException('Usuário ou senha inválidos.');
+    throw new UnauthorizedException('Usuário(a) ou senha inválidos.');
   }
 
   async login(data: LoginDto) {
