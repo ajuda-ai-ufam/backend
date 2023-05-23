@@ -1,7 +1,7 @@
 export class UserNotFoundException extends Error {
   constructor() {
     super();
-    this.message = `Usuário não encontrado!`;
+    this.message = `Usuário(a) não encontrado(a)!`;
   }
 }
 

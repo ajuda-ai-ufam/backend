@@ -52,7 +52,7 @@ export class TeacherService {
 
     for (const professor_id of body.professors_ids) {
       if (!(await this.isProfessor(professor_id)))
-        throw new BadRequestException('Professor não encontrado.');
+        throw new BadRequestException('Professor(a) não encontrado(a).');
       const subject_responsability =
         await this.prisma.subjectResponsability.findFirst({
           where: {
@@ -62,7 +62,9 @@ export class TeacherService {
           },
         });
       if (subject_responsability)
-        throw new BadRequestException('Professor já responsável pela matéria.');
+        throw new BadRequestException(
+          'Professor(a) já responsável pela matéria.',
+        );
     }
     return await this.assingSubjectToProfessor(
       body.subject_id,

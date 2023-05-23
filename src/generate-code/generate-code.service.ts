@@ -25,10 +25,10 @@ export class GenerateCodeService {
   async verifyCode(data: VerifyCodeDTO) {
     const userExists = await this.userService.findOneByEmail(data.email);
 
-    if (!userExists) throw new NotFoundException('Email não encontrado.');
+    if (!userExists) throw new NotFoundException('E-mail não encontrado.');
 
     if (data.type_code == 1 && userExists.is_verified)
-      throw new BadRequestException('Email já verificado.');
+      throw new BadRequestException('E-mail já verificado.');
 
     const codeExists = await this.prisma.verification_Code.findFirst({
       where: {
@@ -60,7 +60,7 @@ export class GenerateCodeService {
     const type_id: number = data.type_code;
 
     if (!Validations.validateEmail(data.email))
-      throw new BadRequestException('Email não atende aos requisitos.');
+      throw new BadRequestException('E-mail não atende aos requisitos.');
 
     let email: string;
 
@@ -80,10 +80,11 @@ export class GenerateCodeService {
 
     const user = await this.userService.findOneByEmail(data.email);
 
-    if (user == null) throw new NotFoundException('Usuário não encontrado.');
+    if (user == null)
+      throw new NotFoundException('Usuário(a) não encontrado(a).');
 
     if (user.is_verified)
-      throw new BadRequestException('Usuário com email ja verificado.');
+      throw new BadRequestException('Usuário(a) com email ja verificado(a).');
 
     if (type_id == 2) {
       email = user.email;

@@ -23,9 +23,9 @@ export class MonitorService {
   ) {}
   async requestMonitoring(user_id: number, data: RequestMonitoringDto) {
     const user = await this.userService.findOneById(user_id);
-    if (!user) throw new NotFoundException('Usuário não encontrado.');
+    if (!user) throw new NotFoundException('Usuário(a) não encontrado(a).');
     if (user.type_user_id != 1)
-      throw new ForbiddenException('Usuário não é um aluno');
+      throw new ForbiddenException('Usuário(a) não é um(a) aluno(a)');
 
     const subject = await this.subjectService.findOne(data.subject_id);
     if (!subject) throw new NotFoundException('Disciplina não encontrada.');
@@ -37,7 +37,7 @@ export class MonitorService {
 
     if (!subjectResponsability)
       throw new BadRequestException(
-        'Não há nenhum responsavel pela disciplina!',
+        'Não há nenhum responsável pela disciplina!',
       );
 
     const verify_professor =
@@ -47,12 +47,13 @@ export class MonitorService {
 
     if (!verify_professor)
       throw new BadRequestException(
-        'Este professor não é responsável por esta disciplina.',
+        'Este(a) professor(a) não é responsável por esta disciplina.',
       );
 
     const professor = await this.userService.findOneById(data.professor_id);
 
-    if (!professor) throw new NotFoundException('Professor não encontrado.');
+    if (!professor)
+      throw new NotFoundException('Professor(a) não encontrado(a).');
 
     const hasMonitoring = await this.prismaService.monitor.findFirst({
       where: {
@@ -89,7 +90,8 @@ export class MonitorService {
   async acceptMonitoring(id_monitoring: number, id_teacher: number) {
     const teacher = await this.userService.findOneById(id_teacher);
 
-    if (!teacher) throw new NotFoundException('Professor não encontrado.');
+    if (!teacher)
+      throw new NotFoundException('Professor(a) não encontrado(a).');
 
     if (teacher.type_user_id == 1)
       throw new BadRequestException(
@@ -138,7 +140,8 @@ export class MonitorService {
   async refuseMonitoring(id_monitoring: number, id_teacher: number) {
     const teacher = await this.userService.findOneById(id_teacher);
 
-    if (!teacher) throw new NotFoundException('Professor não encontrado.');
+    if (!teacher)
+      throw new NotFoundException('Professor(a) não encontrado(a).');
 
     if (teacher.type_user_id == 1)
       throw new BadRequestException(
@@ -166,7 +169,7 @@ export class MonitorService {
 
     if (request_monitor.id_status != 1)
       throw new BadRequestException(
-        'Esta solicitacão não pode ser recusada,somente se estiver Pendente.',
+        'Esta solicitacão não pode ser recusada, somente se estiver Pendente.',
       );
 
     await this.prismaService.monitor.update({
@@ -191,7 +194,7 @@ export class MonitorService {
       },
     });
 
-    if (!monitor) throw new NotFoundException('Monitor não encontrado');
+    if (!monitor) throw new NotFoundException('Monitor(a) não encontrado(a)');
 
     if (!data.availability.length)
       throw new BadRequestException('Nenhum horário informado');
@@ -260,7 +263,7 @@ export class MonitorService {
       },
     });
 
-    if (!monitor) throw new NotFoundException('Monitor não encontrado.');
+    if (!monitor) throw new NotFoundException('Monitor(a) não encontrado(a).');
 
     return this.prismaService.availableTimes.findMany({
       where: { monitor_id: monitor.id },
