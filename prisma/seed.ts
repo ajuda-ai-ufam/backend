@@ -9,6 +9,24 @@ const subjects_cc = csvToJson
   .fieldDelimiter(';')
   .getJsonFromCsv('prisma/disciplinas_cc.csv');
 
+let professores = [];
+try {
+  professores = csvToJson
+    .fieldDelimiter(';')
+    .getJsonFromCsv('prisma/professores.csv');
+} catch (error) {
+  console.warn('professores.csv not found');
+}
+
+let coordenadores = [];
+try {
+  coordenadores = csvToJson
+    .fieldDelimiter(';')
+    .getJsonFromCsv('prisma/coordenadores.csv');
+} catch (error) {
+  console.warn('coordenadores.csv not found');
+}
+
 const courses = [
   { id: 1, name: 'Engenharia de Software', code: 'IE17' },
   { id: 2, name: 'Ciência da Computação', code: 'IE08' },
@@ -132,6 +150,75 @@ async function main() {
     });
   }
   console.log('Subject responsability status seeded.');
+
+  for (const professor of professores) {
+    const user = await prisma.user.upsert({
+      where: { email: professor.email },
+      create: {
+        email: professor.email,
+        name: professor.name,
+        password: professor.password,
+        updated_at: new Date(professor.updated_at),
+        type_user: {
+          connect: { id: 2 },
+        },
+        is_verified: true,
+      },
+      update: {},
+    });
+
+    await prisma.teacher.upsert({
+      where: { user_id: user.id },
+      create: {
+        user_id: user.id,
+      },
+      update: {},
+    });
+    const subject = await prisma.subject.findUnique({
+      where: { code: professor.discipline },
+    });
+
+    if (subject) {
+      await prisma.subjectResponsability.create({
+        data: {
+          professor: { connect: { user_id: user.id } },
+          subject: { connect: { id: subject.id } },
+          status: {
+            connect: { id: 2 },
+          },
+        },
+      });
+    } else {
+      console.warn(`Discipline with code ${professor.discipline} not found.`);
+    }
+  }
+  console.log('Teachers seeded');
+
+  for (const coordinator of coordenadores) {
+    const user = await prisma.user.upsert({
+      where: { email: coordinator.email },
+      create: {
+        email: coordinator.email,
+        name: coordinator.name,
+        password: coordinator.password,
+        updated_at: new Date(coordinator.updated_at),
+        type_user: {
+          connect: { id: 3 },
+        },
+        is_verified: true,
+      },
+      update: {},
+    });
+
+    await prisma.coordinator.upsert({
+      where: { id: user.id },
+      create: {
+        id: user.id,
+      },
+      update: {},
+    });
+  }
+  console.log('Coordinators seeded.');
 }
 
 main()
