@@ -20,6 +20,7 @@ import {
   InvalidCodeException,
   InvalidPasswordException,
   InvalidTokenException,
+  UsedCodeException,
   UserNotFoundException,
   ValidResetPasswordTokenFoundException,
 } from 'src/user/utils/exceptions';
@@ -100,7 +101,8 @@ export class UserController {
 
       if (
         error instanceof ExpiredCodeException ||
-        error instanceof InvalidCodeException
+        error instanceof InvalidCodeException ||
+        error instanceof UsedCodeException
       ) {
         throw new ForbiddenException(error.message);
       }
