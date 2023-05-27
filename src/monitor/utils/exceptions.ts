@@ -8,7 +8,8 @@ export class MonitoringNotFoundException extends Error {
 export class NotTheResponsibleProfessorException extends Error {
   constructor() {
     super();
-    this.message = 'Você não é o professor responsável por essa disciplina.';
+    this.message =
+      'Você não é o(a) professor(a) responsável por essa disciplina.';
   }
 }
 

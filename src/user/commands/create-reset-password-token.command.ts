@@ -34,16 +34,21 @@ export class CreateResetPasswordTokenCommand {
         type_id: VerificationCodeType.RESET_PASSWORD,
         is_verified: false,
       },
+      orderBy: { created_at: 'desc' },
     });
 
     const now = new Date();
-    const expiresAt = new Date(
-      now.getTime() +
-        Number(process.env.RESET_PASSWORD_TOKEN_EXPIRATION_TIME_IN_MIN) * 60000,
-    );
 
-    if (code && code.created_at <= expiresAt) {
-      throw new ValidResetPasswordTokenFoundException();
+    if (code) {
+      const expiresAt = new Date(
+        code.created_at.getTime() +
+          Number(process.env.RESET_PASSWORD_TOKEN_EXPIRATION_TIME_IN_MIN) *
+            60000,
+      );
+
+      if (expiresAt > now) {
+        throw new ValidResetPasswordTokenFoundException();
+      }
     }
 
     const newVerificationCode = {
@@ -62,7 +67,11 @@ export class CreateResetPasswordTokenCommand {
     const payload: JWTRecoverToken = {
       userId: user.id,
       code: generatedCode.code,
-      expiresAt,
+      expiresAt: new Date(
+        now.getTime() +
+          Number(process.env.RESET_PASSWORD_TOKEN_EXPIRATION_TIME_IN_MIN) *
+            60000,
+      ),
     };
 
     const token = this.jwtService.sign(payload);

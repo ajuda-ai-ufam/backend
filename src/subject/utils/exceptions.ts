@@ -15,9 +15,9 @@ export class AlreadyFinishedException extends Error {
 export class BlockingMonitorsException extends Error {
   constructor(blockingMonitors: Array<any>) {
     super();
-    this.message = 'Professor possui monitores com status bloqueantes.';
+    this.message = 'Professor(a) possui monitores(a) com status bloqueantes.';
     blockingMonitors.forEach((monitor) => {
-      this.message += ` Monitor ID: ${monitor.id} (status ${monitor.status.status}).`;
+      this.message += ` Monitor(a) ID: ${monitor.id} (status ${monitor.status.status}).`;
     });
   }
 }
