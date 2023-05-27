@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -13,22 +15,30 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import {
+  ExpiredCodeException,
+  InvalidCodeException,
+  InvalidPasswordException,
+  InvalidTokenException,
+  UserNotFoundException,
+  ValidResetPasswordTokenFoundException,
+} from 'src/user/utils/exceptions';
+import { CreateResetPasswordTokenCommand } from './commands/create-reset-password-token.command';
+import { ResetPasswordCommand } from './commands/reset-password.command';
+import { ResetPasswordTokenRequestBody } from './dto/reset-password-token.request.dto';
+import { ResetPasswordRequestBody } from './dto/reset-password.request.dto';
 import { StudentCreateDTO } from './dto/student-create.dto';
 import { TeacherCreateDTO } from './dto/teacher-create.dto';
 import { UserService } from './user.service';
-import { ResetPasswordTokenRequestBody } from './dto/reset-password-token.request.dto';
-import { CreateResetPasswordTokenCommand } from './commands/create-reset-password-token.command';
-import {
-  ValidResetPasswordTokenFoundException,
-  UserNotFoundException,
-} from 'src/user/utils/exceptions';
 
 @Controller('user')
 @ApiTags('User')
 export class UserController {
+  [x: string]: any;
   constructor(
     private readonly userService: UserService,
     private readonly createResetPasswordTokenCommand: CreateResetPasswordTokenCommand,
+    private readonly resetPasswordCommand: ResetPasswordCommand,
   ) {}
 
   @ApiOperation({ description: 'Rota para criar usuário-estudante.' })
@@ -66,6 +76,33 @@ export class UserController {
 
       if (error instanceof ValidResetPasswordTokenFoundException) {
         throw new PreconditionFailedException(error.message);
+      }
+
+      throw error;
+    }
+  }
+  @ApiOperation({ description: 'Rota para resetar a senha.' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('reset-password')
+  async resetPassword(@Body() data: ResetPasswordRequestBody) {
+    try {
+      return await this.resetPasswordCommand.execute(
+        data.newPassword,
+        data.token,
+      );
+    } catch (error) {
+      if (
+        error instanceof InvalidPasswordException ||
+        error instanceof InvalidTokenException
+      ) {
+        throw new BadRequestException(error.message);
+      }
+
+      if (
+        error instanceof ExpiredCodeException ||
+        error instanceof InvalidCodeException
+      ) {
+        throw new ForbiddenException(error.message);
       }
 
       throw error;

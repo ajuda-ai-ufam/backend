@@ -12,6 +12,7 @@ import { PrismaService } from '../database/prisma.service';
 import { CreateResetPasswordTokenCommand } from './commands/create-reset-password-token.command';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { ResetPasswordCommand } from './commands/reset-password.command';
 
 @Module({
   controllers: [UserController],
@@ -23,6 +24,7 @@ import { UserService } from './user.service';
     SubjectService,
     EmailService,
     CreateResetPasswordTokenCommand,
+    ResetPasswordCommand,
     JwtStrategy,
   ],
   imports: [
