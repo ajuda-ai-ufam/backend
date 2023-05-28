@@ -10,9 +10,16 @@ import {
   Post,
   PreconditionFailedException,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiTags,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import {
@@ -30,7 +37,11 @@ import { ResetPasswordTokenRequestBody } from './dto/reset-password-token.reques
 import { ResetPasswordRequestBody } from './dto/reset-password.request.dto';
 import { StudentCreateDTO } from './dto/student-create.dto';
 import { TeacherCreateDTO } from './dto/teacher-create.dto';
+import { GetUserInfoResponse } from './dto/user-info.response.dto';
 import { UserService } from './user.service';
+import { GetUserInfoCommand } from './commands/get-user-info.command';
+import { JwtService } from '@nestjs/jwt';
+import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
 
 @Controller('user')
 @ApiTags('User')
@@ -40,6 +51,8 @@ export class UserController {
     private readonly userService: UserService,
     private readonly createResetPasswordTokenCommand: CreateResetPasswordTokenCommand,
     private readonly resetPasswordCommand: ResetPasswordCommand,
+    private readonly getUserInfo: GetUserInfoCommand,
+    private readonly jwtService: JwtService,
   ) {}
 
   @ApiOperation({ description: 'Rota para criar usuário-estudante.' })
@@ -109,5 +122,23 @@ export class UserController {
 
       throw error;
     }
+  }
+
+  @ApiOperation({ description: 'Rota para retornar dados cadastrais' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('me')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Dados cadastrais encontrados.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Não foi encontrado um token de autenticação válido.',
+  })
+  async returnUserInfo(@Req() req: Request): Promise<GetUserInfoResponse> {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+    return await this.getUserInfo.execute(user.sub);
   }
 }
