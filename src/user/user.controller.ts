@@ -1,27 +1,26 @@
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Patch,
   Post,
   PreconditionFailedException,
   Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiTags,
   ApiResponse,
 } from '@nestjs/swagger';
-import { IsPublic } from 'src/auth/decorators/is-public.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import {
   ExpiredCodeException,
   InvalidCodeException,
@@ -31,9 +30,9 @@ import {
   ValidResetPasswordTokenFoundException,
   UserNotFoundException,
   MissingFieldsException,
-  ContactEmailAreadyExistsException,
+  ContactEmailAreadyExistsException as ContactEmailAlreadyExistsException,
   CourseNotFoundException,
-  EmailAreadyExistsException,
+  EmailAreadyExistsException as EmailAlreadyExistsException,
   EnrollmentAlreadyExistsException,
   InvalidEmailException,
   InvalidEnrollmentException,
@@ -43,6 +42,9 @@ import {
   PasswordsDoNotMatchException,
   PersonalDataInPasswordException,
   InvalidContactEmailException,
+  OldPasswordNotProvidedException,
+  WrongPasswordException,
+  InvalidStudentParametersException,
 } from 'src/user/utils/exceptions';
 import { ResetPasswordCommand } from './commands/reset-password.command';
 import { ResetPasswordRequestBody } from './dto/reset-password.request.dto';
@@ -54,16 +56,23 @@ import { GetUserInfoCommand } from './commands/get-user-info.command';
 import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
 import { ResetPasswordTokenRequestBody } from './dto/reset-password-token.request.dto';
 import { CreateResetPasswordTokenCommand } from './commands/create-reset-password-token.command';
-import {} from 'src/user/utils/exceptions';
+import { UserEditDTO } from './dto/user-edit.dto';
+import { Request } from 'express';
+import { IsPublic } from 'src/auth/decorators/is-public.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { EditUserCommand } from './commands/edit-user.command';
+import { Teacher } from './domain/teacher';
+import { Student } from './domain/student';
+import { Coordinator } from './domain/coordinator';
 
 @Controller('user')
 @ApiTags('User')
 export class UserController {
-  [x: string]: any;
   constructor(
     private readonly userService: UserService,
     private readonly createResetPasswordTokenCommand: CreateResetPasswordTokenCommand,
+    private readonly editUserCommand: EditUserCommand,
     private readonly resetPasswordCommand: ResetPasswordCommand,
     private readonly getUserInfo: GetUserInfoCommand,
     private readonly jwtService: JwtService,
@@ -77,25 +86,29 @@ export class UserController {
       return await this.userService.createUserStudent(data);
     } catch (error) {
       if (
-        error instanceof MissingFieldsException ||
-        error instanceof InvalidNameException ||
-        error instanceof InvalidEmailException ||
-        error instanceof EmailAreadyExistsException ||
-        error instanceof ContactEmailAreadyExistsException ||
-        error instanceof CourseNotFoundException ||
         error instanceof InvalidEnrollmentException ||
-        error instanceof InvalidPasswordException ||
-        error instanceof PersonalDataInPasswordException ||
-        error instanceof PasswordsDoNotMatchException ||
+        error instanceof InvalidEmailException ||
         error instanceof InvalidLinkedinURLException ||
+        error instanceof InvalidNameException ||
+        error instanceof InvalidPasswordException ||
         error instanceof InvalidWhatsAppNumberException ||
-        error instanceof EnrollmentAlreadyExistsException
+        error instanceof MissingFieldsException ||
+        error instanceof PersonalDataInPasswordException ||
+        error instanceof PasswordsDoNotMatchException
       ) {
         throw new BadRequestException(error.message);
       }
 
       if (error instanceof CourseNotFoundException) {
         throw new NotFoundException(error.message);
+      }
+
+      if (
+        error instanceof ContactEmailAlreadyExistsException ||
+        error instanceof EnrollmentAlreadyExistsException ||
+        error instanceof EmailAlreadyExistsException
+      ) {
+        throw new ConflictException(error.message);
       }
 
       throw error;
@@ -110,20 +123,19 @@ export class UserController {
       return await this.userService.createUserTeacher(data);
     } catch (error) {
       if (
-        error instanceof MissingFieldsException ||
-        error instanceof InvalidNameException ||
-        error instanceof InvalidEmailException ||
         error instanceof InvalidContactEmailException ||
-        error instanceof EmailAreadyExistsException ||
+        error instanceof InvalidEmailException ||
+        error instanceof InvalidNameException ||
         error instanceof InvalidPasswordException ||
-        error instanceof PersonalDataInPasswordException ||
-        error instanceof PasswordsDoNotMatchException
+        error instanceof MissingFieldsException ||
+        error instanceof PasswordsDoNotMatchException ||
+        error instanceof PersonalDataInPasswordException
       ) {
         throw new BadRequestException(error.message);
       }
 
-      if (error instanceof CourseNotFoundException) {
-        throw new NotFoundException(error.message);
+      if (error instanceof EmailAlreadyExistsException) {
+        throw new ConflictException(error.message);
       }
 
       throw error;
@@ -151,6 +163,56 @@ export class UserController {
 
       if (error instanceof ValidResetPasswordTokenFoundException) {
         throw new PreconditionFailedException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  @ApiOperation({ description: 'Rota para editar dados de usuário.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @Patch('')
+  async editUser(
+    @Req() req: Request,
+    @Body() data: UserEditDTO,
+  ): Promise<Student | Teacher | Coordinator> {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    try {
+      return await this.editUserCommand.execute(
+        data,
+        user.sub,
+        user.type_user.type,
+      );
+    } catch (error) {
+      if (
+        error instanceof InvalidNameException ||
+        error instanceof InvalidPasswordException ||
+        error instanceof InvalidEnrollmentException ||
+        error instanceof InvalidLinkedinURLException ||
+        error instanceof InvalidWhatsAppNumberException ||
+        error instanceof InvalidStudentParametersException
+      ) {
+        throw new BadRequestException(error.message);
+      }
+
+      if (
+        error instanceof OldPasswordNotProvidedException ||
+        error instanceof WrongPasswordException
+      ) {
+        throw new ForbiddenException(error.message);
+      }
+
+      if (error instanceof CourseNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      if (
+        error instanceof ContactEmailAlreadyExistsException ||
+        error instanceof InvalidContactEmailException
+      ) {
+        throw new ConflictException(error.message);
       }
 
       throw error;
