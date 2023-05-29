@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { CourseService } from 'src/course/course.service';
@@ -14,6 +14,7 @@ import { GetUserInfoCommand } from './commands/get-user-info.command';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { ResetPasswordCommand } from './commands/reset-password.command';
+import { EditUserCommand } from './commands/edit-user.command';
 
 @Module({
   controllers: [UserController],
@@ -24,9 +25,11 @@ import { ResetPasswordCommand } from './commands/reset-password.command';
     CourseService,
     SubjectService,
     EmailService,
+    JwtService,
     CreateResetPasswordTokenCommand,
     ResetPasswordCommand,
     GetUserInfoCommand,
+    EditUserCommand,
     JwtStrategy,
   ],
   imports: [

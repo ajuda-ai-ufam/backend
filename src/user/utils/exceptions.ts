@@ -151,3 +151,14 @@ export class WrongPasswordException extends Error {
     this.message = `A senha informada não confere com os dados armazenados no sistema.`;
   }
 }
+
+export class InvalidStudentParametersException extends Error {
+  constructor(paramArray: Array<any>) {
+    super();
+    this.message =
+      'Os seguintes parâmetros só podem ser usados para usuários do tipo Estudante:';
+    paramArray.forEach((parameter) => {
+      this.message += ` ${parameter};`;
+    });
+  }
+}
