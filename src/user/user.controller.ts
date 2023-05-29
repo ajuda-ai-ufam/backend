@@ -28,20 +28,34 @@ import {
   InvalidPasswordException,
   InvalidTokenException,
   UsedCodeException,
-  UserNotFoundException,
   ValidResetPasswordTokenFoundException,
+  UserNotFoundException,
+  MissingFieldsException,
+  ContactEmailAreadyExistsException,
+  CourseNotFoundException,
+  EmailAreadyExistsException,
+  EnrollmentAlreadyExistsException,
+  InvalidEmailException,
+  InvalidEnrollmentException,
+  InvalidLinkedinURLException,
+  InvalidNameException,
+  InvalidWhatsAppNumberException,
+  PasswordsDoNotMatchException,
+  PersonalDataInPasswordException,
+  InvalidContactEmailException,
 } from 'src/user/utils/exceptions';
-import { CreateResetPasswordTokenCommand } from './commands/create-reset-password-token.command';
 import { ResetPasswordCommand } from './commands/reset-password.command';
-import { ResetPasswordTokenRequestBody } from './dto/reset-password-token.request.dto';
 import { ResetPasswordRequestBody } from './dto/reset-password.request.dto';
 import { StudentCreateDTO } from './dto/student-create.dto';
 import { TeacherCreateDTO } from './dto/teacher-create.dto';
 import { GetUserInfoResponse } from './dto/user-info.response.dto';
 import { UserService } from './user.service';
 import { GetUserInfoCommand } from './commands/get-user-info.command';
-import { JwtService } from '@nestjs/jwt';
 import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
+import { ResetPasswordTokenRequestBody } from './dto/reset-password-token.request.dto';
+import { CreateResetPasswordTokenCommand } from './commands/create-reset-password-token.command';
+import {} from 'src/user/utils/exceptions';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('user')
 @ApiTags('User')
@@ -59,14 +73,61 @@ export class UserController {
   @Post('student')
   @IsPublic()
   async createUserStudent(@Body() data: StudentCreateDTO) {
-    return this.userService.createUserStudent(data);
+    try {
+      return await this.userService.createUserStudent(data);
+    } catch (error) {
+      if (
+        error instanceof MissingFieldsException ||
+        error instanceof InvalidNameException ||
+        error instanceof InvalidEmailException ||
+        error instanceof EmailAreadyExistsException ||
+        error instanceof ContactEmailAreadyExistsException ||
+        error instanceof CourseNotFoundException ||
+        error instanceof InvalidEnrollmentException ||
+        error instanceof InvalidPasswordException ||
+        error instanceof PersonalDataInPasswordException ||
+        error instanceof PasswordsDoNotMatchException ||
+        error instanceof InvalidLinkedinURLException ||
+        error instanceof InvalidWhatsAppNumberException ||
+        error instanceof EnrollmentAlreadyExistsException
+      ) {
+        throw new BadRequestException(error.message);
+      }
+
+      if (error instanceof CourseNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @ApiOperation({ description: 'Rota para criar usuário-professor.' })
   @Post('teacher')
   @IsPublic()
   async createUserTeacher(@Body() data: TeacherCreateDTO) {
-    return this.userService.createUserTeacher(data);
+    try {
+      return await this.userService.createUserTeacher(data);
+    } catch (error) {
+      if (
+        error instanceof MissingFieldsException ||
+        error instanceof InvalidNameException ||
+        error instanceof InvalidEmailException ||
+        error instanceof InvalidContactEmailException ||
+        error instanceof EmailAreadyExistsException ||
+        error instanceof InvalidPasswordException ||
+        error instanceof PersonalDataInPasswordException ||
+        error instanceof PasswordsDoNotMatchException
+      ) {
+        throw new BadRequestException(error.message);
+      }
+
+      if (error instanceof CourseNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @ApiOperation({ description: 'Rota para listar todos os usuários.' })
