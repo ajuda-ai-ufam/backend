@@ -40,32 +40,32 @@ export class UserService {
 
     if (!Validations.validateName(data.name))
       throw new BadRequestException(
-        'O nome deve ter no minimo 1 nome e 1 sobrenome e no maximo 50 caracteres.',
+        'O nome deve ter no mínimo um nome, sobrenome e no máximo 50 caracteres.',
       );
 
     if (!Validations.validateEmail(data.email))
-      throw new BadRequestException('Email de contato não é válido!');
+      throw new BadRequestException('E-mail de contato não é válido!');
 
     if (data.contact_email.length == 0) data.contact_email = data.email;
 
     if (!Validations.validateEmailContact(data.contact_email))
-      throw new BadRequestException('Email de contato não é válido!');
+      throw new BadRequestException('E-mail de contato não é válido!');
 
     const email_exists = await this.findOneByEmail(data.email);
 
-    if (email_exists) throw new BadRequestException('Email já cadastrado.');
+    if (email_exists) throw new BadRequestException('E-mail já cadastrado.');
 
     const contact_email_exists = await this.findOneByEmail(data.contact_email);
 
     if (contact_email_exists)
-      throw new BadRequestException('Email de contato já cadastrado.');
+      throw new BadRequestException('E-mail de contato já cadastrado.');
 
     const course = await this.courseService.findCourseId(data.course_id);
 
     if (course == null) throw new NotFoundException('Curso não encontrado!');
 
     if (!Validations.validateEnrollment(data.enrollment))
-      throw new BadRequestException('Matricula não atende aos requisitos!');
+      throw new BadRequestException('Matrícula não atende aos requisitos!');
 
     if (!Validations.validatePassword(data.password))
       throw new BadRequestException('A senha não atende aos requisitos!');
@@ -88,18 +88,18 @@ export class UserService {
 
     if (!Validations.validateLinkedIn(data.linkedin))
       throw new BadRequestException(
-        'Link do perfil do Linkedin não é compativel.',
+        'Link do perfil do Linkedin não é compatível.',
       );
 
     if (!Validations.validateWhatsapp(data.whatsapp))
-      throw new BadRequestException('Número do Whatsapp inválido.');
+      throw new BadRequestException('Número do WhatsApp inválido.');
 
     const user_enrollment = await this.findEnrollmentCommand.execute(
       data.enrollment,
     );
 
     if (user_enrollment != null)
-      throw new BadRequestException('Matricula ja cadastrada!');
+      throw new BadRequestException('Matrícula já cadastrada!');
 
     const user = await this.prisma.user.create({
       data: {
@@ -143,15 +143,15 @@ export class UserService {
 
     if (!Validations.validateName(data.name))
       throw new BadRequestException(
-        'O nome deve ter no minimo 1 nome e 1 sobrenome e no maximo 50 caracteres.',
+        'O nome deve ter no mínimo um nome, sobrenome e no máximo 50 caracteres.',
       );
 
     if (!Validations.validateEmail(data.email))
-      throw new BadRequestException('Email não atende aos requisitos!');
+      throw new BadRequestException('E-mail não atende aos requisitos!');
 
     const email_exists = await this.findOneByEmail(data.email);
 
-    if (email_exists) throw new BadRequestException('Email já cadastrado.');
+    if (email_exists) throw new BadRequestException('E-mail já cadastrado.');
 
     if (!Validations.validatePassword(data.password))
       throw new BadRequestException('A senha não atende aos requisitos!');
@@ -214,7 +214,8 @@ export class UserService {
     const user_exists = await this.prisma.user.findUnique({
       where: { id },
     });
-    if (!user_exists) throw new BadRequestException('Usuário não encontrado.');
+    if (!user_exists)
+      throw new BadRequestException('Usuário(a) não encontrado(a).');
 
     return this.prisma.user.delete({
       where: { id },
@@ -227,7 +228,8 @@ export class UserService {
       include: { user: true },
     });
 
-    if (student == null) throw new NotFoundException('Usuário não encontrado.');
+    if (student == null)
+      throw new NotFoundException('Usuário(a) não encontrado(a).');
 
     delete student.user.password;
 

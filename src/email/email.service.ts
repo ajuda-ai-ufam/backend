@@ -58,23 +58,6 @@ export class EmailService {
     });
   }
 
-  async sendEmailRefuseScheduledMonitoring(
-    email: string,
-    subject: string,
-    template: string,
-  ) {
-    return this.mailerService.sendMail({
-      to: email,
-      from: process.env.MAIL_AUTH_USER,
-      subject: subject,
-      text: subject,
-      template: `${template}.hbs`,
-      context: {
-        front_end_base_url: process.env.FRONT_END_BASE_URL,
-      },
-    });
-  }
-
   async sendEmailCancelMonitoring(
     email: string,
     subject: string,
@@ -106,6 +89,58 @@ export class EmailService {
       context: {
         ...context,
         front_end_base_url: process.env.FRONT_END_BASE_URL,
+      },
+    });
+  }
+
+  async sendEmailRefuseScheduledMonitoring(email: string) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: 'Nós sentimos muito...',
+      text: 'Nós sentimos muito...',
+      template: 'refused_scheduled_monitoring.hbs',
+      context: {
+        front_end_base_url: process.env.FRONT_END_BASE_URL,
+      },
+    });
+  }
+
+  async sendAcceptedScheduleEmail(
+    email: string,
+    status: string,
+    name: string,
+    date: string,
+    start: string,
+    end: string,
+  ) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: 'A ajuda está vindo!',
+      text: 'A ajuda está vindo!',
+      template: 'accepted_scheduled_monitoring.hbs',
+      context: {
+        status: status,
+        name: name,
+        date: date,
+        start: start,
+        end: end,
+        front_end_base_url: process.env.FRONT_END_BASE_URL,
+      },
+    });
+  }
+
+  async sendEmailResetPassword(email: string, token: string) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: 'Recuperação de senha',
+      text: 'Recuperação de senha',
+      template: `email_reset_password_token.hbs`,
+      context: {
+        token,
+        frontEndBaseUrl: process.env.FRONT_END_BASE_URL,
       },
     });
   }

@@ -7,7 +7,7 @@
     <meta name="supported-color-schemes" content="light dark">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <title>E-mail Aceite de Monitor(a)</title>
+    <title>Agendamento Aceito</title>
 </head>
 
 <body style="margin:0;">
@@ -108,23 +108,20 @@
 
                                                                                                 <td valign="top"
                                                                                                     class="m_4639109241040304298mcnTextContent"
-                                                                                                    style="padding-top:0;padding-right:40px;padding-bottom:9px;padding-left:40px;word-break:break-word;color:#757575;font-family:Helvetica;font-size:16px;line-height:150%;text-align:center">
+                                                                                                    style="padding-top:0;padding-right:18px;padding-bottom:9px;padding-left:18px;word-break:break-word;color:#757575;font-family:Helvetica;font-size:16px;line-height:150%;text-align:left">
 
                                                                                                     <h3
                                                                                                         style="text-align:center;display:block;margin:0;padding:0;color:#444444;font-family:Helvetica;font-size:22px;font-style:normal;font-weight:bold;line-height:150%;letter-spacing:normal">
                                                                                                         <span
-                                                                                                            style="color:#2d2d2c">Você foi aceito!</span>
+                                                                                                            style="color:#2d2d2c">A ajuda está vindo!</span>
                                                                                                     </h3>
 
                                                                                                     <p
-                                                                                                        style="text-align:center;margin:10px 0;padding:8px 0px 24px 0px;color:#757575;font-family:Helvetica;font-size:16px;line-height:150%">
+                                                                                                        style="text-align:center;margin:10px 0;padding:0;color:#757575;font-family:Helvetica;font-size:16px;line-height:150%">
                                                                                                         <span
-                                                                                                            style="color:#2d2d2c">Sua solicitação para ser monitor(a) foi aceita pelo responsável da disciplina. Acesse a plataforma do Super Monitoria pelo botão abaixo, informe seu horário de disponibilidade e comece essa nova jornada como um(a) SUPER MONITOR(A) ✨</span>
+                                                                                                            style="color:#2d2d2c">Parabéns! Seu agendamento foi confirmado. Acesse a plataforma e entre em contato com o(a) monitor(a).</span>
                                                                                                     </p>
 
-                                                                                                    <a href="{{front_end_base_url}}/login" style="text-decoration:none;"><button
-                                                                                                        style="font-size:12px;color: #ffffff;background-color: #65B95E;padding: 16px 32px 16px 32px;border-radius: 40px;line-height: 20px;border-style: none;">Acessar o Super Monitoria</button></a>
-                                                                                                            
                                                                                                 </td>
                                                                                             </tr>
                                                                                         </tbody>
@@ -133,7 +130,93 @@
                                                                             </tr>
                                                                         </tbody>
                                                                     </table>
-                                                                   
+                                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                                        width="320px"
+                                                                        style="min-width:320px;border-collapse:collapse;" align="center">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td valign="top"
+                                                                                    style="padding-top:9px">
+                                                                                    <table align="center" border="0"
+                                                                                        cellpadding="0" cellspacing="0"
+                                                                                        style="max-width:100%;min-width:100%;border-collapse:collapse;"
+                                                                                        width="100%"
+                                                                                        class="m_4639109241040304298mcnTextContentContainer">
+                                                                                        <tbody>
+                                                                                            <tr >
+
+                                                                                                <td valign="top"
+                                                                                                    class="m_4639109241040304298mcnTextContent"
+                                                                                                    style="padding:24px 24px 24px 24px;background:#F6F7F6;word-break:break-word;font-family:Helvetica;line-height:0%;text-align:center;border-radius: 16px;">
+                                                                                   
+                                                                                                            
+                                                                                                    <div>
+                                                                                                       <div><p style="font-size:12px;color: #777777;">Status</p></div>
+                                                                                                       <div style="display: flex; flex-direction: row;padding-top: 6px;width: 42%;margin: 0 0 0 28%;"><div style="margin: auto 0 auto 0;"><div style="width: 16px; height: 16px; background:  #65B95E; border-radius: 32px;"></div></div><div><p style="font-size: 16px; color:#2d2d2c;padding-left: 8px;line-height: 16px; margin: auto 0 auto 0"><strong>{{ status }}</strong></p></div>
+                                                                                                    </div>
+
+                                                                                                    <div style="padding-top:20px;">
+                                                                                                        <div><p style="font-size:12px;color: #777777;">Monitor(a)</p></div>
+                                                                                                        <p style="font-size: 16px; color:#2d2d2c;line-height: 16px;"><strong>{{ name }}</strong></p></div>
+                                                                                                    </div>
+
+                                                                                                    
+                                                                                                    <div style="padding-top: 4px;">
+                                                                                                        <div><p style="font-size:12px;color: #777777;">Data</p></div>
+                                                                                                        <p style="font-size: 16px; color:#2d2d2c;line-height: 16px;"><strong>{{ date }}</strong></p></div>
+                                                                                                    </div>
+
+
+                                                                                                    <div style="padding-top: 4px;">
+                                                                                                        <div><p style="font-size:12px;color: #777777;">Hora</p></div>
+                                                                                                        <p style="font-size: 16px; color:#2d2d2c;line-height: 16px;"><strong>de {{ start }} até {{ end }}</strong></p></div>
+                                                                                                    </div>
+
+
+                                                                                                             <div style="padding-top: 16px;text-align: center;"><a href="{{front_end_base_url}}/schedules" style="text-decoration:none;" ><button
+                                                                                                             style="font-size:12px;color: #ffffff;background-color: #65B95E;padding: 8px 20% 8px 20%;border-radius: 40px;line-height: 20px;border-style: none;">Visualizar Agendamento</button></a></div>
+                                                                                                                                                                                                             
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                                        width="100%"
+                                                                        style="min-width:100%;border-collapse:collapse">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td valign="top"
+                                                                                    style="padding-top:9px">
+                                                                                    <table align="left" border="0"
+                                                                                        cellpadding="0" cellspacing="0"
+                                                                                        style="max-width:100%;min-width:100%;border-collapse:collapse"
+                                                                                        width="100%"
+                                                                                        class="m_4639109241040304298mcnTextContentContainer">
+                                                                                        <tbody>
+                                                                                            <tr>
+
+                                                                                                <td valign="top"
+                                                                                                    class="m_4639109241040304298mcnTextContent"
+                                                                                                    style="padding-top:16px;padding-right:18px;padding-bottom:4px;padding-left:18px;word-break:break-word;color:#757575;font-family:Helvetica;font-size:16px;line-height:150%;text-align:left">
+
+                                                                                                    <div
+                                                                                                        style="text-align:center">
+                                                                                                        <span
+                                                                                                            style="color:#2d2d2c;">Ao clicar no botão acima você será direcionado à nossa plataforma.</span>
+                                                                                                    </div>
+
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
