@@ -10,6 +10,7 @@ import { SubjectService } from 'src/subject/subject.service';
 import { TeacherService } from 'src/teacher/teacher.service';
 import { PrismaService } from '../database/prisma.service';
 import { CreateResetPasswordTokenCommand } from './commands/create-reset-password-token.command';
+import { GetUserInfoCommand } from './commands/get-user-info.command';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { ResetPasswordCommand } from './commands/reset-password.command';
@@ -25,6 +26,7 @@ import { ResetPasswordCommand } from './commands/reset-password.command';
     EmailService,
     CreateResetPasswordTokenCommand,
     ResetPasswordCommand,
+    GetUserInfoCommand,
     JwtStrategy,
   ],
   imports: [
