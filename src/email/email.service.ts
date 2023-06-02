@@ -28,6 +28,7 @@ export class EmailService {
     email: string,
     subject: string,
     template: string,
+    subjectId: number,
   ) {
     return this.mailerService.sendMail({
       to: email,
@@ -37,6 +38,7 @@ export class EmailService {
       template: `${template}.hbs`,
       context: {
         front_end_base_url: process.env.FRONT_END_BASE_URL,
+        subjectId: subjectId,
       },
     });
   }

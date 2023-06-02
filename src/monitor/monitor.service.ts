@@ -131,8 +131,14 @@ export class MonitorService {
     const email: string = student.email;
     const sub = 'Você foi aceito!';
     const template = 'accept_monitor';
+    const subject_id = request_monitor.subject_id;
 
-    this.emailService.sendEmailAcceptMonitoring(email, sub, template);
+    this.emailService.sendEmailAcceptMonitoring(
+      email,
+      sub,
+      template,
+      subject_id,
+    );
 
     return { message: 'Solicitacão aceita!' };
   }
