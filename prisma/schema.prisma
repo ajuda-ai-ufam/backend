@@ -187,6 +187,21 @@ model ScheduleMonitoring {
   student    Student                  @relation(fields: [student_id], references: [user_id])
   monitor_id Int
   monitor    Monitor                  @relation(fields: [monitor_id], references: [id])
+  schedule_topic_id Int?
+  ScheduleTopics ScheduleTopics?       @relation(fields: [schedule_topic_id], references: [id])
 
   @@map("schedule_monitoring")
+}
+
+model ScheduleTopics {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  token       String    @db.VarChar(100)
+  updated_at  DateTime  @updatedAt
+  created_at  DateTime  @default(now())
+  ScheduleMonitoring ScheduleMonitoring[]
+
+  @@index([token])
+
+  @@map("schedule_topics")
 }

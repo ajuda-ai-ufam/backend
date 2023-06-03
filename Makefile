@@ -37,6 +37,10 @@ db-start:
 db-migrate:
 	@docker-compose exec ${API_SERVICE_NAME} npx prisma migrate dev
 
+.PHONY: db-migrate-reset
+db-migrate-reset:
+	@docker-compose exec ${API_SERVICE_NAME} npx prisma migrate reset
+
 .PHONY: db-migrate-create
 db-migrate-create:
 	@docker-compose exec ${API_SERVICE_NAME} npx prisma migrate dev --name ${NAME}
