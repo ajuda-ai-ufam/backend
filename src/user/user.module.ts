@@ -25,7 +25,6 @@ import { EditUserCommand } from './commands/edit-user.command';
     CourseService,
     SubjectService,
     EmailService,
-    JwtService,
     CreateResetPasswordTokenCommand,
     ResetPasswordCommand,
     GetUserInfoCommand,
