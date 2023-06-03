@@ -5,6 +5,13 @@ export class ResponsabilityNotFoundException extends Error {
   }
 }
 
+export class SubjectNotFoundException extends Error {
+  constructor() {
+    super();
+    this.message = 'Disciplina não encontrada.';
+  }
+}
+
 export class AlreadyFinishedException extends Error {
   constructor() {
     super();
