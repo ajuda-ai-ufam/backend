@@ -51,6 +51,26 @@ export class TeacherController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Assinala um professor a uma disciplina, criando uma responsabilidade.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Responsabilidade assinalada com sucesso.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Professor ou disciplina não encontrados.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Professor já responsável pela disciplina.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Token inválido.',
+  })
   @Post('assign-subject')
   async assignSubject(@Body() body: TeacherAssingDto) {
     try {

@@ -7,5 +7,6 @@ import { EndResponsabilityCommand } from './commands/end-responsability-command'
 @Module({
   controllers: [SubjectController],
   providers: [SubjectService, EndResponsabilityCommand, PrismaService],
+  exports: [SubjectService],
 })
 export class SubjectModule {}
