@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { TeacherAssingDto } from '../dto/teacher-assing.dto';
 import { SubjectService } from 'src/subject/subject.service';
@@ -7,60 +8,89 @@ import {
   TeacherAlreadyResponsibleException,
   TeacherNotFoundException,
 } from '../utils/exceptions';
+import { EmailService } from 'src/email/email.service';
 
+@Injectable()
 export class AssignSubjectCommand {
   constructor(
     private readonly prisma: PrismaService,
     private readonly subjectService: SubjectService,
+    private readonly emailService: EmailService,
   ) {}
 
   async execute(body: TeacherAssingDto) {
-    if (!(await this.subjectService.findOne(body.subject_id)))
-      throw new SubjectNotFoundException();
+    const subject = await this.subjectService.findOne(body.subject_id);
 
-    for (const professor_id of body.professors_ids) {
-      if (!(await this.isProfessor(professor_id)))
-        throw new TeacherNotFoundException();
+    if (!subject) throw new SubjectNotFoundException();
 
-      const subject_responsability =
-        await this.prisma.subjectResponsability.findFirst({
-          where: {
-            subject_id: body.subject_id,
-            professor_id: professor_id,
-            id_status: { not: SubjectResponsabilityStatus.FINISHED },
-          },
-        });
-      if (subject_responsability)
-        throw new TeacherAlreadyResponsibleException();
+    const teachers = await this.prisma.teacher.findMany({
+      where: {
+        user_id: { in: body.professors_ids },
+      },
+      include: {
+        SubjectResponsability: true,
+        user: true,
+      },
+    });
+
+    if (!teachers) {
+      throw new TeacherNotFoundException();
+    }
+
+    const isAnyTeacherAlreadyAssigned = teachers.some((teacher) =>
+      teacher.SubjectResponsability.some(
+        (subject) =>
+          subject.subject_id === body.subject_id &&
+          subject.id_status !== SubjectResponsabilityStatus.FINISHED,
+      ),
+    );
+
+    if (isAnyTeacherAlreadyAssigned) {
+      throw new TeacherAlreadyResponsibleException();
     }
 
     await this.assingSubjectToProfessor(body.subject_id, body.professors_ids);
 
+    await this.sendEmailToTeachers(teachers, body);
   }
 
-  /***************************************************************************************
+  /*****************************************************************************
    * Private / Supportive Methods
    */
   private async assingSubjectToProfessor(
     subject_id: number,
     professors_ids: number[],
   ) {
-    for (const professor_id of professors_ids) {
-      await this.prisma.subjectResponsability.create({
-        data: {
-          professor_id: professor_id,
-          subject_id: subject_id,
-          id_status: 2,
-        },
-      });
-    }
+    await this.prisma.subjectResponsability.createMany({
+      data: professors_ids.map((id) => ({
+        professor_id: id,
+        subject_id: subject_id,
+        id_status: SubjectResponsabilityStatus.APPROVED,
+      })),
+    });
     return { message: `Disciplina atribuida com sucesso!` };
   }
 
-  private async isProfessor(user_id: number) {
-    const isProfessor = await this.prisma.teacher.findUnique({
-      where: { user_id: user_id },
+  private async sendEmailToTeachers(
+    teachers: Array<any>,
+    body: TeacherAssingDto,
+  ) {
+    const subject = await this.prisma.subject.findUnique({
+      where: { id: body.subject_id },
     });
-    return isProfessor;
+
+    for (const teacher of teachers) {
+      const email = teacher.user.email;
+      const teacherName = teacher.user.name;
+      const subjectName = `${subject.code} - ${subject.name}`;
+      const subjectId = body.subject_id;
+
+      await this.emailService.sendEmailAssignSubject(
+        email,
+        teacherName,
+        subjectName,
+        subjectId,
+      );
+    }
   }
 }
