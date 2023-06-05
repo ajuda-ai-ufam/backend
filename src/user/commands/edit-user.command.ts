@@ -45,16 +45,6 @@ export class EditUserCommand {
 
     await this.verifyUserPasswordField(data, userId);
 
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        name: data.name,
-        password: data.password,
-      },
-    });
-
     if (userRole === Role.Student) {
       this.verifyStudentEnrollmentField(data);
 
@@ -65,21 +55,32 @@ export class EditUserCommand {
       this.verifyStudentLinkedinField(data);
 
       this.verifyStudentWhatsAppField(data);
+    }
 
-      await this.prisma.student.update({
-        where: {
-          user_id: userId,
-        },
-        data: {
-          description: data.description,
-          enrollment: data.enrollment,
-          course_id: data.courseId,
-          contact_email: data.contactEmail,
-          whatsapp: data.whatsapp,
-          linkedin: data.linkedin,
-        },
-      });
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        name: data.name,
+        password: data.password,
+        student:
+          userRole === Role.Student
+            ? {
+                update: {
+                  description: data.description,
+                  enrollment: data.enrollment,
+                  course_id: data.courseId,
+                  contact_email: data.contactEmail,
+                  whatsapp: data.whatsapp,
+                  linkedin: data.linkedin,
+                },
+              }
+            : {},
+      },
+    });
 
+    if (userRole === Role.Student) {
       const student = await this.prisma.student.findUnique({
         where: {
           user_id: userId,
