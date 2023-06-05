@@ -75,7 +75,12 @@ export class MonitorService {
     const context = { student_name: user.name, subject_name: subject.name };
     const template = 'request_monitor';
 
-    this.emailService.sendEmailRequestMonitoring(email, sub, context, template);
+    await this.emailService.sendEmailRequestMonitoring(
+      email,
+      sub,
+      context,
+      template,
+    );
 
     await this.prismaService.monitor.create({
       data: {
@@ -133,7 +138,7 @@ export class MonitorService {
     const template = 'accept_monitor';
     const subject_id = request_monitor.subject_id;
 
-    this.emailService.sendEmailAcceptMonitoring(
+    await this.emailService.sendEmailAcceptMonitoring(
       email,
       sub,
       template,
@@ -187,7 +192,7 @@ export class MonitorService {
     const sub = 'Obrigado por tentar...';
     const template = 'refuse_monitor';
 
-    this.emailService.sendEmailRefuseMonitoring(email, sub, template);
+    await this.emailService.sendEmailRefuseMonitoring(email, sub, template);
 
     return { message: 'Solicitacão recusada!' };
   }

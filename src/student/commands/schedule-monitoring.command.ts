@@ -83,7 +83,7 @@ export class ScheduleMonitoringCommand {
       };
       const template = 'schedule_monitoring';
 
-      this.emailService.sendEmailScheduleMonitoring(
+      await this.emailService.sendEmailScheduleMonitoring(
         email,
         sub,
         context,
