@@ -66,6 +66,7 @@ export class CreateResetPasswordTokenCommand {
 
     const payload: JWTRecoverToken = {
       userId: user.id,
+      userName: user.name,
       code: generatedCode.code,
       expiresAt: new Date(
         now.getTime() +
