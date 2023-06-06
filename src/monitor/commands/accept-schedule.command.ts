@@ -50,7 +50,7 @@ export class AcceptScheduleCommand {
       where: { id: userId },
     });
 
-    this.emailService.sendAcceptedScheduleEmail(
+    await this.emailService.sendAcceptedScheduleEmail(
       schedule.student.contact_email,
       'Confirmado',
       user.name,
