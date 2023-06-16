@@ -18,6 +18,7 @@ import { join } from 'path';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { JwtService } from '@nestjs/jwt';
 import { SchedulesModule } from './schedules/schedules.module';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
@@ -52,6 +53,19 @@ import { SchedulesModule } from './schedules/schedules.module';
     }),
     MonitorModule,
     SchedulesModule,
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            levelFirst: true,
+            translateTime: true,
+            colorize: true,
+          },
+        },
+        redact: ['req.headers', 'res.headers'],
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [
