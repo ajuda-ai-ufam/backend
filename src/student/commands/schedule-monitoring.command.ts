@@ -72,7 +72,7 @@ export class ScheduleMonitoringCommand {
     });
 
     //TODO Aguardando o resultado da rota.
-    const topic = ''
+    const topic = '';
 
     if (newSchedule) {
       const email = monitor.student.contact_email;

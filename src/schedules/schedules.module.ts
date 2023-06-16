@@ -8,11 +8,13 @@ import { ListEndingSchedulesCommand } from './commands/list-ending-schedules.com
 import { ListSchedulesCommand } from './commands/list-schedules.command';
 import { SchedulesController } from './schedules.controller';
 import { CreateTopicCommand } from './commands/create-topic.command';
+import { GetTopicsCommand } from './commands/get-topics.command';
 
 @Module({
   providers: [
     CancelScheduleCommand,
     EndScheduleCommand,
+    GetTopicsCommand,
     ListSchedulesCommand,
     ListEndingSchedulesCommand,
     CreateTopicCommand,
