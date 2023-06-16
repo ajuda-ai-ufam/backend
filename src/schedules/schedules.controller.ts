@@ -43,6 +43,9 @@ import {
 import { CreateTopicRequestBody } from './dto/create-topic.request.dto';
 import { CreateTopicCommand } from './commands/create-topic.command';
 import { Topic } from './dto/topic.dto';
+import { GetTopicsCommand as GetScheduleTopicsCommand } from './commands/get-topics.command';
+import { GetTopicsQueryParams } from './dto/get-topics.request.dto';
+import { GetTopicsResponse } from './dto/get-topics.response.dto';
 
 @Controller('schedules')
 @ApiTags('Schedules')
@@ -50,6 +53,7 @@ export class SchedulesController {
   constructor(
     private readonly cancelScheduleCommand: CancelScheduleCommand,
     private readonly endScheduleCommand: EndScheduleCommand,
+    private readonly getScheduleTopicsCommand: GetScheduleTopicsCommand,
     private readonly listSchedulesCommand: ListSchedulesCommand,
     private readonly listEndingSchedulesCommand: ListEndingSchedulesCommand,
     private readonly createTopicCommand: CreateTopicCommand,
@@ -244,6 +248,22 @@ export class SchedulesController {
         throw new PreconditionFailedException(error.message);
       }
 
+      throw error;
+    }
+  }
+
+  @ApiBearerAuth()
+  @Get('topics')
+  async getTopics(
+    @Query() query: GetTopicsQueryParams,
+  ): Promise<GetTopicsResponse> {
+    try {
+      return await this.getScheduleTopicsCommand.execute(
+        query.name,
+        query.page,
+        query.pageSize,
+      );
+    } catch (error) {
       throw error;
     }
   }
