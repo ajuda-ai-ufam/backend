@@ -71,15 +71,20 @@ export class ScheduleMonitoringCommand {
       where: { id: userId },
     });
 
+    //TODO Aguardando o resultado da rota.
+    const topic = ''
+
     if (newSchedule) {
       const email = monitor.student.contact_email;
-      const sub = 'Um aluno pediu sua ajuda!';
+      const sub = 'Alguém pediu sua ajuda!';
       const context = {
         status: 'Pendente',
         name: user.name,
         date: start.toLocaleDateString('pt-BR'),
         start: start.toLocaleTimeString('pt-BR').slice(0, 5),
         end: end.toLocaleTimeString('pt-BR').slice(0, 5),
+        description: description,
+        topic: topic,
       };
       const template = 'schedule_monitoring';
 
