@@ -19,24 +19,26 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const config = new DocumentBuilder()
-    .setTitle('Super Monitoria API')
-    .setDescription('Backend Super Monitoria')
-    .setVersion('1.0')
-    .addTag('Super Monitoria')
-    .addBearerAuth({
-      description: 'Please enter token in following format: Bearer <JWT>',
-      name: 'Authorization',
-      bearerFormat: 'Bearer',
-      scheme: 'Bearer',
-      type: 'http',
-      in: 'Header',
-    })
-    .build();
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Super Monitoria API')
+      .setDescription('Backend Super Monitoria')
+      .setVersion('1.0')
+      .addTag('Super Monitoria')
+      .addBearerAuth({
+        description: 'Please enter token in following format: Bearer <JWT>',
+        name: 'Authorization',
+        bearerFormat: 'Bearer',
+        scheme: 'Bearer',
+        type: 'http',
+        in: 'Header',
+      })
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+    const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('/swagger', app, document);
+    SwaggerModule.setup('/swagger', app, document);
+  }
 
   await app.init();
 

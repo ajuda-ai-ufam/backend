@@ -39,7 +39,7 @@ export class RefuseScheduledMonitoringCommand {
 
     const email = schedule.student.contact_email;
 
-    this.emailService.sendEmailRefuseScheduledMonitoring(email);
+    await this.emailService.sendEmailRefuseScheduledMonitoring(email);
 
     return { message: 'Agendamento rejeitado!' };
   }

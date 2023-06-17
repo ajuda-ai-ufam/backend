@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CourseService } from 'src/course/course.service';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateStudentCommand } from 'src/student/commands/create-student.command';
@@ -12,6 +8,23 @@ import { hashPassword } from 'src/utils/bcrypt';
 import { Validations } from 'src/utils/validations';
 import { StudentCreateDTO } from './dto/student-create.dto';
 import { TeacherCreateDTO } from './dto/teacher-create.dto';
+import {
+  ContactEmailAreadyExistsException,
+  CourseNotFoundException,
+  EmailAreadyExistsException,
+  EnrollmentAlreadyExistsException,
+  InvalidContactEmailException,
+  InvalidEmailException,
+  InvalidEnrollmentException,
+  InvalidLinkedinURLException,
+  InvalidNameException,
+  InvalidPasswordException,
+  InvalidWhatsAppNumberException,
+  MissingFieldsException,
+  PasswordsDoNotMatchException,
+  PersonalDataInPasswordException,
+  UserNotFoundException,
+} from './utils/exceptions';
 
 @Injectable()
 export class UserService {
@@ -33,42 +46,37 @@ export class UserService {
       data.course_id,
     ];
 
-    if (list_data_user.includes(''))
-      throw new BadRequestException('Preencha todos os campos.');
+    if (list_data_user.includes('')) throw new MissingFieldsException();
 
     data.name = data.name.trim();
 
-    if (!Validations.validateName(data.name))
-      throw new BadRequestException(
-        'O nome deve ter no mínimo um nome, sobrenome e no máximo 50 caracteres.',
-      );
+    if (!Validations.validateName(data.name)) throw new InvalidNameException();
 
     if (!Validations.validateEmail(data.email))
-      throw new BadRequestException('E-mail de contato não é válido!');
+      throw new InvalidEmailException();
 
     if (data.contact_email.length == 0) data.contact_email = data.email;
 
     if (!Validations.validateEmailContact(data.contact_email))
-      throw new BadRequestException('E-mail de contato não é válido!');
+      throw new InvalidContactEmailException();
 
     const email_exists = await this.findOneByEmail(data.email);
 
-    if (email_exists) throw new BadRequestException('E-mail já cadastrado.');
+    if (email_exists) throw new EmailAreadyExistsException();
 
     const contact_email_exists = await this.findOneByEmail(data.contact_email);
 
-    if (contact_email_exists)
-      throw new BadRequestException('E-mail de contato já cadastrado.');
+    if (contact_email_exists) throw new ContactEmailAreadyExistsException();
 
     const course = await this.courseService.findCourseId(data.course_id);
 
-    if (course == null) throw new NotFoundException('Curso não encontrado!');
+    if (course == null) throw new CourseNotFoundException();
 
     if (!Validations.validateEnrollment(data.enrollment))
-      throw new BadRequestException('Matrícula não atende aos requisitos!');
+      throw new InvalidEnrollmentException();
 
     if (!Validations.validatePassword(data.password))
-      throw new BadRequestException('A senha não atende aos requisitos!');
+      throw new InvalidPasswordException();
 
     if (
       !Validations.searchNameEnrollmentPassword(
@@ -77,29 +85,24 @@ export class UserService {
         data.enrollment,
       )
     )
-      throw new BadRequestException(
-        'A senha não deve conter dados como nome ou matricula.',
-      );
+      throw new PersonalDataInPasswordException();
 
     if (
       !Validations.validateConfirmPassword(data.password, data.confirm_password)
     )
-      throw new BadRequestException('As senhas não são iguais!');
+      throw new PasswordsDoNotMatchException();
 
     if (!Validations.validateLinkedIn(data.linkedin))
-      throw new BadRequestException(
-        'Link do perfil do Linkedin não é compatível.',
-      );
+      throw new InvalidLinkedinURLException();
 
     if (!Validations.validateWhatsapp(data.whatsapp))
-      throw new BadRequestException('Número do WhatsApp inválido.');
+      throw new InvalidWhatsAppNumberException();
 
     const user_enrollment = await this.findEnrollmentCommand.execute(
       data.enrollment,
     );
 
-    if (user_enrollment != null)
-      throw new BadRequestException('Matrícula já cadastrada!');
+    if (user_enrollment != null) throw new EnrollmentAlreadyExistsException();
 
     const user = await this.prisma.user.create({
       data: {
@@ -136,35 +139,31 @@ export class UserService {
       data.password,
     ];
 
-    if (list_data_user.includes(''))
-      throw new BadRequestException('Preencha todos os campos.');
+    if (list_data_user.includes('')) throw new MissingFieldsException();
 
     data.name = data.name.trim();
 
-    if (!Validations.validateName(data.name))
-      throw new BadRequestException(
-        'O nome deve ter no mínimo um nome, sobrenome e no máximo 50 caracteres.',
-      );
+    if (!Validations.validateName(data.name)) throw new InvalidNameException();
 
     if (!Validations.validateEmail(data.email))
-      throw new BadRequestException('E-mail não atende aos requisitos!');
+      throw new InvalidEmailException();
 
     const email_exists = await this.findOneByEmail(data.email);
 
-    if (email_exists) throw new BadRequestException('E-mail já cadastrado.');
+    if (email_exists) throw new EmailAreadyExistsException();
 
     if (!Validations.validatePassword(data.password))
-      throw new BadRequestException('A senha não atende aos requisitos!');
+      throw new InvalidPasswordException();
 
     if (
       !Validations.searchNameEnrollmentPasswordTeacher(data.password, data.name)
     )
-      throw new BadRequestException('A senha não deve conter dados como nome.');
+      throw new PersonalDataInPasswordException();
 
     if (
       !Validations.validateConfirmPassword(data.password, data.confirm_password)
     )
-      throw new BadRequestException('As senhas não são iguais!');
+      throw new PasswordsDoNotMatchException();
 
     const user = await this.prisma.user.create({
       data: {
@@ -214,8 +213,7 @@ export class UserService {
     const user_exists = await this.prisma.user.findUnique({
       where: { id },
     });
-    if (!user_exists)
-      throw new BadRequestException('Usuário(a) não encontrado(a).');
+    if (!user_exists) throw new UserNotFoundException();
 
     return this.prisma.user.delete({
       where: { id },
@@ -228,8 +226,7 @@ export class UserService {
       include: { user: true },
     });
 
-    if (student == null)
-      throw new NotFoundException('Usuário(a) não encontrado(a).');
+    if (student == null) throw new UserNotFoundException();
 
     delete student.user.password;
 
