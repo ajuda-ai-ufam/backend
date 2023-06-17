@@ -50,6 +50,12 @@ export class ListStudentSchedulesCommand {
         start: { gte: today.toISOString() },
       },
       include: {
+        ScheduleTopics: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         monitor: { include: { student: studentInclude, subject: true } },
         student: studentInclude,
       },
