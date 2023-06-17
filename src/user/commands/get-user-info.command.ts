@@ -9,7 +9,7 @@ export class GetUserInfoCommand {
   async execute(userId: number): Promise<GetUserInfoResponse> {
     const user = await this.prisma.user.findFirst({
       where: { id: userId },
-      include: { student: true },
+      include: { student: { include: { course: true } } },
     });
 
     if (!user.student) {
@@ -21,7 +21,7 @@ export class GetUserInfoCommand {
       email: user.email,
       description: user.student?.description,
       enrollment: user.student?.enrollment,
-      course_id: user.student?.course_id,
+      course: { id: user.student?.course_id, name: user.student?.course?.name },
       contact_email: user.student?.contact_email,
       whatsapp: user.student?.whatsapp,
       linkedin: user.student?.linkedin,

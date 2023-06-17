@@ -18,7 +18,7 @@ export class GetUserInfoResponse {
 
   @ApiProperty()
   @IsOptional()
-  course_id?: number;
+  course?: any;
 
   @ApiProperty()
   @IsOptional()
