@@ -40,6 +40,9 @@ import {
   ProfessorNotAuthorizedException,
   ScheduleNotFoundException,
 } from './utils/exceptions';
+import { CreateTopicRequestBody } from './dto/create-topic.request.dto';
+import { CreateTopicCommand } from './commands/create-topic.command';
+import { Topic } from './dto/topic.dto';
 
 @Controller('schedules')
 @ApiTags('Schedules')
@@ -49,6 +52,7 @@ export class SchedulesController {
     private readonly endScheduleCommand: EndScheduleCommand,
     private readonly listSchedulesCommand: ListSchedulesCommand,
     private readonly listEndingSchedulesCommand: ListEndingSchedulesCommand,
+    private readonly createTopicCommand: CreateTopicCommand,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -192,6 +196,17 @@ export class SchedulesController {
         throw new NotFoundException(error.message);
       }
 
+      throw error;
+    }
+  }
+
+  @ApiBearerAuth()
+  @Roles(Role.Student)
+  @Post('topics')
+  async createTopic(@Body() body: CreateTopicRequestBody): Promise<Topic> {
+    try {
+      return await this.createTopicCommand.execute(body.name);
+    } catch (error) {
       throw error;
     }
   }
