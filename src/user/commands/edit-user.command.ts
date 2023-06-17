@@ -109,29 +109,25 @@ export class EditUserCommand {
    * *********************************************************************************
    */
   private verifyUserNameField(data: UserEditDTO) {
-    if (data.name) {
-      data.name = data.name.trim();
-      data.name = Validations.capitalizeName(data.name);
-      if (!Validations.validateName(data.name)) {
-        throw new InvalidNameException();
-      }
+    data.name = data.name.trim();
+    data.name = Validations.capitalizeName(data.name);
+    if (!Validations.validateName(data.name)) {
+      throw new InvalidNameException();
     }
   }
 
   private async verifyUserPasswordField(data: UserEditDTO, userId: number) {
-    if (data.password) {
-      if (!data.oldPassword) {
-        throw new OldPasswordNotProvidedException();
-      }
-
-      await this.checkPasswordInDatabase(userId, data.oldPassword);
-
-      if (!Validations.validatePassword(data.password)) {
-        throw new InvalidPasswordException();
-      }
-
-      data.password = await hashPassword(data.password);
+    if (!data.oldPassword) {
+      throw new OldPasswordNotProvidedException();
     }
+
+    await this.checkPasswordInDatabase(userId, data.oldPassword);
+
+    if (!Validations.validatePassword(data.password)) {
+      throw new InvalidPasswordException();
+    }
+
+    data.password = await hashPassword(data.password);
   }
 
   private async checkPasswordInDatabase(userId: number, oldPassword: string) {
@@ -148,46 +144,36 @@ export class EditUserCommand {
   }
 
   private verifyStudentEnrollmentField(data: UserEditDTO) {
-    if (data.enrollment) {
-      if (!Validations.validateEnrollment(data.enrollment)) {
-        throw new InvalidEnrollmentException();
-      }
+    if (!Validations.validateEnrollment(data.enrollment)) {
+      throw new InvalidEnrollmentException();
     }
   }
 
   private async verifyStudentCourseIdField(data: UserEditDTO) {
-    if (data.courseId) {
-      const course = await this.courseService.findCourseId(data.courseId);
-      if (course == null) throw new CourseNotFoundException();
-    }
+    const course = await this.courseService.findCourseId(data.courseId);
+    if (course == null) throw new CourseNotFoundException();
   }
 
   private async verifyStudentContactEmailField(data: UserEditDTO) {
-    if (data.contactEmail) {
-      if (!Validations.validateEmailContact(data.contactEmail)) {
-        throw new InvalidContactEmailException();
-      }
-      const contact_email_exists = await this.userService.findOneByEmail(
-        data.contactEmail,
-      );
-
-      if (contact_email_exists) throw new ContactEmailAreadyExistsException();
+    if (!Validations.validateEmailContact(data.contactEmail)) {
+      throw new InvalidContactEmailException();
     }
+    const contact_email_exists = await this.userService.findOneByEmail(
+      data.contactEmail,
+    );
+
+    if (contact_email_exists) throw new ContactEmailAreadyExistsException();
   }
 
   private verifyStudentLinkedinField(data: UserEditDTO) {
-    if (data.linkedin) {
-      if (!Validations.validateLinkedIn(data.linkedin)) {
-        throw new InvalidLinkedinURLException();
-      }
+    if (!Validations.validateLinkedIn(data.linkedin)) {
+      throw new InvalidLinkedinURLException();
     }
   }
 
   private verifyStudentWhatsAppField(data: UserEditDTO) {
-    if (data.whatsapp) {
-      if (!Validations.validateWhatsapp(data.whatsapp)) {
-        throw new InvalidWhatsAppNumberException();
-      }
+    if (!Validations.validateWhatsapp(data.whatsapp)) {
+      throw new InvalidWhatsAppNumberException();
     }
   }
 
