@@ -28,6 +28,7 @@ import {
   NotAnAvailableTimeException,
   SameStudentException,
   StudentTimeAlreadyScheduledException,
+  TopicNotFoundException,
 } from './utils/exceptions';
 
 @ApiTags('Students')
@@ -57,7 +58,10 @@ export class StudentController {
         body,
       );
     } catch (error) {
-      if (error instanceof MonitorNotFoundException) {
+      if (
+        error instanceof MonitorNotFoundException ||
+        error instanceof TopicNotFoundException
+      ) {
         throw new NotFoundException(error.message);
       }
 
