@@ -8,6 +8,7 @@ export class ScheduleFactory {
       endDate: prismaSchedule.end,
       status: prismaSchedule.id_status,
       description: prismaSchedule.description,
+      topic: prismaSchedule.ScheduleTopics,
     };
 
     if (!!prismaSchedule.monitor) {

@@ -12,6 +12,7 @@ import {
   NotAnAvailableTimeException,
   SameStudentException,
   StudentTimeAlreadyScheduledException,
+  TopicNotFoundException,
 } from '../utils/exceptions';
 import { Schedule } from 'src/schedules/domain/schedule';
 import { EmailService } from 'src/email/email.service';
@@ -28,7 +29,7 @@ export class ScheduleMonitoringCommand {
     monitorId: number,
     data: ScheduleMonitoringDto,
   ): Promise<Schedule> {
-    const { start, end, description } = data;
+    const { start, end, description, topicId } = data;
     const now = new Date();
     const AMT_OFFSET = -4;
     now.setHours(now.getHours() + AMT_OFFSET);
@@ -57,6 +58,12 @@ export class ScheduleMonitoringCommand {
 
     await this.checkStudentSchedules(userId, start, end);
 
+    const topic = await this.prisma.scheduleTopics.findUnique({
+      where: { id: topicId },
+    });
+
+    if (!topic) throw new TopicNotFoundException();
+
     const newSchedule = await this.prisma.scheduleMonitoring.create({
       data: {
         student_id: userId,
@@ -64,15 +71,13 @@ export class ScheduleMonitoringCommand {
         start,
         end,
         description,
+        schedule_topic_id: topicId,
       },
     });
 
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
-
-    //TODO Aguardando o resultado da rota.
-    const topic = '';
 
     if (newSchedule) {
       const email = monitor.student.contact_email;
@@ -84,7 +89,7 @@ export class ScheduleMonitoringCommand {
         start: start.toLocaleTimeString('pt-BR').slice(0, 5),
         end: end.toLocaleTimeString('pt-BR').slice(0, 5),
         description: description,
-        topic: topic,
+        topic: topic.name,
       };
       const template = 'schedule_monitoring';
 

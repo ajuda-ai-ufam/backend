@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsNumber, IsString, MaxLength } from 'class-validator';
 
 export class ScheduleMonitoringDto {
   @ApiProperty({
@@ -14,6 +14,10 @@ export class ScheduleMonitoringDto {
   })
   @Transform(({ value }) => value && new Date(value))
   end: Date;
+
+  @ApiProperty()
+  @IsNumber()
+  topicId: number;
 
   @ApiProperty()
   @IsString()
