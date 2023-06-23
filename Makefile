@@ -51,7 +51,7 @@ db-seed:
 
 .PHONY: db-shell
 db-shell:
-	@docker-compose exec -it ${DB_SERVICE_NAME} mysql -uroot -proot -D ufam-dev
+	@docker-compose exec -it ${DB_SERVICE_NAME} mysql -uroot -p
 
 .PHONY: deploy-stg
 deploy-stg: down

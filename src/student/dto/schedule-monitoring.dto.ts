@@ -17,7 +17,8 @@ export class ScheduleMonitoringDto {
 
   @ApiProperty()
   @IsNumber()
-  topicId: number;
+  @IsOptional()
+  topicId?: number;
 
   @ApiProperty()
   @IsString()

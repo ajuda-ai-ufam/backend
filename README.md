@@ -48,6 +48,12 @@ We use Makefile commands to run our scripts:
   make db-seed
   ```
 
+- Access database through terminal:
+  ```bash
+  make db-shell
+  ```
+  - Insert password and run `use <db_name>;` to enter the database and run sql queries.
+
 ## Staging
 
 - Run API on production mode:

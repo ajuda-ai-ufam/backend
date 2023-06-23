@@ -16,6 +16,7 @@ import {
 } from '../utils/exceptions';
 import { Schedule } from 'src/schedules/domain/schedule';
 import { EmailService } from 'src/email/email.service';
+import { ScheduleTopics } from '@prisma/client';
 
 @Injectable()
 export class ScheduleMonitoringCommand {
@@ -58,11 +59,14 @@ export class ScheduleMonitoringCommand {
 
     await this.checkStudentSchedules(userId, start, end);
 
-    const topic = await this.prisma.scheduleTopics.findUnique({
-      where: { id: topicId },
-    });
+    let topic: ScheduleTopics;
 
-    if (!topic) throw new TopicNotFoundException();
+    if (topicId) {
+      topic = await this.prisma.scheduleTopics.findUnique({
+        where: { id: topicId },
+      });
+      if (!topic) throw new TopicNotFoundException();
+    }
 
     const newSchedule = await this.prisma.scheduleMonitoring.create({
       data: {
@@ -89,7 +93,7 @@ export class ScheduleMonitoringCommand {
         start: start.toLocaleTimeString('pt-BR').slice(0, 5),
         end: end.toLocaleTimeString('pt-BR').slice(0, 5),
         description: description,
-        topic: topic.name,
+        topic: topic?.name,
       };
       const template = 'schedule_monitoring';
 
