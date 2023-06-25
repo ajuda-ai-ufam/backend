@@ -24,6 +24,7 @@ export class ScheduleTopicFormatter {
       .replace(/[0-9]/g, '')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^\w\s]/g, '');
+      .replace(/[^\w\s]/g, '')
+      .replace(/_/g, '');
   }
 }
