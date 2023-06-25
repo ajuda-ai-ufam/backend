@@ -12,9 +12,11 @@ import {
   NotAnAvailableTimeException,
   SameStudentException,
   StudentTimeAlreadyScheduledException,
+  TopicNotFoundException,
 } from '../utils/exceptions';
 import { Schedule } from 'src/schedules/domain/schedule';
 import { EmailService } from 'src/email/email.service';
+import { ScheduleTopics } from '@prisma/client';
 
 @Injectable()
 export class ScheduleMonitoringCommand {
@@ -28,7 +30,7 @@ export class ScheduleMonitoringCommand {
     monitorId: number,
     data: ScheduleMonitoringDto,
   ): Promise<Schedule> {
-    const { start, end, description } = data;
+    const { start, end, description, topicId } = data;
     const now = new Date();
     const AMT_OFFSET = -4;
     now.setHours(now.getHours() + AMT_OFFSET);
@@ -57,6 +59,15 @@ export class ScheduleMonitoringCommand {
 
     await this.checkStudentSchedules(userId, start, end);
 
+    let topic: ScheduleTopics;
+
+    if (topicId) {
+      topic = await this.prisma.scheduleTopics.findUnique({
+        where: { id: topicId },
+      });
+      if (!topic) throw new TopicNotFoundException();
+    }
+
     const newSchedule = await this.prisma.scheduleMonitoring.create({
       data: {
         student_id: userId,
@@ -64,6 +75,7 @@ export class ScheduleMonitoringCommand {
         start,
         end,
         description,
+        schedule_topic_id: topicId,
       },
     });
 
@@ -73,13 +85,15 @@ export class ScheduleMonitoringCommand {
 
     if (newSchedule) {
       const email = monitor.student.contact_email;
-      const sub = 'Um aluno pediu sua ajuda!';
+      const sub = 'Alguém pediu sua ajuda!';
       const context = {
         status: 'Pendente',
         name: user.name,
         date: start.toLocaleDateString('pt-BR'),
         start: start.toLocaleTimeString('pt-BR').slice(0, 5),
         end: end.toLocaleTimeString('pt-BR').slice(0, 5),
+        description: description,
+        topic: topic?.name,
       };
       const template = 'schedule_monitoring';
 

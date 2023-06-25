@@ -6,11 +6,13 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
+import { Logger } from 'nestjs-pino';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const server = express();
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  app.useLogger(app.get(Logger));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors({

@@ -7,13 +7,17 @@ import { EndScheduleCommand } from './commands/end-schedule.command';
 import { ListEndingSchedulesCommand } from './commands/list-ending-schedules.command';
 import { ListSchedulesCommand } from './commands/list-schedules.command';
 import { SchedulesController } from './schedules.controller';
+import { CreateTopicCommand } from './commands/create-topic.command';
+import { GetTopicsCommand } from './commands/get-topics.command';
 
 @Module({
   providers: [
     CancelScheduleCommand,
     EndScheduleCommand,
+    GetTopicsCommand,
     ListSchedulesCommand,
     ListEndingSchedulesCommand,
+    CreateTopicCommand,
     JwtService,
     EmailService,
     PrismaService,

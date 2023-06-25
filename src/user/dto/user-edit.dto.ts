@@ -1,19 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UserEditDTO {
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   name?: string;
 
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   password?: string;
 
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   oldPassword?: string;
 
@@ -24,6 +27,7 @@ export class UserEditDTO {
 
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   enrollment?: string;
 
@@ -33,6 +37,7 @@ export class UserEditDTO {
   courseId?: number;
 
   @IsString()
+  @IsNotEmpty()
   @IsOptional()
   @ApiProperty()
   contactEmail?: string;

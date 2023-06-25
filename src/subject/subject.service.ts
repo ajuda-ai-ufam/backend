@@ -150,6 +150,7 @@ export class SubjectService {
           },
         },
       },
+      orderBy: { name: 'asc' },
     });
     return pagination(data, query);
   }

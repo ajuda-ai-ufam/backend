@@ -7,7 +7,7 @@ export class EmailService {
   async sendEmailRequestMonitoring(
     email: string,
     subject: string,
-    message,
+    context: any,
     template: string,
   ) {
     return this.mailerService.sendMail({
@@ -17,9 +17,30 @@ export class EmailService {
       text: subject,
       template: `${template}.hbs`,
       context: {
-        student_name: message.student_name,
-        subject_name: message.subject_name,
+        student_name: context.student_name,
+        subject_name: context.subject_name,
         front_end_base_url: process.env.FRONT_END_BASE_URL,
+      },
+    });
+  }
+
+  async sendEmailAssignSubject(
+    email: string,
+    teacher: string,
+    subject: string,
+    subject_id: number,
+  ) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: 'Agora você é responsável!',
+      text: 'Agora você é responsável!',
+      template: `assign-subject.hbs`,
+      context: {
+        front_end_base_url: process.env.FRONT_END_BASE_URL,
+        teacher,
+        subject,
+        subject_id,
       },
     });
   }

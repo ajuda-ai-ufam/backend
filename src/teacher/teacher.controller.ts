@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   HttpStatus,
@@ -24,7 +25,12 @@ import { ListTeacherSubjectsCommand } from './commands/list-teacher-subjects.com
 import { ListTeacherSubjectsResponse } from './dto/list-teacher-subjects.response';
 import { TeacherAssingDto } from './dto/teacher-assing.dto';
 import { TeacherService } from './teacher.service';
-import { TeacherNotFoundException } from './utils/exceptions';
+import {
+  TeacherAlreadyResponsibleException,
+  TeacherNotFoundException,
+} from './utils/exceptions';
+import { AssignSubjectCommand } from './commands/assign-subject.command';
+import { SubjectNotFoundException } from 'src/subject/utils/exceptions';
 
 @Controller('teacher')
 @ApiTags('Professors')
@@ -32,6 +38,7 @@ export class TeacherController {
   constructor(
     private readonly teacherService: TeacherService,
     private readonly listTeacherSubjectsCommand: ListTeacherSubjectsCommand,
+    private readonly assignSubjectCommand: AssignSubjectCommand,
   ) {}
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -44,9 +51,44 @@ export class TeacherController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Assinala um professor a uma disciplina, criando uma responsabilidade.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Responsabilidade assinalada com sucesso.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Professor ou disciplina não encontrados.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Professor já responsável pela disciplina.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Token inválido.',
+  })
   @Post('assign-subject')
   async assignSubject(@Body() body: TeacherAssingDto) {
-    return await this.teacherService.assignSubject(body);
+    try {
+      return await this.assignSubjectCommand.execute(body);
+    } catch (error) {
+      if (
+        error instanceof SubjectNotFoundException ||
+        error instanceof TeacherNotFoundException
+      ) {
+        throw new NotFoundException(error.message);
+      }
+
+      if (error instanceof TeacherAlreadyResponsibleException) {
+        throw new ConflictException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)

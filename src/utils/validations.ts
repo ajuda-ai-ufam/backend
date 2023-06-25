@@ -1,11 +1,6 @@
 export class Validations {
-  static capitalizeName(name) {
+  static capitalizeName(name: string) {
     return name.replace(/\b(\w)/g, (s) => s.toUpperCase());
-  }
-
-  static validateEnrollment(enrollment: string) {
-    const re = /^([\d]{8})$/gm;
-    return re.test(enrollment);
   }
 
   static validateName(name: string) {
@@ -14,9 +9,13 @@ export class Validations {
     return re.test(name);
   }
 
+  static validatePassword(password: string): boolean {
+    if (password.length >= 8 && password.length <= 18) return true;
+    return false;
+  }
+
   static validateEmail(email: string) {
-    const re =
-      /^([\w.]{3,20})@(icomp\.ufam\.edu\.br|ufam\.edu\.br|super\.ufam\.edu\.br)$/gm;
+    const re = /^([\w.]{3,20})@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gm;
     return re.test(email);
   }
 
@@ -25,27 +24,27 @@ export class Validations {
     return re.test(email);
   }
 
+  static validateEnrollment(enrollment: string) {
+    const re = /^([\d]{8})$/gm;
+    return re.test(enrollment);
+  }
+
   static validateLinkedIn(linkedin: string) {
+    if (linkedin.length == 0) return true;
     const re =
       /^(https:(?:\/\/)www.linkedin.com(\/)in(\/)([\w.#&-]{5,60}))(\/)$/gm;
-    if (linkedin.length == 0) return true;
-    else return re.test(linkedin);
+    return re.test(linkedin);
   }
 
   static validateWhatsapp(whatsapp: string) {
-    const re = /^([1-9]{1})(\d{10})$/gm;
     if (whatsapp.length == 0) return true;
-    else return re.test(whatsapp);
-  }
-
-  static validatePassword(password: string) {
-    if (password.length >= 8 && password.length <= 18) return true;
-    else return false;
+    const re = /^([1-9]{1})(\d{10})$/gm;
+    return re.test(whatsapp);
   }
 
   static searchNameEnrollmentPasswordTeacher(password: string, name: string) {
     if (password.indexOf(name) == -1) return true;
-    else return false;
+    return false;
   }
 
   static searchNameEnrollmentPassword(
@@ -54,12 +53,12 @@ export class Validations {
     enrollment: string,
   ) {
     if (password.indexOf(name) == -1) return true;
-    else if (password.indexOf(enrollment) == -1) return true;
-    else return false;
+    if (password.indexOf(enrollment) == -1) return true;
+    return false;
   }
 
   static validateConfirmPassword(password: string, confirm_password: string) {
     if (password == confirm_password) return true;
-    else return false;
+    return false;
   }
 }

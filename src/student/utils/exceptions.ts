@@ -46,3 +46,10 @@ export class StudentTimeAlreadyScheduledException extends Error {
     this.message = `Aluno(a) já possui um agendamento com status '${status}' no horário solicitado`;
   }
 }
+
+export class TopicNotFoundException extends Error {
+  constructor() {
+    super();
+    this.message = `Assunto não encontrado`;
+  }
+}
