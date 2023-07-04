@@ -3,16 +3,25 @@ dist
 .vscode
 test
 .git
+.github
+.husky
+.infra
+test
 
 .env
 .development.env
+.staging.env
 .prod.env
 .example.env
 
+.commitlintrc.json
+.eslintignore
 .eslintrc.js
 .gitignore
 .prettierrc
 docker-compose.dev.yml
+docker-compose.staging.yml
 docker-compose.yml
 Dockerfile
-README
+Makefile
+README.md

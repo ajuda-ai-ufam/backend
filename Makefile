@@ -17,6 +17,10 @@ up-silent:
 build:
 	@docker-compose -f ${DEV_DOCKER_COMPOSE_FILE} build
 
+.PHONY: build-no-cache
+build-no-cache:
+	@docker-compose -f ${DEV_DOCKER_COMPOSE_FILE} build --no-cache
+
 .PHONY: down
 down:
 	@docker-compose down  --remove-orphans

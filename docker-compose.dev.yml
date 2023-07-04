@@ -27,7 +27,7 @@ services:
         restart: unless-stopped
         volumes:
             - .:/usr/src/app
-            - node_modules:/usr/src/app/node_modules
+            - /usr/src/app/node_modules
 
 volumes:
     mysql_dev:
