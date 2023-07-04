@@ -9,6 +9,10 @@ const subjects_cc = csvToJson
   .fieldDelimiter(';')
   .getJsonFromCsv('prisma/disciplinas_cc.csv');
 
+const subjects_ec = csvToJson
+  .fieldDelimiter(';')
+  .getJsonFromCsv('prisma/disciplinas_ec.csv');
+
 let professores = [];
 try {
   professores = csvToJson
@@ -30,6 +34,8 @@ try {
 const courses = [
   { id: 1, name: 'Engenharia de Software', code: 'IE17' },
   { id: 2, name: 'Ciência da Computação', code: 'IE08' },
+  { id: 3, name: 'Engenharia da Computação', code: 'FT05' },
+  { id: 4, name: 'Outros', code: '0000' },
 ];
 
 const status_monitoring = [
@@ -105,6 +111,16 @@ async function main() {
     });
   }
   console.log('CC subjects seeded.');
+
+  for (const subject of subjects_ec) {
+    subject.name = formatSubjectName(subject.name);
+    await prisma.subject.upsert({
+      create: { ...subject, course_id: 3 },
+      update: { ...subject, course_id: 3 },
+      where: { code: subject.code },
+    });
+  }
+  console.log('EC subjects seeded.');
 
   for (const type of type_user) {
     await prisma.typeUser.upsert({
