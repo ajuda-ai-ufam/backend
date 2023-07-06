@@ -57,6 +57,10 @@ db-seed:
 db-shell:
 	@docker-compose exec ${DB_SERVICE_NAME} mysql -uroot -p
 
+.PHONY: db-prune
+db-prune:
+	docker system prune -af --volumes
+
 .PHONY: deploy-stg
 deploy-stg: down
 	git pull origin staging && \
