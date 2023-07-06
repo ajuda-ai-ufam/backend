@@ -109,6 +109,8 @@ export class EditUserCommand {
    * *********************************************************************************
    */
   private verifyUserNameField(data: UserEditDTO) {
+    if (data.name === undefined) return;
+
     data.name = data.name.trim();
     data.name = Validations.capitalizeName(data.name);
     if (!Validations.validateName(data.name)) {
@@ -117,6 +119,8 @@ export class EditUserCommand {
   }
 
   private async verifyUserPasswordField(data: UserEditDTO, userId: number) {
+    if (data.password === undefined) return;
+
     if (!data.oldPassword) {
       throw new OldPasswordNotProvidedException();
     }
@@ -144,17 +148,23 @@ export class EditUserCommand {
   }
 
   private verifyStudentEnrollmentField(data: UserEditDTO) {
+    if (data.enrollment === undefined) return;
+
     if (!Validations.validateEnrollment(data.enrollment)) {
       throw new InvalidEnrollmentException();
     }
   }
 
   private async verifyStudentCourseIdField(data: UserEditDTO) {
+    if (data.courseId === undefined) return;
+
     const course = await this.courseService.findCourseId(data.courseId);
     if (course == null) throw new CourseNotFoundException();
   }
 
   private async verifyStudentContactEmailField(data: UserEditDTO) {
+    if (data.contactEmail === undefined) return;
+
     if (!Validations.validateEmailContact(data.contactEmail)) {
       throw new InvalidContactEmailException();
     }
@@ -166,12 +176,16 @@ export class EditUserCommand {
   }
 
   private verifyStudentLinkedinField(data: UserEditDTO) {
+    if (data.linkedin === undefined) return;
+
     if (!Validations.validateLinkedIn(data.linkedin)) {
       throw new InvalidLinkedinURLException();
     }
   }
 
   private verifyStudentWhatsAppField(data: UserEditDTO) {
+    if (data.whatsapp === undefined) return;
+
     if (!Validations.validateWhatsapp(data.whatsapp)) {
       throw new InvalidWhatsAppNumberException();
     }
