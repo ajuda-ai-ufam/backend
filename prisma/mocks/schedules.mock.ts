@@ -1,0 +1,58 @@
+import { ScheduleStatus } from 'src/schedules/utils/schedules.enum';
+
+export const schedules = [
+  {
+    id: 1,
+    start: new Date('2023-01-20 11:00:00'),
+    end: new Date('2023-01-20 12:00:00'),
+    id_status: ScheduleStatus.WAITING_APPROVAL,
+    student_id: 9,
+    monitor_id: 2,
+    description: '',
+  },
+  {
+    id: 2,
+    start: new Date('2023-01-20 12:20:00'),
+    end: new Date('2023-01-20 13:20:00'),
+    id_status: ScheduleStatus.CONFIRMED,
+    student_id: 9,
+    monitor_id: 2,
+    description: '',
+  },
+  {
+    id: 3,
+    start: new Date('2023-01-20 13:30:00'),
+    end: new Date('2023-01-20 14:30:00'),
+    id_status: ScheduleStatus.CANCELED,
+    student_id: 9,
+    monitor_id: 2,
+    description: '',
+  },
+  {
+    id: 4,
+    start: new Date('2023-01-20 15:00:00'),
+    end: new Date('2023-01-20 16:00:00'),
+    id_status: ScheduleStatus.REALIZED,
+    student_id: 9,
+    monitor_id: 2,
+    description: '',
+  },
+  {
+    id: 5,
+    start: new Date('2023-01-20 17:00:00'),
+    end: new Date('2023-01-20 18:00:00'),
+    id_status: ScheduleStatus.NOT_REALIZED,
+    student_id: 9,
+    monitor_id: 2,
+    description: '',
+  },
+  {
+    id: 5,
+    start: new Date('2023-01-20 13:00:00'),
+    end: new Date('2023-01-20 14:00:00'),
+    id_status: ScheduleStatus.CONFIRMED,
+    student_id: 7,
+    monitor_id: 2,
+    description: '',
+  },
+];
