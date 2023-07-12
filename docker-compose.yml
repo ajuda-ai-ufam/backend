@@ -15,17 +15,16 @@ services:
             - mysql_config_prod:/etc/mysql
 
     super_backend:
-        container_name: super_api_prod
         build:
             context: .
             dockerfile: Dockerfile
             target: production
         env_file: ./.env
         ports: 
-            - $HTTP_PORT:$HTTP_PORT
+            - $HTTP_REPLICA_PORTS:$HTTP_PORT
         command: npm run start:prod
+        scale: $API_REPLICAS
 
 volumes:
     mysql_prod:
     mysql_config_prod:
-    node_modules:
