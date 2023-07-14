@@ -8,12 +8,14 @@ import scheduleSelectPrismaSQL from '../utils/select-schedule.prisma-sql';
 @Injectable()
 export class ListEndingSchedulesCommand {
   constructor(private prisma: PrismaService) {}
-
   async execute(monitorUserId: number): Promise<ListEndingSchedulesResponse> {
+    const now = new Date();
+    const AMT_OFFSET = -4;
+    now.setHours(now.getHours() + AMT_OFFSET);
     const where = {
       id_status: ScheduleStatus.CONFIRMED,
       end: {
-        lte: new Date(),
+        lte: now.toISOString(),
       },
       monitor: {
         student: {

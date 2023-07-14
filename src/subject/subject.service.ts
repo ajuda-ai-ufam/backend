@@ -4,6 +4,7 @@ import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { pagination } from 'src/common/pagination';
 import { PrismaService } from 'src/database/prisma.service';
+import { MonitorStatus } from 'src/monitor/utils/monitor.enum';
 
 @Injectable()
 export class SubjectService {
@@ -146,7 +147,9 @@ export class SubjectService {
             },
           },
           where: {
-            id_status: 3,
+            id_status: {
+              in: [MonitorStatus.AVAILABLE, MonitorStatus.APPROVED],
+            },
           },
         },
       },
