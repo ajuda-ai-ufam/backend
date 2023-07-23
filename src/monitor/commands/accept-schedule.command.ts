@@ -20,12 +20,24 @@ export class AcceptScheduleCommand {
   async execute(userId: number, scheduleId: number): Promise<void> {
     const schedule = await this.prisma.scheduleMonitoring.findUnique({
       where: { id: scheduleId },
-      include: { monitor: true, status: true, student: true },
+      include: {
+        monitor: {
+          include: {
+            MonitorSettings: { where: { is_active: true } },
+            student: { include: { user: true } },
+          },
+        },
+        status: true,
+        student: true,
+      },
     });
     if (!schedule) throw new ScheduleNotFoundException();
 
     if (schedule.monitor.student_id != userId)
       throw new NotTheScheduleMonitorException();
+
+    const preferential_place =
+      schedule.monitor?.MonitorSettings?.[0]?.preferential_place ?? '-';
 
     const now = new Date();
     const AMT_OFFSET = -4;
@@ -46,17 +58,14 @@ export class AcceptScheduleCommand {
       where: { id: schedule.id },
     });
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-
     await this.emailService.sendAcceptedScheduleEmail(
       schedule.student.contact_email,
       'Confirmado',
-      user.name,
+      schedule.monitor.student.user.name,
       schedule.start.toLocaleDateString('pt-BR'),
       schedule.start.toLocaleTimeString('pt-BR').slice(0, 5),
       schedule.end.toLocaleTimeString('pt-BR').slice(0, 5),
+      preferential_place,
     );
   }
 

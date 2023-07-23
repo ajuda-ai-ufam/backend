@@ -116,7 +116,15 @@ export class EmailService {
     });
   }
 
-  async sendEmailRefuseScheduledMonitoring(email: string) {
+  async sendEmailRefuseScheduledMonitoring(
+    email: string,
+    status: string,
+    name: string,
+    date: string,
+    start: string,
+    end: string,
+    preferential_place: string,
+  ) {
     return this.mailerService.sendMail({
       to: email,
       from: process.env.MAIL_AUTH_USER,
@@ -124,6 +132,12 @@ export class EmailService {
       text: 'Nós sentimos muito...',
       template: 'refused_scheduled_monitoring.hbs',
       context: {
+        status,
+        name,
+        date,
+        start,
+        end,
+        preferential_place,
         front_end_base_url: process.env.FRONT_END_BASE_URL,
       },
     });
@@ -136,6 +150,7 @@ export class EmailService {
     date: string,
     start: string,
     end: string,
+    preferential_place: string,
   ) {
     return this.mailerService.sendMail({
       to: email,
@@ -144,11 +159,12 @@ export class EmailService {
       text: 'A ajuda está vindo!',
       template: 'accepted_scheduled_monitoring.hbs',
       context: {
-        status: status,
-        name: name,
-        date: date,
-        start: start,
-        end: end,
+        status,
+        name,
+        date,
+        start,
+        end,
+        preferential_place,
         front_end_base_url: process.env.FRONT_END_BASE_URL,
       },
     });
