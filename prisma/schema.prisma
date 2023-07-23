@@ -83,7 +83,7 @@ model StatusScheduleMonitoring {
 model Monitor {
   id                       Int                  @id @default(autoincrement())
   id_status                Int                  @default(1)
-  end_date                 DateTime?            
+  end_date                 DateTime?
   status                   StatusMonitoring     @relation(fields: [id_status], references: [id])
   responsible_professor_id Int
   responsible_professor    Teacher              @relation(fields: [responsible_professor_id], references: [user_id])
@@ -93,6 +93,7 @@ model Monitor {
   subject                  Subject              @relation(fields: [subject_id], references: [id])
   ScheduleMonitoring       ScheduleMonitoring[]
   AvailableTimes           AvailableTimes[]
+  MonitorSettings          MonitorSettings[]
 
   @@map("monitor")
 }
@@ -167,7 +168,7 @@ model SubjectResponsability {
   status       StatusResponsability @relation(fields: [id_status], references: [id])
   updated_at   DateTime             @updatedAt
   created_at   DateTime             @default(now())
-  end_date     DateTime?            
+  end_date     DateTime?
   professor_id Int
   professor    Teacher              @relation(fields: [professor_id], references: [user_id])
   subject_id   Int
@@ -177,31 +178,46 @@ model SubjectResponsability {
 }
 
 model ScheduleMonitoring {
-  id         Int                      @id @default(autoincrement())
-  start      DateTime
-  end        DateTime
-  description String?                 @db.VarChar(500)   
-  id_status  Int                      @default(1)
-  status     StatusScheduleMonitoring @relation(fields: [id_status], references: [id])
-  student_id Int
-  student    Student                  @relation(fields: [student_id], references: [user_id])
-  monitor_id Int
-  monitor    Monitor                  @relation(fields: [monitor_id], references: [id])
-  schedule_topic_id Int?
-  ScheduleTopics ScheduleTopics?       @relation(fields: [schedule_topic_id], references: [id])
+  id                  Int                      @id @default(autoincrement())
+  start               DateTime
+  end                 DateTime
+  description         String?                  @db.VarChar(500)
+  id_status           Int                      @default(1)
+  status              StatusScheduleMonitoring @relation(fields: [id_status], references: [id])
+  student_id          Int
+  student             Student                  @relation(fields: [student_id], references: [user_id])
+  monitor_id          Int
+  monitor             Monitor                  @relation(fields: [monitor_id], references: [id])
+  schedule_topic_id   Int?
+  ScheduleTopics      ScheduleTopics?          @relation(fields: [schedule_topic_id], references: [id])
+  monitor_settings_id Int?
+  monitor_settings    MonitorSettings?          @relation(fields: [monitor_settings_id], references: [id])
 
   @@map("schedule_monitoring")
 }
 
 model ScheduleTopics {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(100)
-  token       String    @db.VarChar(100)
-  updated_at  DateTime  @updatedAt
-  created_at  DateTime  @default(now())
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(100)
+  token              String               @db.VarChar(100)
+  updated_at         DateTime             @updatedAt
+  created_at         DateTime             @default(now())
   ScheduleMonitoring ScheduleMonitoring[]
 
   @@index([token])
-
   @@map("schedule_topics")
+}
+
+model MonitorSettings {
+  id                 Int                  @id @default(autoincrement())
+  preferential_place String               @db.VarChar(60)
+  is_active          Boolean              @default(true)
+  monitor_id         Int
+  monitor            Monitor              @relation(fields: [monitor_id], references: [id])
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
+  schedules          ScheduleMonitoring[]
+
+  @@map("monitor_settings")
+
 }

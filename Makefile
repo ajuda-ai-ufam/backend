@@ -53,9 +53,17 @@ db-migrate-create:
 db-seed:
 	@docker-compose exec ${API_SERVICE_NAME} node dist/prisma/seed.js
 
+.PHONY: db-populate
+db-populate:
+	@docker-compose exec ${API_SERVICE_NAME} node dist/prisma/populate.js
+
 .PHONY: db-shell
 db-shell:
 	@docker-compose exec ${DB_SERVICE_NAME} mysql -uroot -p
+
+.PHONY: db-prune
+db-prune: down
+	docker volume rm backend_mysql_dev backend_mysql_config_dev 
 
 .PHONY: deploy-stg
 deploy-stg: down
