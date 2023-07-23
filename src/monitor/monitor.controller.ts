@@ -17,7 +17,12 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { MonitorService } from './monitor.service';
@@ -28,13 +33,17 @@ import { AcceptScheduleCommand } from './commands/accept-schedule.command';
 import { RefuseScheduledMonitoringCommand } from './commands/refuse-scheduled-monitoring.command';
 import { EndMonitoringCommand } from './commands/end-monitoring.command';
 import { ListMonitorsCommand } from './commands/list-monitors.command';
+import { GetMonitorCommand } from './commands/get-monitor.command';
 import {
   InvalidScheduleStatusException,
   NotTheScheduleMonitorException,
   OverdueScheduleException,
   ScheduleNotFoundException,
 } from 'src/schedules/utils/exceptions';
-import { MonitorTimeAlreadyScheduledException } from 'src/student/utils/exceptions';
+import {
+  MonitorNotFoundException,
+  MonitorTimeAlreadyScheduledException,
+} from 'src/student/utils/exceptions';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
 import {
@@ -44,6 +53,7 @@ import {
   ScheduleNotPendingException,
   ScheduledMonitoringNotFoundException,
 } from './utils/exceptions';
+import { Monitor } from './domain/monitor';
 
 @ApiTags('Monitor')
 @Controller('monitor')
@@ -52,6 +62,7 @@ export class MonitorController {
     private readonly monitorService: MonitorService,
     private readonly refuseScheduledMonitoringCommand: RefuseScheduledMonitoringCommand,
     private readonly acceptScheduleCommand: AcceptScheduleCommand,
+    private readonly getMonitorCommand: GetMonitorCommand,
     private readonly listMonitorsCommand: ListMonitorsCommand,
     private readonly endMonitoringCommand: EndMonitoringCommand,
     private jwtService: JwtService,
@@ -68,6 +79,33 @@ export class MonitorController {
       user.type_user.type,
       query,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get(':monitorId')
+  @ApiOperation({ summary: 'Retorna os dados de um monitor.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Busca realizada com sucesso.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Monitor não encontrado.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Não foi encontrado um token de autenticação válido.',
+  })
+  async getMonitor(@Param('monitorId') monitorId: string): Promise<Monitor> {
+    try {
+      return await this.getMonitorCommand.execute(+monitorId);
+    } catch (error) {
+      if (error instanceof MonitorNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -191,13 +229,6 @@ export class MonitorController {
     const token = req.headers.authorization.toString().replace('Bearer ', '');
     const dataToken = this.jwtService.decode(`${token}`);
     return this.monitorService.registerAvailability(+dataToken.sub, body);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @Get('availability/:monitorId')
-  async getMonitorAvailability(@Param('monitorId') monitorId: string) {
-    return this.monitorService.getMonitorAvailability(+monitorId);
   }
 
   @UseGuards(JwtAuthGuard)

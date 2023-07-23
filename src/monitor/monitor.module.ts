@@ -15,6 +15,7 @@ import { ListMonitorsCommand } from './commands/list-monitors.command';
 import { AcceptScheduleCommand } from './commands/accept-schedule.command';
 import { RefuseScheduledMonitoringCommand } from './commands/refuse-scheduled-monitoring.command';
 import { EndMonitoringCommand } from './commands/end-monitoring.command';
+import { GetMonitorCommand } from './commands/get-monitor.command';
 
 @Module({
   controllers: [MonitorController],
@@ -22,6 +23,7 @@ import { EndMonitoringCommand } from './commands/end-monitoring.command';
   providers: [
     AcceptScheduleCommand,
     EndMonitoringCommand,
+    GetMonitorCommand,
     ListMonitorsCommand,
     RefuseScheduledMonitoringCommand,
     MonitorService,
