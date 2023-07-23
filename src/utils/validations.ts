@@ -32,7 +32,7 @@ export class Validations {
   static validateLinkedIn(linkedin: string) {
     if (linkedin.length == 0) return true;
     const re =
-      /^(https:(?:\/\/)www.linkedin.com(\/)in(\/)([\w.#&-]{5,60}))(\/)$/gm;
+      /^(http(s)?:\/\/)?([\w]+\.)?linkedin\.com\/(pub|in|profile)\/([-a-zA-Z0-9]+)\/*/gm;
     return re.test(linkedin);
   }
 
