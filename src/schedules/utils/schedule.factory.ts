@@ -52,6 +52,14 @@ export class ScheduleFactory {
       };
     }
 
+    if (!!prismaSchedule.monitor_settings) {
+      schedule.monitorSettings = {
+        id: prismaSchedule.monitor_settings.id,
+        preferentialPlace: prismaSchedule.monitor_settings.preferential_place,
+        isActive: prismaSchedule.monitor_settings.is_active,
+      };
+    }
+
     return schedule;
   }
 }

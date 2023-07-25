@@ -17,7 +17,7 @@ class Availability {
   end: Date;
 }
 
-class MonitorSettings {
+export class MonitorSettings {
   @ApiProperty({ type: Number })
   id: number;
 

@@ -57,6 +57,10 @@ export class ListMonitorsCommand {
           select: { user: { select: { name: true } } },
         },
         status: { select: { status: true } },
+        MonitorSettings: {
+          select: { id: true, preferential_place: true },
+          where: { is_active: true },
+        },
       },
       take,
       skip,
