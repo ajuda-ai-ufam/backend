@@ -45,6 +45,10 @@ export class SubjectService {
             responsible_professor: {
               select: { user: selecUserData.select.user },
             },
+            MonitorSettings: {
+              select: { id: true, preferential_place: true },
+              where: { is_active: true },
+            },
           },
         },
       },
@@ -99,6 +103,10 @@ export class SubjectService {
                 },
               },
             },
+            MonitorSettings: {
+              select: { id: true, preferential_place: true },
+              where: { is_active: true },
+            },
           },
         },
       },
@@ -144,6 +152,10 @@ export class SubjectService {
             status: { select: { id: true, status: true } },
             responsible_professor: {
               select: { user: selecUserData.select.user },
+            },
+            MonitorSettings: {
+              select: { id: true, preferential_place: true },
+              where: { is_active: true },
             },
           },
           where: {

@@ -3,6 +3,7 @@ import { Subject } from 'src/subject/domain/subject';
 import { User } from 'src/user/domain/user';
 import { ScheduleStatus } from '../utils/schedules.enum';
 import { Topic } from '../dto/topic.dto';
+import { MonitorSettings } from 'src/monitor/domain/monitor';
 
 class Student extends User {
   @ApiProperty({ type: String })
@@ -44,4 +45,7 @@ export class Schedule {
 
   @ApiProperty({ type: Topic })
   topic?: Topic;
+
+  @ApiProperty({ type: Topic })
+  monitorSettings?: MonitorSettings;
 }
