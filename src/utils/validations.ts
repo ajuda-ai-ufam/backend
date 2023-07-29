@@ -4,7 +4,8 @@ export class Validations {
   }
 
   static validateName(name: string) {
-    const re = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/gm;
+    const re =
+      /^(?! )[a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ',. -]+([',. -][a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+)+$/gm;
     return re.test(name);
   }
 
