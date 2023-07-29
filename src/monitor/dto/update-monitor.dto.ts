@@ -1,16 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
-export type hours = {
+export type AvailabilityDayPeriod = {
   start: string;
   end: string;
 };
 
-export type days = {
+export type AvailabilityWeekDay = {
   weekDay: number;
-  hours: hours[];
+  hours: AvailabilityDayPeriod[];
 };
 
-export class MonitorAvailabilityDto {
+export class UpdateMonitorDTO {
+  @IsOptional()
   @ApiProperty({
     type: 'array',
     items: {
@@ -38,5 +40,11 @@ export class MonitorAvailabilityDto {
       },
     },
   })
-  availability: days[];
+  availability?: AvailabilityWeekDay[];
+
+  @IsOptional()
+  @ApiProperty()
+  @IsString()
+  @MaxLength(60)
+  preferentialPlace?: string;
 }
