@@ -43,7 +43,10 @@ export class ScheduleMonitoringCommand {
       throw new InvalidDateException();
 
     const monitor = await this.prisma.monitor.findFirst({
-      include: { student: { include: { user: true } } },
+      include: {
+        student: { include: { user: true } },
+        MonitorSettings: { select: { id: true }, where: { is_active: true } },
+      },
       where: { id: monitorId },
     });
     if (!monitor) throw new MonitorNotFoundException();
@@ -60,13 +63,16 @@ export class ScheduleMonitoringCommand {
     await this.checkStudentSchedules(userId, start, end);
 
     let topic: ScheduleTopics;
-
     if (topicId) {
       topic = await this.prisma.scheduleTopics.findUnique({
         where: { id: topicId },
       });
       if (!topic) throw new TopicNotFoundException();
     }
+
+    const monitorSettingsId = monitor.MonitorSettings.length
+      ? monitor.MonitorSettings[0].id
+      : null;
 
     const newSchedule = await this.prisma.scheduleMonitoring.create({
       data: {
@@ -76,6 +82,7 @@ export class ScheduleMonitoringCommand {
         end,
         description,
         schedule_topic_id: topicId,
+        monitor_settings_id: monitorSettingsId,
       },
     });
 

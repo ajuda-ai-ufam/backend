@@ -16,24 +16,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request } from 'express';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RequestMonitoringDto } from './dto/request-monitoring.dto';
-import { MonitorService } from './monitor.service';
-import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
-import { ListMonitorsQueryParams } from './dto/list-monitors.request.dto';
-import { AcceptScheduleCommand } from './commands/accept-schedule.command';
-import { RefuseScheduledMonitoringCommand } from './commands/refuse-scheduled-monitoring.command';
-import { EndMonitoringCommand } from './commands/end-monitoring.command';
-import { ListMonitorsCommand } from './commands/list-monitors.command';
-import { GetMonitorCommand } from './commands/get-monitor.command';
 import {
   InvalidScheduleStatusException,
   NotTheScheduleMonitorException,
@@ -44,16 +37,28 @@ import {
   MonitorNotFoundException,
   MonitorTimeAlreadyScheduledException,
 } from 'src/student/utils/exceptions';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
+import { AcceptScheduleCommand } from './commands/accept-schedule.command';
+import { EndMonitoringCommand } from './commands/end-monitoring.command';
+import { GetMonitorCommand } from './commands/get-monitor.command';
+import { ListMonitorsCommand } from './commands/list-monitors.command';
+import { RefuseScheduledMonitoringCommand } from './commands/refuse-scheduled-monitoring.command';
+import { UpdateMonitorCommand } from './commands/update-monitor.command';
+import { Monitor } from './domain/monitor';
+import { ListMonitorsQueryParams } from './dto/list-monitors.request.dto';
+import { RequestMonitoringDto } from './dto/request-monitoring.dto';
+import { UpdateMonitorDTO } from './dto/update-monitor.dto';
+import { MonitorService } from './monitor.service';
 import {
-  InvalidMonitoringStatusException as InvalidMonitoringStatusException,
+  EditMonitorBodyMissingFieldsException,
+  EmptyAvailabilityException,
+  InvalidMonitoringStatusException,
+  InvalidPreferentialPlaceException,
   MonitoringNotFoundException,
   NotTheResponsibleProfessorException,
   ScheduleNotPendingException,
   ScheduledMonitoringNotFoundException,
+  UserLoggedNotResponsableForMonitoringException,
 } from './utils/exceptions';
-import { Monitor } from './domain/monitor';
 
 @ApiTags('Monitor')
 @Controller('monitor')
@@ -65,6 +70,7 @@ export class MonitorController {
     private readonly getMonitorCommand: GetMonitorCommand,
     private readonly listMonitorsCommand: ListMonitorsCommand,
     private readonly endMonitoringCommand: EndMonitoringCommand,
+    private readonly updateMonitorCommand: UpdateMonitorCommand,
     private jwtService: JwtService,
   ) {}
 
@@ -221,14 +227,46 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Post('availability')
-  async registerAvailability(
+  @Patch('/:id')
+  @Roles(Role.Student)
+  async editMonitorAvailability(
     @Req() req: Request,
-    @Body() body: MonitorAvailabilityDto,
+    @Body() body: UpdateMonitorDTO,
+    @Param('id') monitorId: number,
   ) {
     const token = req.headers.authorization.toString().replace('Bearer ', '');
-    const dataToken = this.jwtService.decode(`${token}`);
-    return this.monitorService.registerAvailability(+dataToken.sub, body);
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    try {
+      return await this.updateMonitorCommand.execute(
+        monitorId,
+        user.sub,
+        body.preferentialPlace,
+        body.availability,
+      );
+    } catch (error) {
+      if (
+        error instanceof EditMonitorBodyMissingFieldsException ||
+        error instanceof EmptyAvailabilityException ||
+        error instanceof InvalidPreferentialPlaceException
+      ) {
+        throw new BadRequestException(error.message);
+      }
+
+      if (error instanceof InvalidMonitoringStatusException) {
+        throw new PreconditionFailedException(error.message);
+      }
+
+      if (error instanceof MonitoringNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      if (error instanceof UserLoggedNotResponsableForMonitoringException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)

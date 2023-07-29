@@ -5,12 +5,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Monitor } from '@prisma/client';
-import * as moment from 'moment';
 import { PrismaService } from 'src/database/prisma.service';
 import { EmailService } from 'src/email/email.service';
 import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
-import { MonitorAvailabilityDto } from './dto/monitor-availability.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 
 @Injectable()
@@ -195,61 +193,6 @@ export class MonitorService {
     await this.emailService.sendEmailRefuseMonitoring(email, sub, template);
 
     return { message: 'Solicitacão recusada!' };
-  }
-
-  async registerAvailability(userId: number, data: MonitorAvailabilityDto) {
-    const monitor = await this.prismaService.monitor.findFirst({
-      where: {
-        OR: [{ id_status: 2 }, { id_status: 3 }],
-        AND: { student_id: userId },
-      },
-    });
-
-    if (!monitor) throw new NotFoundException('Monitor(a) não encontrado(a)');
-
-    if (!data.availability.length)
-      throw new BadRequestException('Nenhum horário informado');
-
-    data.availability.forEach((day) => {
-      if (day.weekDay < 0 || day.weekDay > 6)
-        throw new BadRequestException('Dia da semana inválido');
-      day.hours.forEach((hour) => {
-        const hourRegex = /^([0-1]?[\d]|2[0-3]):[0-5][\d]$/;
-        if (!hourRegex.test(hour.start) || !hourRegex.test(hour.end))
-          throw new BadRequestException('Formato de hora inválido');
-        const start = moment(hour.start, 'HH:mm');
-        const end = moment(hour.end, 'HH:mm');
-        if (!start.isValid() || !end.isValid())
-          throw new BadRequestException('Horário inválido');
-        if (start.isSameOrAfter(end))
-          throw new BadRequestException(
-            'Horário de início deve ser menor que o horário de fim',
-          );
-      });
-    });
-
-    await this.clearMonitorAvailability(monitor);
-
-    data.availability.forEach((day) => {
-      day.hours.forEach(async (hour) => {
-        try {
-          await this.prismaService.availableTimes.create({
-            data: {
-              week_day: day.weekDay,
-              start: hour.start,
-              end: hour.end,
-              monitor_id: monitor.id,
-            },
-          });
-        } catch (error) {
-          console.log(error);
-        }
-      });
-    });
-
-    if (monitor.id_status == 2) await this.updateStatusMonitor(monitor.id);
-
-    return { message: 'Disponibilidade registrada!' };
   }
 
   async updateStatusMonitor(id: number) {

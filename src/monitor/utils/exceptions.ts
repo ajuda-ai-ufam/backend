@@ -1,3 +1,33 @@
+export class EmptyAvailabilityException extends Error {
+  constructor() {
+    super();
+    this.message =
+      'Um(a) monitor(a) precisa ter pelo menos um dia disponível para agendamentos.';
+  }
+}
+
+export class InvalidPreferentialPlaceException extends Error {
+  constructor() {
+    super();
+    this.message = 'Local de antedimento preferencial inválido';
+  }
+}
+
+export class UserLoggedNotResponsableForMonitoringException extends Error {
+  constructor() {
+    super();
+    this.message =
+      'Usuário(a) logado(a) não é responsável pela monitoria que está sendo alterada.';
+  }
+}
+
+export class EditMonitorBodyMissingFieldsException extends Error {
+  constructor() {
+    super();
+    this.message = 'Nenhum dos campos foi passado para edição.';
+  }
+}
+
 export class MonitoringNotFoundException extends Error {
   constructor() {
     super();
