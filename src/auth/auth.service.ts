@@ -17,16 +17,22 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.userService.findOneByEmail(email);
+    const user = await this.userService.findOneByEmailWithOnGoingMonitor(email);
 
     if (user && (await comparePassword(password, user.password))) {
       if (!user.is_verified)
         throw new ForbiddenException('Usuário(a) não verificado(a).');
+
+      const monitor = !!user.student?.Monitor?.length
+        ? user.student.Monitor[0]
+        : undefined;
+
       return {
         id: user.id,
         username: user.name,
         type_user_id: user.type_user_id,
         type_user: user.type_user,
+        monitor,
       };
     }
     throw new UnauthorizedException('Usuário(a) ou senha inválidos.');
@@ -39,6 +45,7 @@ export class AuthService {
       username: user.username,
       type_user: user.type_user,
       type_user_id: user.type_user_id,
+      monitor: user.monitor,
     };
     return {
       access_token: this.jwtService.sign(payload),
