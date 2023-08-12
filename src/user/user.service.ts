@@ -25,6 +25,7 @@ import {
   PersonalDataInPasswordException,
   UserNotFoundException,
 } from './utils/exceptions';
+import { MonitorStatus } from 'src/monitor/utils/monitor.enum';
 
 @Injectable()
 export class UserService {
@@ -192,6 +193,27 @@ export class UserService {
       },
       orderBy: {
         created_at: 'asc',
+      },
+    });
+  }
+
+  async findOneByEmailWithOnGoingMonitor(email: string) {
+    return this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        student: {
+          include: {
+            Monitor: {
+              where: {
+                id_status: {
+                  in: [MonitorStatus.APPROVED, MonitorStatus.AVAILABLE],
+                },
+                end_date: null,
+              },
+            },
+          },
+        },
+        type_user: true,
       },
     });
   }
