@@ -15,12 +15,13 @@ export class Validations {
   }
 
   static validateEmail(email: string) {
-    const re = /^([\w.]{3,20})@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gm;
+    const re =
+      /^([\w.-]{3,20})@(icomp\.ufam\.edu\.br|ufam\.edu\.br|super\.ufam\.edu\.br)$/gm;
     return re.test(email);
   }
 
   static validateEmailContact(email: string) {
-    const re = /^([\w.]{3,20})@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gm;
+    const re = /^([\w.-]{3,20})@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gm;
     return re.test(email);
   }
 
