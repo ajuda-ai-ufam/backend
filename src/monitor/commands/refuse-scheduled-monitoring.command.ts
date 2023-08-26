@@ -20,7 +20,7 @@ export class RefuseScheduledMonitoringCommand {
       where: { id: scheduleId },
       include: {
         monitor: {
-          include: { MonitorSettings: { where: { is_active: true } } },
+          include: {  MonitorSettings: { where: { is_active: true } }, student: { include: { user: true } } },
         },
         student: {
           include: { user: true },
@@ -52,7 +52,7 @@ export class RefuseScheduledMonitoringCommand {
     await this.emailService.sendEmailRefuseScheduledMonitoring(
       email,
       'Cancelado',
-      schedule.student.user.name,
+      schedule.monitor.student.user.name,
       schedule.start.toLocaleDateString('pt-BR'),
       schedule.start.toLocaleTimeString('pt-BR').slice(0, 5),
       schedule.end.toLocaleTimeString('pt-BR').slice(0, 5),
