@@ -22,7 +22,7 @@ export class RefuseScheduledMonitoringCommand {
         monitor: {
           include: {
             MonitorSettings: { where: { is_active: true } }, 
-            student: { include: { user: true } }
+            student: { include: { user: true } },
           },
         },
         student: {
