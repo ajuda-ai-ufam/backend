@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
+import { SubjectQueryDto } from './dto/subject-query.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { SubjectService } from './subject.service';
 import { EndResponsabilityCommand } from './commands/end-responsability-command';
@@ -36,9 +36,7 @@ export class SubjectController {
   @ApiBearerAuth()
   @ApiOperation({ description: 'Rota para listar todas as disciplinas.' })
   @Get()
-  async findAll(
-    @Query() query: QueryPaginationDto,
-  ): Promise<IResponsePaginate> {
+  async findAll(@Query() query: SubjectQueryDto): Promise<IResponsePaginate> {
     return await this.subjectService.findAll(query);
   }
 
