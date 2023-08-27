@@ -56,8 +56,28 @@ export class ListStudentSchedulesCommand {
             name: true,
           },
         },
-        monitor: { include: { student: studentInclude, subject: true } },
+        monitor: {
+          include: {
+            student: studentInclude,
+            subject: true,
+            MonitorSettings: {
+              select: {
+                id: true,
+                preferential_place: true,
+                is_active: true,
+              },
+              where: { is_active: true },
+            },
+          },
+        },
         student: studentInclude,
+        monitor_settings: {
+          select: {
+            id: true,
+            preferential_place: true,
+            is_active: true,
+          },
+        },
       },
       orderBy: {
         start: 'asc',
@@ -73,7 +93,6 @@ export class ListStudentSchedulesCommand {
         schedule['is_monitoring'] = true;
       else schedule['is_monitoring'] = false;
     });
-
     return pagination(schedules, query);
   }
 }

@@ -5,7 +5,7 @@ export class Validations {
 
   static validateName(name: string) {
     const re =
-      /^([a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ']{3,}){1}(([',. -][a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ' ]{3,45}))$/gm;
+      /^(?! )[a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ',. -]+([',. -][a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+)+$/gm;
     return re.test(name);
   }
 
@@ -15,12 +15,13 @@ export class Validations {
   }
 
   static validateEmail(email: string) {
-    const re = /^([\w.]{3,20})@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gm;
+    const re =
+      /^([\w.-]{3,20})@(icomp\.ufam\.edu\.br|ufam\.edu\.br|super\.ufam\.edu\.br)$/gm;
     return re.test(email);
   }
 
   static validateEmailContact(email: string) {
-    const re = /^([\w.]{3,20})@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gm;
+    const re = /^([\w.-]{3,20})@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gm;
     return re.test(email);
   }
 

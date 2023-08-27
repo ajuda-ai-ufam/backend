@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Subject } from '@prisma/client';
-import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
+import { SubjectQueryDto } from './dto/subject-query.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { pagination } from 'src/common/pagination';
 import { PrismaService } from 'src/database/prisma.service';
@@ -44,6 +44,10 @@ export class SubjectService {
             status: { select: { id: true, status: true } },
             responsible_professor: {
               select: { user: selecUserData.select.user },
+            },
+            MonitorSettings: {
+              select: { id: true, preferential_place: true },
+              where: { is_active: true },
             },
           },
         },
@@ -99,6 +103,10 @@ export class SubjectService {
                 },
               },
             },
+            MonitorSettings: {
+              select: { id: true, preferential_place: true },
+              where: { is_active: true },
+            },
           },
         },
       },
@@ -109,19 +117,66 @@ export class SubjectService {
     return data;
   }
 
-  async findAll(query: QueryPaginationDto): Promise<IResponsePaginate> {
+  async findAll(query: SubjectQueryDto): Promise<IResponsePaginate> {
     const selecUserData = {
       select: {
-        user: { select: { id: true, name: true, email: true } },
+        user: {
+          select: { id: true, name: true, email: true },
+        },
       },
     };
 
-    const data = await this.prisma.subject.findMany({
-      where: {
-        name: {
-          contains: query.search,
-        },
+    console.log(query.monitorStatus);
+
+    const teacherId =
+      typeof query.teacherId === 'string'
+        ? Number.parseInt(query.teacherId)
+        : null;
+
+    if (teacherId !== null) {
+      const teacherExists = await this.prisma.teacher.findUnique({
+        where: { user_id: teacherId },
+      });
+
+      if (!teacherExists) {
+        throw new NotFoundException('Professor não encontrado.');
+      }
+    }
+
+    const monitorStatus =
+      typeof query.monitorStatus === 'undefined' ? null : query.monitorStatus;
+
+    const monitorStatusFilter =
+      monitorStatus !== null
+        ? {
+            id_status: {
+              in: [...monitorStatus],
+            },
+          }
+        : {
+            id_status: {
+              in: [MonitorStatus.AVAILABLE, MonitorStatus.APPROVED],
+            },
+          };
+
+    const where = {
+      name: {
+        contains: query.search,
       },
+      SubjectResponsability:
+        teacherId !== null
+          ? {
+              some: {
+                professor_id: {
+                  equals: teacherId,
+                },
+              },
+            }
+          : undefined,
+    };
+
+    const data = await this.prisma.subject.findMany({
+      where: where,
       include: {
         SubjectResponsability: {
           select: {
@@ -136,6 +191,7 @@ export class SubjectService {
             student: {
               select: {
                 user: selecUserData.select.user,
+                enrollment: true,
                 course: {
                   select: { id: true, name: true },
                 },
@@ -145,16 +201,17 @@ export class SubjectService {
             responsible_professor: {
               select: { user: selecUserData.select.user },
             },
-          },
-          where: {
-            id_status: {
-              in: [MonitorStatus.AVAILABLE, MonitorStatus.APPROVED],
+            MonitorSettings: {
+              select: { id: true, preferential_place: true },
+              where: { is_active: true },
             },
           },
+          where: monitorStatusFilter,
         },
       },
       orderBy: { name: 'asc' },
     });
+
     return pagination(data, query);
   }
 }

@@ -30,6 +30,9 @@ const scheduleSelectPrismaSQL = {
       name: true,
     },
   },
+  monitor_settings: {
+    select: { id: true, preferential_place: true, is_active: true },
+  },
   monitor: {
     select: {
       id: true,
@@ -48,6 +51,10 @@ const scheduleSelectPrismaSQL = {
       },
       responsible_professor: {
         select: { ...userSelect },
+      },
+      MonitorSettings: {
+        select: { id: true, preferential_place: true, is_active: true },
+        where: { is_active: true },
       },
     },
   },
