@@ -7,10 +7,10 @@ class Enrollment {
   id: number;
 
   @ApiProperty()
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty()
-  canceledAt?: Date;
+  canceled_at?: Date;
 }
 
 export class StudentEnrollment extends Enrollment {
