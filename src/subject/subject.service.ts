@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Subject } from '@prisma/client';
 import { SubjectQueryDto } from './dto/subject-query.dto';
+import { Role } from 'src/auth/enums/role.enum';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { pagination } from 'src/common/pagination';
 import { PrismaService } from 'src/database/prisma.service';
@@ -10,7 +15,7 @@ import { MonitorStatus } from 'src/monitor/utils/monitor.enum';
 export class SubjectService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findSubjectById(id: number) {
+  async findSubjectById(userId: number, id: number) {
     const selecUserData = {
       select: {
         user: { select: { id: true, name: true, email: true } },
@@ -72,6 +77,18 @@ export class SubjectService {
     data.SubjectResponsability = approved_SubjectResponsability;
     data.Monitor = approved_Monitores;
 
+    const subjectsEnrollments = await this.prisma.subjectEnrollment.findMany({
+      where: { student_id: userId },
+    });
+
+    data['isStudentEnrolled'] = false;
+
+    subjectsEnrollments.forEach((element) => {
+      if (element.subject_id == data.id) {
+        data['isStudentEnrolled'] = true;
+      }
+    });
+
     return data;
   }
 
@@ -117,7 +134,11 @@ export class SubjectService {
     return data;
   }
 
-  async findAll(query: SubjectQueryDto): Promise<IResponsePaginate> {
+  async findAll(
+    userId: number,
+    userType: Role,
+    query: SubjectQueryDto,
+  ): Promise<IResponsePaginate> {
     const selecUserData = {
       select: {
         user: {
@@ -125,9 +146,6 @@ export class SubjectService {
         },
       },
     };
-
-    console.log(query.monitorStatus);
-
     const teacherId =
       typeof query.teacherId === 'string'
         ? Number.parseInt(query.teacherId)
@@ -142,6 +160,16 @@ export class SubjectService {
         throw new NotFoundException('Professor não encontrado.');
       }
     }
+
+    const onlyEnrollments = query.onlyEnrollments;
+
+    if (onlyEnrollments === true && userType !== Role.Student) {
+      throw new BadRequestException('Usuário logado não é um Aluno.');
+    }
+
+    const subjectsEnrollments = await this.prisma.subjectEnrollment.findMany({
+      where: { student_id: userId },
+    });
 
     const monitorStatus =
       typeof query.monitorStatus === 'undefined' ? null : query.monitorStatus;
@@ -163,6 +191,16 @@ export class SubjectService {
       name: {
         contains: query.search,
       },
+      studentsEnrolled:
+        onlyEnrollments === true
+          ? {
+              some: {
+                student_id: {
+                  equals: userId,
+                },
+              },
+            }
+          : undefined,
       SubjectResponsability:
         teacherId !== null
           ? {
@@ -210,6 +248,15 @@ export class SubjectService {
         },
       },
       orderBy: { name: 'asc' },
+    });
+
+    data.forEach((element) => {
+      element['isStudentEnrolled'] = false;
+      subjectsEnrollments.forEach((subject) => {
+        if (subject.subject_id == element.id) {
+          element['isStudentEnrolled'] = true;
+        }
+      });
     });
 
     return pagination(data, query);

@@ -8,16 +8,20 @@ import {
   Patch,
   PreconditionFailedException,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SubjectQueryDto } from './dto/subject-query.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { SubjectService } from './subject.service';
+import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
 import { EndResponsabilityCommand } from './commands/end-responsability-command';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
+import { Request } from 'express';
 import {
   AlreadyFinishedException,
   BlockingMonitorsException,
@@ -30,21 +34,35 @@ export class SubjectController {
   constructor(
     private readonly subjectService: SubjectService,
     private readonly endResponsabilityCommand: EndResponsabilityCommand,
+    private jwtService: JwtService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ description: 'Rota para listar todas as disciplinas.' })
   @Get()
-  async findAll(@Query() query: SubjectQueryDto): Promise<IResponsePaginate> {
-    return await this.subjectService.findAll(query);
+  async findAll(
+    @Req() req: Request,
+    @Query() query: SubjectQueryDto,
+  ): Promise<IResponsePaginate> {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    return await this.subjectService.findAll(
+      user.sub,
+      user.type_user.type,
+      query,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return await this.subjectService.findSubjectById(id);
+  async findOne(@Req() req: Request, @Param('id') id: number) {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    return await this.subjectService.findSubjectById(user.sub, id);
   }
 
   @UseGuards(JwtAuthGuard)
