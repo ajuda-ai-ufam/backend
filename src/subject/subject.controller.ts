@@ -3,6 +3,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  BadRequestException,
   NotFoundException,
   Param,
   Patch,
@@ -26,6 +27,7 @@ import {
   AlreadyFinishedException,
   BlockingMonitorsException,
   ResponsabilityNotFoundException,
+  UserNotStudentException,
 } from './utils/exceptions';
 
 @Controller('subject')
@@ -48,11 +50,17 @@ export class SubjectController {
     const token = req.headers.authorization.toString().replace('Bearer ', '');
     const user = this.jwtService.decode(token) as JWTUser;
 
-    return await this.subjectService.findAll(
-      user.sub,
-      user.type_user.type,
-      query,
-    );
+    try {
+      return await this.subjectService.findAll(
+        user.sub,
+        user.type_user.type,
+        query,
+      );
+    } catch (error) {
+      if (error instanceof UserNotStudentException) {
+        throw new BadRequestException(error.message);
+      }
+    }
   }
 
   @UseGuards(JwtAuthGuard)

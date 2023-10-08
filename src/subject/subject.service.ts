@@ -1,8 +1,5 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { UserNotStudentException } from 'src/subject/utils/exceptions';
 import { Subject } from '@prisma/client';
 import { SubjectQueryDto } from './dto/subject-query.dto';
 import { Role } from 'src/auth/enums/role.enum';
@@ -164,12 +161,15 @@ export class SubjectService {
     const onlyEnrollments = query.onlyEnrollments;
 
     if (onlyEnrollments === true && userType !== Role.Student) {
-      throw new BadRequestException('Usuário logado não é um Aluno.');
+      throw new UserNotStudentException();
     }
 
-    const subjectsEnrollments = await this.prisma.subjectEnrollment.findMany({
-      where: { student_id: userId },
-    });
+    let subjectsEnrollments = [];
+    if (userType === Role.Student) {
+      subjectsEnrollments = await this.prisma.subjectEnrollment.findMany({
+        where: { student_id: userId },
+      });
+    }
 
     const monitorStatus =
       typeof query.monitorStatus === 'undefined' ? null : query.monitorStatus;
