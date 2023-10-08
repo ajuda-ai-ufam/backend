@@ -32,6 +32,6 @@ export class BlockingMonitorsException extends Error {
 export class UserNotStudentException extends Error {
   constructor() {
     super();
-    this.message = 'Usuário logado não é um Aluno.';
+    this.message = 'Usuário(a) logado(a) não é aluno(a).';
   }
 }

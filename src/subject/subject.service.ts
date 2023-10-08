@@ -258,7 +258,6 @@ export class SubjectService {
         }
       });
     });
-
     return pagination(data, query);
   }
 }

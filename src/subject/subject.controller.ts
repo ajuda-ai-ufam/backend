@@ -60,6 +60,8 @@ export class SubjectController {
       if (error instanceof UserNotStudentException) {
         throw new BadRequestException(error.message);
       }
+
+      throw error;
     }
   }
 
