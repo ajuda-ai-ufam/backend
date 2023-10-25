@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  PreconditionFailedException,
 } from '@nestjs/common';
 import { Monitor } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
@@ -27,6 +28,20 @@ export class MonitorService {
 
     const subject = await this.subjectService.findOne(data.subject_id);
     if (!subject) throw new NotFoundException('Disciplina não encontrada.');
+
+    const subjectEnrollment =
+      await this.prismaService.subjectEnrollment.findFirst({
+        where: {
+          student_id: user_id,
+          subject_id: data.subject_id,
+          canceled_at: null,
+        },
+      });
+    if (subjectEnrollment) {
+      throw new PreconditionFailedException(
+        'Você não pode estar matriculado(a) em uma disciplina que quer se tornar monitor(a).',
+      );
+    }
 
     const subjectResponsability =
       await this.prismaService.subjectResponsability.findMany({
