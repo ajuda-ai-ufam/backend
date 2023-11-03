@@ -27,6 +27,7 @@ import {
   MonitorTimeAlreadyScheduledException,
   NotAnAvailableTimeException,
   SameStudentException,
+  StudentNotEnrolledException,
   StudentTimeAlreadyScheduledException,
   TopicNotFoundException,
 } from './utils/exceptions';
@@ -77,7 +78,8 @@ export class StudentController {
         error instanceof MonitorStatusNotAvailableException ||
         error instanceof NotAnAvailableTimeException ||
         error instanceof MonitorTimeAlreadyScheduledException ||
-        error instanceof StudentTimeAlreadyScheduledException
+        error instanceof StudentTimeAlreadyScheduledException ||
+        error instanceof StudentNotEnrolledException
       ) {
         throw new PreconditionFailedException(error.message);
       }

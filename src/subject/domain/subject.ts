@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Course } from 'src/course/domain/course';
+import { SubjectEnrollment } from 'src/enrollment/domain/enrollment';
 
 export class Subject {
   @ApiProperty({ type: Number })
@@ -14,4 +15,7 @@ export class Subject {
 
   @ApiProperty({ type: Course })
   course?: Course;
+
+  @ApiProperty({ type: SubjectEnrollment })
+  studentsEnrolled?: SubjectEnrollment[];
 }

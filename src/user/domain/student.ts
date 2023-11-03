@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from './user';
 import { Course } from 'src/course/domain/course';
+import { StudentEnrollment } from 'src/enrollment/domain/enrollment';
+import { User } from './user';
 
 export class Student extends User {
   @ApiProperty({ type: String })
@@ -23,4 +24,7 @@ export class Student extends User {
 
   @ApiProperty({ type: Course })
   course?: Course;
+
+  @ApiProperty()
+  subjectsEnrolled?: StudentEnrollment[];
 }

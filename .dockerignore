@@ -1,12 +1,11 @@
 node_modules
 dist
 .vscode
-test
 .git
 .github
 .husky
 .infra
-test
+__tests__
 
 .env
 .development.env

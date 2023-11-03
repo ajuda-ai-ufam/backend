@@ -28,3 +28,10 @@ export class BlockingMonitorsException extends Error {
     });
   }
 }
+
+export class UserNotStudentException extends Error {
+  constructor() {
+    super();
+    this.message = 'Usuário(a) logado(a) não é aluno(a).';
+  }
+}

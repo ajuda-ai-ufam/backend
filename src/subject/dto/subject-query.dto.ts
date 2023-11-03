@@ -8,6 +8,15 @@ import { EnumValidator } from '../../enum-validator.validator';
 export class SubjectQueryDto extends QueryPaginationDto {
   @ApiProperty({
     required: false,
+    type: Boolean,
+    description: 'Disciplinas Matriculadas',
+  })
+  @Transform(({ value }) => value && value === 'true')
+  @IsOptional()
+  onlyEnrollments?: boolean;
+
+  @ApiProperty({
+    required: false,
     description: 'ID do professor',
   })
   @IsOptional()

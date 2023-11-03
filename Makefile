@@ -75,6 +75,10 @@ deploy-prod: down
 	git pull origin master && \
 	docker-compose -f ${PROD_DOCKER_COMPOSE_FILE} up --build --remove-orphans -d
 
+.PHONY: restart-prod
+restart-prod: down
+	@docker-compose -f ${PROD_DOCKER_COMPOSE_FILE} up --build --remove-orphans -d
+
 .PHONY: apache-status
 apache-status:
 	systemctl status apache2
@@ -95,3 +99,11 @@ apache-stop:
 apache-config:
 	cp ./.infra/apache2.config /etc/apache2/sites-enabled/000-default.conf && \
 	systemctl restart apache2
+
+.PHONY: setup-status
+setup-status:
+	sudo systemctl status super-setup
+
+.PHONY: setup-restart
+setup-restartß:
+	sudo systemctl restart super-setup
