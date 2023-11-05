@@ -37,6 +37,7 @@ model User {
   verification_code Verification_Code[]
   student           Student?
   teacher           Teacher?
+  SuperCoordinators SuperCoordinators?
 
   @@map("user")
 }
@@ -245,4 +246,11 @@ model Department {
   abbreviation String @db.VarChar(10)
 
   @@map("department")
+}
+
+model SuperCoordinators {
+  user_id Int  @id @unique
+  user    User @relation(fields: [user_id], references: [id])
+
+  @@map("super_coordinators")
 }
