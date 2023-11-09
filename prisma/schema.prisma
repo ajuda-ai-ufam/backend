@@ -116,6 +116,7 @@ model AvailableTimes {
 model Teacher {
   user_id               Int                     @id
   user                  User                    @relation(fields: [user_id], references: [id])
+  siape                 String?                  @db.VarChar(16)
   SubjectResponsability SubjectResponsability[]
   Monitor               Monitor[]
 
