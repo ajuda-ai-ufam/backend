@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UserNotStudentException } from 'src/subject/utils/exceptions';
 import { Subject } from '@prisma/client';
-import { SubjectQueryDto } from './dto/subject-query.dto';
 import { Role } from 'src/auth/enums/role.enum';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { pagination } from 'src/common/pagination';
 import { PrismaService } from 'src/database/prisma.service';
 import { MonitorStatus } from 'src/monitor/utils/monitor.enum';
+import { UserNotStudentException } from 'src/subject/utils/exceptions';
+import { SubjectQueryDto } from './dto/subject-query.dto';
 
 @Injectable()
 export class SubjectService {
@@ -22,6 +22,7 @@ export class SubjectService {
     const data = await this.prisma.subject.findFirst({
       where: { id: id },
       include: {
+        studentsEnrolled: {},
         SubjectResponsability: {
           select: {
             id: true,
