@@ -71,6 +71,7 @@ async function populateTeachers() {
     await prisma.teacher.upsert({
       create: {
         user_id: teacher.userData.id,
+        siape: teacher.siape
       },
       update: {},
       where: { user_id: teacher.userData.id },
