@@ -76,7 +76,10 @@ export class SubjectService {
     data.Monitor = approved_Monitores;
 
     const subjectsEnrollments = await this.prisma.subjectEnrollment.findMany({
-      where: { student_id: userId },
+      where: {
+        student_id: userId,
+        canceled_at: null,
+      },
     });
 
     data['isStudentEnrolled'] = false;
@@ -198,6 +201,9 @@ export class SubjectService {
               some: {
                 student_id: {
                   equals: userId,
+                },
+                canceled_at: {
+                  equals: null,
                 },
               },
             }
