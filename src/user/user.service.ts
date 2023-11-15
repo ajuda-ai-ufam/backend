@@ -18,6 +18,7 @@ import {
   InvalidEnrollmentException,
   InvalidLinkedinURLException,
   InvalidNameException,
+  InvalidSiapeException,
   InvalidPasswordException,
   InvalidWhatsAppNumberException,
   MissingFieldsException,
@@ -137,6 +138,7 @@ export class UserService {
       data.confirm_password,
       data.email,
       data.name,
+      data.siape,
       data.password,
     ];
 
@@ -145,6 +147,9 @@ export class UserService {
     data.name = data.name.trim();
 
     if (!Validations.validateName(data.name)) throw new InvalidNameException();
+
+    if (!Validations.validateSiape(data.siape))
+      throw new InvalidSiapeException();
 
     if (!Validations.validateEmail(data.email))
       throw new InvalidEmailException();
@@ -178,7 +183,7 @@ export class UserService {
       },
     });
 
-    await this.teacherService.create(user.id);
+    await this.teacherService.create(user.id, data.siape);
 
     return { status: 201, message: 'Cadastrado com sucesso!' };
   }

@@ -61,6 +61,13 @@ export class InvalidNameException extends Error {
   }
 }
 
+export class InvalidSiapeException extends Error {
+  constructor() {
+    super();
+    this.message = `O Código de identificação SIAPE deve ter no máximo 16 caracteres.`;
+  }
+}
+
 export class InvalidEmailException extends Error {
   constructor() {
     super();

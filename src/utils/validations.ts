@@ -14,6 +14,11 @@ export class Validations {
     return false;
   }
 
+  static validateSiape(siape: string): boolean {
+    if (siape.length <= 16) return true;
+    return false;
+  }
+
   static validateEmail(email: string) {
     const re =
       /^([\w.-]{3,20})@(icomp\.ufam\.edu\.br|ufam\.edu\.br|super\.ufam\.edu\.br)$/gm;
