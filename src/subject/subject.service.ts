@@ -171,7 +171,10 @@ export class SubjectService {
     let subjectsEnrollments = [];
     if (userType === Role.Student) {
       subjectsEnrollments = await this.prisma.subjectEnrollment.findMany({
-        where: { student_id: userId },
+        where: {
+          student_id: userId,
+          canceled_at: null,
+        },
       });
     }
 
