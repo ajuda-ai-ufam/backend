@@ -39,6 +39,7 @@ export class EndMonitoringCommand {
 
     if (
       userRole !== Role.Coordinator &&
+      userRole !== Role.SuperCoordinator &&
       userId !== monitoring.responsible_professor_id
     ) {
       throw new NotTheResponsibleProfessorException();
