@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import {
   StudentAlreadyEnrolledException,
+  StudentMonitorException,
   SubjectNotFoundException,
 } from '../utils/exceptions';
 import { Enrollment } from '../dto/enrollment.dto';
+import { MonitorStatus } from 'src/monitor/utils/monitor.enum';
 
 @Injectable()
 export class CreateSubjectEnrollmentCommand {
@@ -28,6 +30,23 @@ export class CreateSubjectEnrollmentCommand {
 
     if (enrollment) {
       throw new StudentAlreadyEnrolledException();
+    }
+
+    const monitor = await this.prisma.monitor.findFirst({
+      where: {
+        student_id: studentId,
+        subject_id: subjectId,
+        id_status: {
+          in: [
+            MonitorStatus.APPROVED,
+            MonitorStatus.AVAILABLE,
+            MonitorStatus.PENDING,
+          ],
+        },
+      },
+    });
+    if (monitor) {
+      throw new StudentMonitorException();
     }
 
     const subjectEnrollment = {

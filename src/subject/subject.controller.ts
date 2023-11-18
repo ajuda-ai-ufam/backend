@@ -31,6 +31,7 @@ import {
   BlockingMonitorsException,
   ResponsabilityNotFoundException,
   StudentAlreadyEnrolledException,
+  StudentMonitorException,
   StudentNotEnrolledException,
   SubjectNotFoundException,
   UserNotStudentException,
@@ -129,6 +130,10 @@ export class SubjectController {
     } catch (error) {
       if (error instanceof StudentAlreadyEnrolledException) {
         throw new ConflictException(error.message);
+      }
+
+      if (error instanceof StudentMonitorException) {
+        throw new PreconditionFailedException();
       }
 
       if (error instanceof SubjectNotFoundException) {
