@@ -19,6 +19,13 @@ export class StudentAlreadyEnrolledException extends Error {
   }
 }
 
+export class StudentMonitorException extends Error {
+  constructor() {
+    super();
+    this.message = 'Aluno(a) é monitor(a) da disciplina.';
+  }
+}
+
 export class StudentNotEnrolledException extends Error {
   constructor() {
     super();
