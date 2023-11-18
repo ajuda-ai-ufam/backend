@@ -1,17 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
-import { SubjectService } from '../subject.service';
-import { StudentAlreadyEnrolledException } from '../utils/exceptions';
+import {
+  StudentAlreadyEnrolledException,
+  SubjectNotFoundException,
+} from '../utils/exceptions';
 import { Enrollment } from '../dto/enrollment.dto';
 
 @Injectable()
 export class CreateSubjectEnrollmentCommand {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly subjectService: SubjectService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async execute(subjectId: number, studentId: number): Promise<Enrollment> {
+    const subject = await this.prisma.subject.findFirst({
+      where: { id: subjectId },
+    });
+    if (!subject) {
+      throw new SubjectNotFoundException();
+    }
+
     const enrollment = await this.prisma.subjectEnrollment.findFirst({
       where: {
         student_id: studentId,

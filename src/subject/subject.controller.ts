@@ -32,6 +32,7 @@ import {
   ResponsabilityNotFoundException,
   StudentAlreadyEnrolledException,
   StudentNotEnrolledException,
+  SubjectNotFoundException,
   UserNotStudentException,
 } from './utils/exceptions';
 
@@ -130,6 +131,10 @@ export class SubjectController {
         throw new ConflictException(error.message);
       }
 
+      if (error instanceof SubjectNotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
       throw error;
     }
   }
@@ -150,6 +155,10 @@ export class SubjectController {
       return await this.cancelSubjectEnrollmentCommand.execute(id, user.sub);
     } catch (error) {
       if (error instanceof StudentNotEnrolledException) {
+        throw new PreconditionFailedException(error.message);
+      }
+
+      if (error instanceof SubjectNotFoundException) {
         throw new NotFoundException(error.message);
       }
 
