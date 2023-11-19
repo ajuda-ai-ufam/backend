@@ -20,17 +20,18 @@ async function main() {
 
 async function populateCoordinator() {
   await prisma.user.upsert({
-    create: coordinator,
+    create: coordinator.userData,
     update: {},
-    where: { email: coordinator.email },
+    where: { email: coordinator.userData.email },
   });
 
   await prisma.coordinator.upsert({
     create: {
-      id: coordinator.id,
+      id: coordinator.userData.id,
+      department_id: coordinator.departament_id,
     },
     update: {},
-    where: { id: coordinator.id },
+    where: { id: coordinator.userData.id },
   });
 
   console.log('Coordinator populated.');
@@ -71,7 +72,8 @@ async function populateTeachers() {
     await prisma.teacher.upsert({
       create: {
         user_id: teacher.userData.id,
-        siape: teacher.siape
+        siape: teacher.siape,
+        department_id: teacher.department_id,
       },
       update: {},
       where: { user_id: teacher.userData.id },

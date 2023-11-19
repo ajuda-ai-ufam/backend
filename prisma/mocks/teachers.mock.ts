@@ -3,6 +3,7 @@ import { SubjectResponsabilityStatus } from 'src/subject/utils/subject.enum';
 export const teachers = [
   {
     siape: '1111111',
+    department_id: 2,
     userData: {
       id: 2,
       email: 'juan.professor@icomp.ufam.edu.br',
@@ -15,7 +16,7 @@ export const teachers = [
       {
         id: 1,
         professor_id: 2,
-        subject_id: 1,
+        subject_id: 3,
         id_status: SubjectResponsabilityStatus.APPROVED,
       },
       {
@@ -28,6 +29,7 @@ export const teachers = [
   },
   {
     siape: '3333333',
+    department_id: 2,
     userData: {
       id: 3,
       email: 'andre.professor@icomp.ufam.edu.br',
@@ -40,13 +42,14 @@ export const teachers = [
       {
         id: 3,
         professor_id: 3,
-        subject_id: 1,
+        subject_id: 3,
         id_status: SubjectResponsabilityStatus.APPROVED,
       },
     ],
   },
   {
     siape: '2222222',
+    department_id: 2,
     userData: {
       id: 4,
       email: 'nakamura.professor@icomp.ufam.edu.br',
@@ -59,6 +62,7 @@ export const teachers = [
   },
   {
     siape: '5555555',
+    department_id: 2,
     userData: {
       id: 5,
       email: 'tayana.professor@icomp.ufam.edu.br',

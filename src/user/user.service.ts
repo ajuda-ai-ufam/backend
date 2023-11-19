@@ -183,7 +183,7 @@ export class UserService {
       },
     });
 
-    await this.teacherService.create(user.id, data.siape);
+    await this.teacherService.create(user.id, data.siape, data.department_id);
 
     return { status: 201, message: 'Cadastrado com sucesso!' };
   }
