@@ -133,7 +133,7 @@ export class SubjectController {
       }
 
       if (error instanceof StudentMonitorException) {
-        throw new PreconditionFailedException();
+        throw new PreconditionFailedException(error.message);
       }
 
       if (error instanceof SubjectNotFoundException) {
