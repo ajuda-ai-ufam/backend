@@ -32,10 +32,10 @@ try {
 }
 
 const courses = [
-  { id: 1, name: 'Engenharia de Software', code: 'IE17' },
-  { id: 2, name: 'Ciência da Computação', code: 'IE08' },
-  { id: 3, name: 'Engenharia da Computação', code: 'FT05' },
-  { id: 4, name: 'Outros', code: '0000' },
+  { id: 1, name: 'Engenharia de Software', code: 'IE17', department_id: 2 },
+  { id: 2, name: 'Ciência da Computação', code: 'IE08', department_id: 2 },
+  { id: 3, name: 'Engenharia da Computação', code: 'FT05', department_id: 2 },
+  { id: 4, name: 'Outros', code: '0000', department_id: 1 },
 ];
 
 const status_monitoring = [
@@ -64,6 +64,7 @@ const type_user = [
   { type: 'Student', id: 1 },
   { type: 'Teacher', id: 2 },
   { type: 'Coordinator', id: 3 },
+  { type: 'Super Coordinator', id: 4 },
 ];
 
 const type_code = [
@@ -95,8 +96,8 @@ async function main() {
   for (const subject of subjects_es) {
     subject.name = formatSubjectName(subject.name);
     await prisma.subject.upsert({
-      create: { ...subject, course_id: 1 },
-      update: { ...subject, course_id: 1 },
+      create: { ...subject, course_id: 1, department_id: 2 },
+      update: { ...subject, course_id: 1, department_id: 2 },
       where: { code: subject.code },
     });
   }
@@ -105,8 +106,8 @@ async function main() {
   for (const subject of subjects_cc) {
     subject.name = formatSubjectName(subject.name);
     await prisma.subject.upsert({
-      create: { ...subject, course_id: 2 },
-      update: { ...subject, course_id: 2 },
+      create: { ...subject, course_id: 2, department_id: 2 },
+      update: { ...subject, course_id: 2, department_id: 2 },
       where: { code: subject.code },
     });
   }
@@ -115,8 +116,8 @@ async function main() {
   for (const subject of subjects_ec) {
     subject.name = formatSubjectName(subject.name);
     await prisma.subject.upsert({
-      create: { ...subject, course_id: 3 },
-      update: { ...subject, course_id: 3 },
+      create: { ...subject, course_id: 3, department_id: 2 },
+      update: { ...subject, course_id: 3, department_id: 2 },
       where: { code: subject.code },
     });
   }
@@ -187,7 +188,8 @@ async function main() {
       where: { user_id: user.id },
       create: {
         user_id: user.id,
-        siape: professor.siape
+        siape: professor.siape,
+        department_id: professor.depaetment_id,
       },
       update: {},
     });
@@ -231,6 +233,7 @@ async function main() {
       where: { id: user.id },
       create: {
         id: user.id,
+        department_id: coordinator.departament_id,
       },
       update: {},
     });

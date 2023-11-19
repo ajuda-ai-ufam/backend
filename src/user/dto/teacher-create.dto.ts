@@ -8,6 +8,9 @@ export class TeacherCreateDTO {
   siape: string;
 
   @ApiProperty()
+  department_id: number;
+
+  @ApiProperty()
   name: string;
 
   @ApiProperty()
