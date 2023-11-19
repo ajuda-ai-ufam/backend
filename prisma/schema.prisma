@@ -10,7 +10,7 @@ datasource db {
 
 model TypeUser {
   id   Int    @id @unique @default(autoincrement())
-  type String @db.VarChar(15)
+  type String @db.VarChar(32)
   user User[]
 
   @@map("type_user")
@@ -117,7 +117,9 @@ model AvailableTimes {
 model Teacher {
   user_id               Int                     @id
   user                  User                    @relation(fields: [user_id], references: [id])
-  siape                 String?                  @db.VarChar(16)
+  siape                 String?                 @db.VarChar(16)
+  department_id         Int                     @default(2)
+  department            Department              @relation(fields: [department_id], references: [id])
   SubjectResponsability SubjectResponsability[]
   Monitor               Monitor[]
 
@@ -130,6 +132,8 @@ model Subject {
   code                  String                  @unique @db.VarChar(10)
   course_id             Int
   course                Course                  @relation(fields: [course_id], references: [id])
+  department_id         Int                     @default(2)
+  department            Department              @relation(fields: [department_id], references: [id])
   SubjectResponsability SubjectResponsability[]
   Monitor               Monitor[]
   studentsEnrolled      SubjectEnrollment[]
@@ -138,9 +142,11 @@ model Subject {
 }
 
 model Course {
-  id      Int       @id @default(autoincrement())
-  name    String    @db.VarChar(100)
-  code    String    @unique @db.VarChar(10)
+  id                    Int           @id @default(autoincrement())
+  name                  String        @db.VarChar(100)
+  code                  String        @unique @db.VarChar(10)
+  department_id         Int           @default(2)
+  department            Department    @relation(fields: [department_id], references: [id])
   student Student[]
   subject Subject[]
 
@@ -162,7 +168,9 @@ model Verification_Code {
 }
 
 model Coordinator {
-  id Int @id @default(autoincrement())
+  id                  Int           @id @default(autoincrement())
+  department_id       Int           @default(2)
+  department          Department    @relation(fields: [department_id], references: [id])
 
   @@map("coordinators")
 }
@@ -241,10 +249,14 @@ model MonitorSettings {
 }
 
 model Department {
-  id           Int    @id @default(autoincrement())
-  code         String @db.VarChar(10)
-  name         String @db.VarChar(50)
-  abbreviation String @db.VarChar(10)
+  id                Int              @id @default(autoincrement())
+  code              String           @db.VarChar(10)
+  name              String           @db.VarChar(50)
+  abbreviation      String           @db.VarChar(10)
+  coordinators      Coordinator[]
+  subject           Subject[]
+  teacher           Teacher[]
+  course            Course[]
 
   @@map("department")
 }
