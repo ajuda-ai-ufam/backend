@@ -67,6 +67,11 @@ const type_user = [
   { type: 'Super Coordinator', id: 4 },
 ];
 
+const departments = [
+  { code: '000', name: 'Outros', abbreviation: 'Outros', id: 1 },
+  { code: 'ICOMP', name: 'Instituto de Computação', abbreviation: 'IComp', id: 2 },
+];
+
 const type_code = [
   { type: 'Login', id: 1 },
   { type: 'Password', id: 2 },
@@ -74,6 +79,15 @@ const type_code = [
 
 const prisma = new PrismaClient();
 async function main() {
+  for (const department of departments) {
+    await prisma.department.upsert({
+      create: department,
+      update: {},
+      where: { id: department.id },
+    });
+  }
+  console.log('Departments seeded.');
+  
   for (const course of courses) {
     await prisma.course.upsert({
       create: course,
