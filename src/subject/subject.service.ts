@@ -22,7 +22,11 @@ export class SubjectService {
     const data = await this.prisma.subject.findFirst({
       where: { id: id },
       include: {
-        studentsEnrolled: {},
+        studentsEnrolled: {
+          where: {
+            canceled_at: null,
+          },
+        },
         SubjectResponsability: {
           select: {
             id: true,
