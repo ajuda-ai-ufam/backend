@@ -5,10 +5,38 @@ Rest API do projeto Super Monitoria desenvolvido no IComp com o apoio do SUPER.
 # Prerequisites
 
 Make sure you have the following dependencies installed:
-- [Docker](https://docs.docker.com/engine/install/ubuntu/)
-- [docker-compose](https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/How-to-install-Docker-and-docker-compose-on-Ubuntu)
+- Docker
+- docker-compose
 
-Create a `.env` file with the envs on `.example.env`.
+  [Installation Tutorial For Super Monitoria](https://drive.google.com/file/d/1VTI1zlTJT60XxN5O1b0aDQJpFyklRkdr/view?usp=sharing)
+
+
+## :tada: How to run
+
+```bash
+# Clone this repo
+$ git clone https://github.com/ajuda-ai-ufam/backend.git
+
+# change to project directory
+$ cd backend
+
+# Create a .env file with the envs on .example.env.
+$ Obtain project development .env files from someone on the current team or Tech Lead
+
+# Run the MakeFile to up the backend and MySql database
+$ make up
+
+# Open another terminal and run the MakeFile to pull database migrations
+$ make db-migrate
+
+# On the same terminal run the MakeFile to populate the database with the seeds
+$ make db-seed
+
+# On the same terminal run the MakeFile to populate the database with the mocks
+$ make db-populate
+
+# Ready! your backend is running on http://localhost:3003 
+```
 
 # Scripts
 
@@ -16,12 +44,12 @@ We use Makefile commands to run our scripts:
 
 ## Development
 
-- Build docker images:
-  ```bash
-  make build
-  ```
+### Steps
 
-- Run database and API on wath mode:
+1 step - Build docker images with command:
+
+
+- Run database and API on watch mode:
   ```bash
   make up
   ```
