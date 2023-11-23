@@ -1,16 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Subject } from '@prisma/client';
-import { SubjectQueryDto } from './dto/subject-query.dto';
+import { Role } from 'src/auth/enums/role.enum';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { pagination } from 'src/common/pagination';
 import { PrismaService } from 'src/database/prisma.service';
 import { MonitorStatus } from 'src/monitor/utils/monitor.enum';
+import { UserNotStudentException } from 'src/subject/utils/exceptions';
+import { SubjectQueryDto } from './dto/subject-query.dto';
 
 @Injectable()
 export class SubjectService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findSubjectById(id: number) {
+  async findSubjectById(userId: number, id: number) {
     const selecUserData = {
       select: {
         user: { select: { id: true, name: true, email: true } },
@@ -20,6 +22,11 @@ export class SubjectService {
     const data = await this.prisma.subject.findFirst({
       where: { id: id },
       include: {
+        studentsEnrolled: {
+          where: {
+            canceled_at: null,
+          },
+        },
         SubjectResponsability: {
           select: {
             id: true,
@@ -72,6 +79,21 @@ export class SubjectService {
     data.SubjectResponsability = approved_SubjectResponsability;
     data.Monitor = approved_Monitores;
 
+    const subjectsEnrollments = await this.prisma.subjectEnrollment.findMany({
+      where: {
+        student_id: userId,
+        canceled_at: null,
+      },
+    });
+
+    data['isStudentEnrolled'] = false;
+
+    subjectsEnrollments.forEach((element) => {
+      if (element.subject_id == data.id) {
+        data['isStudentEnrolled'] = true;
+      }
+    });
+
     return data;
   }
 
@@ -117,7 +139,11 @@ export class SubjectService {
     return data;
   }
 
-  async findAll(query: SubjectQueryDto): Promise<IResponsePaginate> {
+  async findAll(
+    userId: number,
+    userType: Role,
+    query: SubjectQueryDto,
+  ): Promise<IResponsePaginate> {
     const selecUserData = {
       select: {
         user: {
@@ -125,9 +151,6 @@ export class SubjectService {
         },
       },
     };
-
-    console.log(query.monitorStatus);
-
     const teacherId =
       typeof query.teacherId === 'string'
         ? Number.parseInt(query.teacherId)
@@ -141,6 +164,22 @@ export class SubjectService {
       if (!teacherExists) {
         throw new NotFoundException('Professor não encontrado.');
       }
+    }
+
+    const onlyEnrollments = query.onlyEnrollments;
+
+    if (onlyEnrollments === true && userType !== Role.Student) {
+      throw new UserNotStudentException();
+    }
+
+    let subjectsEnrollments = [];
+    if (userType === Role.Student) {
+      subjectsEnrollments = await this.prisma.subjectEnrollment.findMany({
+        where: {
+          student_id: userId,
+          canceled_at: null,
+        },
+      });
     }
 
     const monitorStatus =
@@ -163,6 +202,19 @@ export class SubjectService {
       name: {
         contains: query.search,
       },
+      studentsEnrolled:
+        onlyEnrollments === true
+          ? {
+              some: {
+                student_id: {
+                  equals: userId,
+                },
+                canceled_at: {
+                  equals: null,
+                },
+              },
+            }
+          : undefined,
       SubjectResponsability:
         teacherId !== null
           ? {
@@ -212,6 +264,14 @@ export class SubjectService {
       orderBy: { name: 'asc' },
     });
 
+    data.forEach((element) => {
+      element['isStudentEnrolled'] = false;
+      subjectsEnrollments.forEach((subject) => {
+        if (subject.subject_id == element.id) {
+          element['isStudentEnrolled'] = true;
+        }
+      });
+    });
     return pagination(data, query);
   }
 }

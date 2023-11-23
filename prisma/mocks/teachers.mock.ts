@@ -2,6 +2,7 @@ import { SubjectResponsabilityStatus } from 'src/subject/utils/subject.enum';
 
 export const teachers = [
   {
+    siape: '1111111',
     userData: {
       id: 2,
       email: 'juan.professor@icomp.ufam.edu.br',
@@ -26,6 +27,7 @@ export const teachers = [
     ],
   },
   {
+    siape: '3333333',
     userData: {
       id: 3,
       email: 'andre.professor@icomp.ufam.edu.br',
@@ -44,6 +46,7 @@ export const teachers = [
     ],
   },
   {
+    siape: '2222222',
     userData: {
       id: 4,
       email: 'nakamura.professor@icomp.ufam.edu.br',
@@ -55,6 +58,7 @@ export const teachers = [
     responsabilities: [],
   },
   {
+    siape: '5555555',
     userData: {
       id: 5,
       email: 'tayana.professor@icomp.ufam.edu.br',

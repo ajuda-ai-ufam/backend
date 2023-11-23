@@ -187,6 +187,7 @@ async function main() {
       where: { user_id: user.id },
       create: {
         user_id: user.id,
+        siape: professor.siape
       },
       update: {},
     });

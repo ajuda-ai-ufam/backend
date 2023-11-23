@@ -11,6 +11,7 @@ export class SubjectFactory {
         name: subject.course.name,
         code: subject.course.code,
       },
+      studentsEnrolled: subject.studentsEnrolled,
     };
   }
 }

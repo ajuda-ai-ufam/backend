@@ -53,3 +53,10 @@ export class TopicNotFoundException extends Error {
     this.message = `Assunto não encontrado`;
   }
 }
+
+export class StudentNotEnrolledException extends Error {
+  constructor() {
+    super();
+    this.message = `Aluno(a) não está matriculado(a) na disciplina do(a) monitor(a)`;
+  }
+}

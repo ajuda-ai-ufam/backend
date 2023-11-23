@@ -12,6 +12,27 @@ export class SubjectNotFoundException extends Error {
   }
 }
 
+export class StudentAlreadyEnrolledException extends Error {
+  constructor() {
+    super();
+    this.message = 'Aluno(a) já matriculado(a) na disciplina.';
+  }
+}
+
+export class StudentMonitorException extends Error {
+  constructor() {
+    super();
+    this.message = 'Aluno(a) é monitor(a) da disciplina.';
+  }
+}
+
+export class StudentNotEnrolledException extends Error {
+  constructor() {
+    super();
+    this.message = 'Aluno(a) não está matriculado(a) na disciplina.';
+  }
+}
+
 export class AlreadyFinishedException extends Error {
   constructor() {
     super();
@@ -26,5 +47,12 @@ export class BlockingMonitorsException extends Error {
     blockingMonitors.forEach((monitor) => {
       this.message += ` Monitor(a) ID: ${monitor.id} (status ${monitor.status.status}).`;
     });
+  }
+}
+
+export class UserNotStudentException extends Error {
+  constructor() {
+    super();
+    this.message = 'Usuário(a) logado(a) não é aluno(a).';
   }
 }

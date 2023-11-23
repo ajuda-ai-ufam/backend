@@ -37,6 +37,7 @@ model User {
   verification_code Verification_Code[]
   student           Student?
   teacher           Teacher?
+  SuperCoordinators SuperCoordinators?
 
   @@map("user")
 }
@@ -53,6 +54,7 @@ model Student {
   linkedin           String?              @db.VarChar(100)
   ScheduleMonitoring ScheduleMonitoring[]
   Monitor            Monitor[]
+  subjectsEnrolled   SubjectEnrollment[]
 
   @@map("student")
 }
@@ -115,6 +117,7 @@ model AvailableTimes {
 model Teacher {
   user_id               Int                     @id
   user                  User                    @relation(fields: [user_id], references: [id])
+  siape                 String?                  @db.VarChar(16)
   SubjectResponsability SubjectResponsability[]
   Monitor               Monitor[]
 
@@ -129,6 +132,7 @@ model Subject {
   course                Course                  @relation(fields: [course_id], references: [id])
   SubjectResponsability SubjectResponsability[]
   Monitor               Monitor[]
+  studentsEnrolled      SubjectEnrollment[]
 
   @@map("subject")
 }
@@ -161,6 +165,19 @@ model Coordinator {
   id Int @id @default(autoincrement())
 
   @@map("coordinators")
+}
+
+model SubjectEnrollment {
+  id                    Int                        @id @default(autoincrement())
+  student_id            Int
+  student               Student                    @relation(fields: [student_id], references: [user_id])
+  subject_id            Int
+  subject               Subject                    @relation(fields: [subject_id], references: [id])
+  created_at            DateTime                   @default(now())
+  updated_at            DateTime                   @updatedAt
+  canceled_at           DateTime?
+
+  @@map("subject_enrollment")
 }
 
 model SubjectResponsability {
@@ -221,4 +238,20 @@ model MonitorSettings {
 
   @@map("monitor_settings")
 
+}
+
+model Department {
+  id           Int    @id @default(autoincrement())
+  code         String @db.VarChar(10)
+  name         String @db.VarChar(50)
+  abbreviation String @db.VarChar(10)
+
+  @@map("department")
+}
+
+model SuperCoordinators {
+  user_id Int  @id @unique
+  user    User @relation(fields: [user_id], references: [id])
+
+  @@map("super_coordinators")
 }

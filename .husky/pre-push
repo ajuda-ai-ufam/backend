@@ -2,3 +2,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 echo "[Husky] Running linter..." && npm run lint
+
+echo "[Husky] Running tests..." && npm run test:silent

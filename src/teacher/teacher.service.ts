@@ -8,9 +8,9 @@ import { PrismaService } from 'src/database/prisma.service';
 export class TeacherService {
   constructor(private prisma: PrismaService) {}
 
-  async create(user_id: number) {
+  async create(user_id: number, siape: string) {
     const user_teacher = await this.prisma.teacher.create({
-      data: { user_id: user_id },
+      data: { user_id: user_id, siape: siape },
     });
     return user_teacher;
   }

@@ -11,6 +11,7 @@ import {
   MonitorTimeAlreadyScheduledException,
   NotAnAvailableTimeException,
   SameStudentException,
+  StudentNotEnrolledException,
   StudentTimeAlreadyScheduledException,
   TopicNotFoundException,
 } from '../utils/exceptions';
@@ -61,6 +62,8 @@ export class ScheduleMonitoringCommand {
     await this.checkMonitorConfirmedSchedules(monitorId, start, end);
 
     await this.checkStudentSchedules(userId, start, end);
+
+    await this.checkStudentEnrollment(userId, monitor.subject_id);
 
     let topic: ScheduleTopics;
     if (topicId) {
@@ -235,5 +238,17 @@ export class ScheduleMonitoringCommand {
       throw new StudentTimeAlreadyScheduledException(
         conflitingSchedule.status.status,
       );
+  }
+
+  private async checkStudentEnrollment(studentId: number, subjectId: number) {
+    const enrollment = await this.prisma.subjectEnrollment.findFirst({
+      where: {
+        student_id: studentId,
+        subject_id: subjectId,
+        canceled_at: null,
+      },
+    });
+
+    if (!enrollment) throw new StudentNotEnrolledException();
   }
 }

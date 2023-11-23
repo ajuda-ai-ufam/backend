@@ -5,6 +5,9 @@ export class TeacherCreateDTO {
   email: string;
 
   @ApiProperty()
+  siape: string;
+
+  @ApiProperty()
   name: string;
 
   @ApiProperty()
