@@ -31,6 +31,8 @@ import {
 } from './utils/exceptions';
 import { AssignSubjectCommand } from './commands/assign-subject.command';
 import { SubjectNotFoundException } from 'src/subject/utils/exceptions';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
 
 @Controller('teacher')
 @ApiTags('Professors')
@@ -51,6 +53,7 @@ export class TeacherController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @Roles(Role.Coordinator, Role.SuperCoordinator)
   @ApiOperation({
     summary:
       'Assinala um professor a uma disciplina, criando uma responsabilidade.',

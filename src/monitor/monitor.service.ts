@@ -11,6 +11,7 @@ import { EmailService } from 'src/email/email.service';
 import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
+import { TypeUser } from 'src/auth/enums/type-user.enum';
 
 @Injectable()
 export class MonitorService {
@@ -129,7 +130,8 @@ export class MonitorService {
 
     if (
       request_monitor.responsible_professor_id != id_teacher &&
-      teacher.type_user_id != 3
+      teacher.type_user_id != TypeUser.Coordinator &&
+      teacher.type_user_id != TypeUser.SuperCoordinator
     )
       throw new BadRequestException(
         'Você não tem permissão para aceitar esta solicitação.',
@@ -167,7 +169,7 @@ export class MonitorService {
     if (!teacher)
       throw new NotFoundException('Professor(a) não encontrado(a).');
 
-    if (teacher.type_user_id == 1)
+    if (teacher.type_user_id == TypeUser.Student)
       throw new BadRequestException(
         'Você não tem permissão para recusar solicitações.',
       );
@@ -185,7 +187,8 @@ export class MonitorService {
 
     if (
       request_monitor.responsible_professor_id != id_teacher &&
-      teacher.type_user_id != 3
+      teacher.type_user_id != TypeUser.Coordinator &&
+      teacher.type_user_id != TypeUser.SuperCoordinator
     )
       throw new BadRequestException(
         'Você não tem permissão para recusar esta solicitação.',
