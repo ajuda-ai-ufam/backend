@@ -88,7 +88,7 @@ export class SubjectController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Roles(Role.Coordinator)
+  @Roles(Role.Coordinator, Role.SuperCoordinator)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Atualiza o status de uma responsabilidade para 3 (finalizada)',

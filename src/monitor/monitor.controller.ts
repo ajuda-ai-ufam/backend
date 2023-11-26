@@ -130,6 +130,7 @@ export class MonitorController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Patch('/:id_monitoring/refuse')
+  @Roles(Role.Professor, Role.Coordinator, Role.SuperCoordinator)
   async refuseMonitoring(
     @Req() req: Request,
     @Param('id_monitoring') id_monitoring: number,
@@ -143,6 +144,7 @@ export class MonitorController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Patch('/:id_monitoring/accept')
+  @Roles(Role.Professor, Role.Coordinator, Role.SuperCoordinator)
   async acceptMonitoring(
     @Req() req: Request,
     @Param('id_monitoring') id_monitoring: number,
@@ -271,7 +273,7 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Roles(Role.Professor, Role.Coordinator)
+  @Roles(Role.Professor, Role.Coordinator, Role.SuperCoordinator)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Atualiza o status de uma monitoria para 4 (finalizada)',

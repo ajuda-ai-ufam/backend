@@ -61,7 +61,7 @@ export class SchedulesController {
   ) {}
 
   @ApiBearerAuth()
-  @Roles(Role.Professor, Role.Coordinator)
+  @Roles(Role.Professor, Role.Coordinator, Role.SuperCoordinator)
   @Get()
   @ApiOperation({ summary: 'Filtra agendamentos' })
   @ApiResponse({
