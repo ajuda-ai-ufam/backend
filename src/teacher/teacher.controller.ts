@@ -31,6 +31,7 @@ import {
 } from './utils/exceptions';
 import { AssignSubjectCommand } from './commands/assign-subject.command';
 import { SubjectNotFoundException } from 'src/subject/utils/exceptions';
+import { ListTeachersQueryParams } from './dto/list-teacher.request.dto';
 
 @Controller('teacher')
 @ApiTags('Professors')
@@ -44,7 +45,7 @@ export class TeacherController {
   @ApiBearerAuth()
   @Get()
   async findAll(
-    @Query() query: QueryPaginationDto,
+    @Query() query: ListTeachersQueryParams,
   ): Promise<IResponsePaginate> {
     return await this.teacherService.findAll(query);
   }
