@@ -10,7 +10,15 @@ import { SubjectQueryDto } from './dto/subject-query.dto';
 
 @Injectable()
 export class SubjectService {
+  
   constructor(private readonly prisma: PrismaService) {}
+
+  async findMany(ids: number[]): Promise<Subject[]> {
+    const subjects = await this.prisma.subject.findMany({
+      where: { id: { in: ids } },
+    });
+    return subjects;
+  }
 
   async findSubjectById(userId: number, id: number) {
     const selecUserData = {

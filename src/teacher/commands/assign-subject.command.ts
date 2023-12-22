@@ -19,9 +19,10 @@ export class AssignSubjectCommand {
   ) {}
 
   async execute(body: TeacherAssingDto) {
-    const subject = await this.subjectService.findOne(body.subject_id);
-
-    if (!subject) throw new SubjectNotFoundException();
+    
+    const subjects = await this.subjectService.findMany(body.subject_ids);
+    
+    if (!subjects) throw new SubjectNotFoundException();
 
     const teachers = await this.prisma.teacher.findMany({
       where: {
@@ -39,9 +40,9 @@ export class AssignSubjectCommand {
 
     const isAnyTeacherAlreadyAssigned = teachers.some((teacher) =>
       teacher.SubjectResponsability.some(
-        (subject) =>
-          subject.subject_id === body.subject_id &&
-          subject.id_status !== SubjectResponsabilityStatus.FINISHED,
+        (subjectResp) =>
+        body.subject_ids.includes(subjectResp.subject_id) &&
+        subjectResp.id_status !== SubjectResponsabilityStatus.FINISHED,
       ),
     );
 
@@ -49,48 +50,56 @@ export class AssignSubjectCommand {
       throw new TeacherAlreadyResponsibleException();
     }
 
-    await this.assingSubjectToProfessor(body.subject_id, body.professors_ids);
+    await this.assingSubjectToProfessor(body.subject_ids, body.professors_ids);
 
-    await this.sendEmailToTeachers(teachers, body);
+
+    await this.sendEmailToTeachers(teachers,subjects);
   }
 
   /*****************************************************************************
    * Private / Supportive Methods
    */
   private async assingSubjectToProfessor(
-    subject_id: number,
+    subject_ids: number[],
     professors_ids: number[],
   ) {
     await this.prisma.subjectResponsability.createMany({
-      data: professors_ids.map((id) => ({
-        professor_id: id,
-        subject_id: subject_id,
-        id_status: SubjectResponsabilityStatus.APPROVED,
-      })),
+      data:
+        professors_ids.map((professor_id) =>
+          subject_ids.map((subject_id) => ({
+            professor_id,
+            subject_id,
+            id_status: SubjectResponsabilityStatus.APPROVED,
+          }))
+        )
+        .reduce((acc, val) => acc.concat(val), []),
     });
+  
     return { message: `Disciplina atribuida com sucesso!` };
   }
+  
+  
+  
 
   private async sendEmailToTeachers(
     teachers: Array<any>,
-    body: TeacherAssingDto,
+    subjects: Array<any>,
+
   ) {
-    const subject = await this.prisma.subject.findUnique({
-      where: { id: body.subject_id },
-    });
-
     for (const teacher of teachers) {
-      const email = teacher.user.email;
-      const teacherName = teacher.user.name;
-      const subjectName = `${subject.code} - ${subject.name}`;
-      const subjectId = body.subject_id;
-
-      await this.emailService.sendEmailAssignSubject(
-        email,
-        teacherName,
-        subjectName,
-        subjectId,
-      );
+      for (const subject of subjects) {  
+        const email = teacher.user.email;
+        const teacherName = teacher.user.name;
+        const subjectName = `${subject.code} - ${subject.name}`;
+        const subjectId = subject.subject_id;
+  
+        await this.emailService.sendEmailAssignSubject(
+          email,
+          teacherName,
+          subjectName,
+          subjectId,
+        );
+      }
     }
   }
 }
