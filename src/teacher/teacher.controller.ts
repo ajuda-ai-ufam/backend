@@ -1,6 +1,8 @@
 import {
   Body,
   ConflictException,
+  ForbiddenException,
+  UnauthorizedException,
   Controller,
   Get,
   HttpStatus,
@@ -8,6 +10,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Req,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -17,8 +20,11 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ParamIdDto } from 'src/common/dto/param-id.dto';
+import { JWTUser } from 'src/auth/interfaces/jwt-user.interface';
 import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
 import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
 import { ListTeacherSubjectsCommand } from './commands/list-teacher-subjects.command';
@@ -27,6 +33,8 @@ import { TeacherAssingDto } from './dto/teacher-assing.dto';
 import { TeacherService } from './teacher.service';
 import {
   TeacherAlreadyResponsibleException,
+  CoordinatorIsNotFromDepartment,
+  UserNotCoordinatorException,
   TeacherNotFoundException,
 } from './utils/exceptions';
 import { AssignSubjectCommand } from './commands/assign-subject.command';
@@ -41,6 +49,7 @@ export class TeacherController {
     private readonly teacherService: TeacherService,
     private readonly listTeacherSubjectsCommand: ListTeacherSubjectsCommand,
     private readonly assignSubjectCommand: AssignSubjectCommand,
+    private jwtService: JwtService,
   ) {}
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -75,15 +84,26 @@ export class TeacherController {
     description: 'Token inválido.',
   })
   @Post('assign-subject')
-  async assignSubject(@Body() body: TeacherAssingDto) {
+  async assignSubject(@Req() req: Request, @Body() body: TeacherAssingDto) {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
     try {
-      return await this.assignSubjectCommand.execute(body);
+      return await this.assignSubjectCommand.execute(user, body);
     } catch (error) {
       if (
         error instanceof SubjectNotFoundException ||
         error instanceof TeacherNotFoundException
       ) {
         throw new NotFoundException(error.message);
+      }
+
+      if (error instanceof UserNotCoordinatorException) {
+        throw new ForbiddenException(error.message);
+      }
+
+      if (error instanceof CoordinatorIsNotFromDepartment) {
+        throw new UnauthorizedException(error.message);
       }
 
       if (error instanceof TeacherAlreadyResponsibleException) {

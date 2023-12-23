@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { TeacherAssingDto } from '../dto/teacher-assing.dto';
+import { JWTUserDTO } from '../dto/user-token.dto';
 import { SubjectService } from 'src/subject/subject.service';
 import { SubjectNotFoundException } from 'src/subject/utils/exceptions';
 import { SubjectResponsabilityStatus } from 'src/subject/utils/subject.enum';
+import { Role } from 'src/auth/enums/role.enum';
 import {
   TeacherAlreadyResponsibleException,
+  CoordinatorIsNotFromDepartment,
+  UserNotCoordinatorException,
   TeacherNotFoundException,
 } from '../utils/exceptions';
 import { EmailService } from 'src/email/email.service';
@@ -18,7 +22,7 @@ export class AssignSubjectCommand {
     private readonly emailService: EmailService,
   ) {}
 
-  async execute(body: TeacherAssingDto) {
+  async execute(userData: JWTUserDTO, body: TeacherAssingDto) {
     const subject = await this.subjectService.findOne(body.subject_id);
 
     if (!subject) throw new SubjectNotFoundException();
@@ -32,6 +36,17 @@ export class AssignSubjectCommand {
         user: true,
       },
     });
+
+    if (userData.type_user.type != Role.Coordinator) {
+      throw new UserNotCoordinatorException();
+    }
+
+    if (
+      userData.department == undefined ||
+      userData.department.id != subject.department_id
+    ) {
+      throw new CoordinatorIsNotFromDepartment();
+    }
 
     if (!teachers) {
       throw new TeacherNotFoundException();
