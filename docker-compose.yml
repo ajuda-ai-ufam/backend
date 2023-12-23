@@ -23,7 +23,8 @@ services:
         ports: 
             - $HTTP_REPLICA_PORTS:$HTTP_PORT
         command: npm run start:prod
-        scale: $API_REPLICAS
+        deploy:
+            replicas: $API_REPLICAS
 
 volumes:
     mysql_prod:
