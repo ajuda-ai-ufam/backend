@@ -223,6 +223,15 @@ export class UserService {
     });
   }
 
+  async findOneByIdWithDepartment(id: number) {
+    return this.prisma.coordinators.findFirst({
+      where: { id },
+      include: {
+        department: true,
+      },
+    });
+  }
+
   async findOneByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },

@@ -6,9 +6,11 @@ import {
   MonitoringNotFoundException,
   NotTheResponsibleProfessorException,
 } from '../utils/exceptions';
+import { CoordinatorIsNotFromDepartment } from 'src/teacher/utils/exceptions';
 import { RefuseScheduledMonitoringCommand } from './refuse-scheduled-monitoring.command';
 import { Role } from 'src/auth/enums/role.enum';
 import { ScheduleStatus } from 'src/schedules/utils/schedules.enum';
+import { JWTUserDTO } from 'src/teacher/dto/user-token.dto';
 
 @Injectable()
 export class EndMonitoringCommand {
@@ -19,7 +21,7 @@ export class EndMonitoringCommand {
 
   async execute(
     monitorId: number,
-    userId: number,
+    userData: JWTUserDTO,
     userRole: string,
   ): Promise<void> {
     const AMT_OFFSET_IN_MS = -4 * 60 * 60 * 1000;
@@ -29,6 +31,7 @@ export class EndMonitoringCommand {
     const monitoring = await this.prisma.monitor.findUnique({
       include: {
         status: true,
+        subject: true,
       },
       where: { id: monitorId },
     });
@@ -38,9 +41,16 @@ export class EndMonitoringCommand {
     }
 
     if (
+      userData.department == undefined ||
+      userData.department.id != monitoring.subject.department_id
+    ) {
+      throw new CoordinatorIsNotFromDepartment();
+    }
+
+    if (
       userRole !== Role.Coordinator &&
       userRole !== Role.SuperCoordinator &&
-      userId !== monitoring.responsible_professor_id
+      userData.sub !== monitoring.responsible_professor_id
     ) {
       throw new NotTheResponsibleProfessorException();
     }

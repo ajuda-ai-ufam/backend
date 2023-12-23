@@ -15,6 +15,12 @@ export interface JWTUser {
     student_id: number;
     subject_id: number;
   };
+  department?: {
+    id: number;
+    code: string;
+    name: string;
+    abbreviation: string;
+  };
   type_user_id: number;
   iat?: number;
   exp?: number;
