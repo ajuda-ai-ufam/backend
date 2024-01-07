@@ -50,7 +50,7 @@ export class EditUserCommand {
 
       await this.verifyStudentCourseIdField(data);
 
-      await this.verifyStudentContactEmailField(data);
+      await this.verifyStudentContactEmailField(data, userId);
 
       this.verifyStudentLinkedinField(data);
 
@@ -162,7 +162,7 @@ export class EditUserCommand {
     if (course == null) throw new CourseNotFoundException();
   }
 
-  private async verifyStudentContactEmailField(data: UserEditDTO) {
+  private async verifyStudentContactEmailField(data: UserEditDTO, userId: number) {
     if (data.contactEmail === undefined) return;
 
     if (!Validations.validateEmailContact(data.contactEmail)) {
@@ -171,8 +171,8 @@ export class EditUserCommand {
     const contact_email_exists = await this.userService.findOneByEmail(
       data.contactEmail,
     );
-
-    if (contact_email_exists) throw new ContactEmailAreadyExistsException();
+  
+    if (contact_email_exists && userId !== contact_email_exists.id) throw new ContactEmailAreadyExistsException();
   }
 
   private verifyStudentLinkedinField(data: UserEditDTO) {
