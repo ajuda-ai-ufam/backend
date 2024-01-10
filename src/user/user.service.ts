@@ -224,7 +224,7 @@ export class UserService {
   }
 
   async findOneByIdWithDepartment(id: number) {
-    return this.prisma.coordinators.findFirst({
+    return this.prisma.coordinator.findFirst({
       where: { id },
       include: {
         department: true,
