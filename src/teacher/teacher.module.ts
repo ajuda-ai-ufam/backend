@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { TeacherService } from './teacher.service';
 import { PrismaService } from 'src/database/prisma.service';
 import { TeacherController } from './teacher.controller';
@@ -17,9 +18,10 @@ import { EmailService } from 'src/email/email.service';
     EmailService,
     ListTeacherSubjectsCommand,
     AssignSubjectCommand,
+    JwtService,
   ],
   exports: [TeacherService],
-  imports: [SubjectModule, EmailModule],
+  imports: [SubjectModule, EmailModule, JwtModule],
   controllers: [TeacherController],
 })
 export class TeacherModule {}

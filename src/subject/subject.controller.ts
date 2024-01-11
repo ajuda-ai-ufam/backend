@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  UnauthorizedException,
   Controller,
   Delete,
   Get,
@@ -36,6 +37,7 @@ import {
   SubjectNotFoundException,
   UserNotStudentException,
 } from './utils/exceptions';
+import { CoordinatorIsNotFromDepartment } from 'src/teacher/utils/exceptions';
 
 import { CancelSubjectEnrollmentCommand } from './commands/cancel-subject-enrollment.command';
 import { CreateSubjectEnrollmentCommand } from './commands/create-subject-enrollment.command';
@@ -88,18 +90,25 @@ export class SubjectController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Roles(Role.Coordinator)
+  @Roles(Role.Coordinator, Role.SuperCoordinator)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Atualiza o status de uma responsabilidade para 3 (finalizada)',
   })
   @Patch('responsability/:id/end')
-  async endResponsability(@Param('id') id: number) {
+  async endResponsability(@Req() req: Request, @Param('id') id: number) {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
     try {
-      return await this.endResponsabilityCommand.execute(id);
+      return await this.endResponsabilityCommand.execute(user, id);
     } catch (error) {
       if (error instanceof ResponsabilityNotFoundException) {
         throw new NotFoundException(error.message);
+      }
+
+      if (error instanceof CoordinatorIsNotFromDepartment) {
+        throw new UnauthorizedException(error.message);
       }
 
       if (

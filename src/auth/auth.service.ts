@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { comparePassword } from 'src/utils/bcrypt';
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
+import { Role } from './enums/role.enum';
 import { JWTUser } from './interfaces/jwt-user.interface';
 
 @Injectable()
@@ -27,11 +28,19 @@ export class AuthService {
         ? user.student.Monitor[0]
         : undefined;
 
+      let coordinadorDepartment = undefined;
+      if (user.type_user.type == Role.Coordinator) {
+        coordinadorDepartment = (
+          await this.userService.findOneByIdWithDepartment(user.id)
+        ).department;
+      }
+
       return {
         id: user.id,
         username: user.name,
         type_user_id: user.type_user_id,
         type_user: user.type_user,
+        department: coordinadorDepartment,
         monitor,
       };
     }
@@ -46,6 +55,7 @@ export class AuthService {
       type_user: user.type_user,
       type_user_id: user.type_user_id,
       monitor: user.monitor,
+      department: user.department,
     };
     return {
       access_token: this.jwtService.sign(payload),

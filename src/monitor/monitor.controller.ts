@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   ForbiddenException,
+  UnauthorizedException,
   Get,
   HttpCode,
   HttpStatus,
@@ -37,6 +38,7 @@ import {
   MonitorNotFoundException,
   MonitorTimeAlreadyScheduledException,
 } from 'src/student/utils/exceptions';
+import { CoordinatorIsNotFromDepartment } from 'src/teacher/utils/exceptions';
 import { AcceptScheduleCommand } from './commands/accept-schedule.command';
 import { EndMonitoringCommand } from './commands/end-monitoring.command';
 import { GetMonitorCommand } from './commands/get-monitor.command';
@@ -130,27 +132,29 @@ export class MonitorController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Patch('/:id_monitoring/refuse')
+  @Roles(Role.Professor, Role.Coordinator, Role.SuperCoordinator)
   async refuseMonitoring(
     @Req() req: Request,
     @Param('id_monitoring') id_monitoring: number,
   ) {
-    let token = req.headers.authorization;
-    token = token.toString().replace('Bearer ', '');
-    const data_token = this.jwtService.decode(`${token}`);
-    return this.monitorService.refuseMonitoring(id_monitoring, data_token.sub);
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    return this.monitorService.refuseMonitoring(user, id_monitoring);
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Patch('/:id_monitoring/accept')
+  @Roles(Role.Professor, Role.Coordinator, Role.SuperCoordinator)
   async acceptMonitoring(
     @Req() req: Request,
     @Param('id_monitoring') id_monitoring: number,
   ) {
-    let token = req.headers.authorization;
-    token = token.toString().replace('Bearer ', '');
-    const data_token = this.jwtService.decode(`${token}`);
-    return this.monitorService.acceptMonitoring(id_monitoring, data_token.sub);
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    return this.monitorService.acceptMonitoring(user, id_monitoring);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -271,7 +275,7 @@ export class MonitorController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @Roles(Role.Professor, Role.Coordinator)
+  @Roles(Role.Professor, Role.Coordinator, Role.SuperCoordinator)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Atualiza o status de uma monitoria para 4 (finalizada)',
@@ -286,12 +290,16 @@ export class MonitorController {
       const user = this.jwtService.decode(token) as JWTUser;
       return await this.endMonitoringCommand.execute(
         +monitorId,
-        user.sub,
+        user,
         user.type_user.type,
       );
     } catch (error) {
       if (error instanceof MonitoringNotFoundException) {
         throw new NotFoundException(error.message);
+      }
+
+      if (error instanceof CoordinatorIsNotFromDepartment) {
+        throw new UnauthorizedException(error.message);
       }
 
       if (error instanceof NotTheResponsibleProfessorException) {

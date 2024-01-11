@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  UnauthorizedException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -11,6 +12,8 @@ import { EmailService } from 'src/email/email.service';
 import { SubjectService } from 'src/subject/subject.service';
 import { UserService } from 'src/user/user.service';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
+import { JWTUserDTO } from 'src/teacher/dto/user-token.dto';
+import { TypeUser } from 'src/auth/enums/type-user.enum';
 
 @Injectable()
 export class MonitorService {
@@ -105,8 +108,8 @@ export class MonitorService {
     return { message: 'Solicitação enviada!' };
   }
 
-  async acceptMonitoring(id_monitoring: number, id_teacher: number) {
-    const teacher = await this.userService.findOneById(id_teacher);
+  async acceptMonitoring(data_token: JWTUserDTO, id_monitoring: number) {
+    const teacher = await this.userService.findOneById(data_token.sub);
 
     if (!teacher)
       throw new NotFoundException('Professor(a) não encontrado(a).');
@@ -118,18 +121,31 @@ export class MonitorService {
 
     const request_monitor = await this.prismaService.monitor.findFirst({
       where: { id: id_monitoring },
+      include: {
+        subject: true,
+      },
     });
 
     if (!request_monitor)
       throw new NotFoundException('Solicitação não encontrada!');
+
+    if (
+      data_token.department == undefined ||
+      data_token.department.id != request_monitor.subject.department_id
+    ) {
+      throw new UnauthorizedException(
+        'Coordenador(a) não pertence ao Departamento da Disciplina.',
+      );
+    }
 
     const student = await this.userService.findOneById(
       request_monitor.student_id,
     );
 
     if (
-      request_monitor.responsible_professor_id != id_teacher &&
-      teacher.type_user_id != 3
+      request_monitor.responsible_professor_id != data_token.sub &&
+      teacher.type_user_id != TypeUser.Coordinator &&
+      teacher.type_user_id != TypeUser.SuperCoordinator
     )
       throw new BadRequestException(
         'Você não tem permissão para aceitar esta solicitação.',
@@ -161,31 +177,44 @@ export class MonitorService {
     return { message: 'Solicitacão aceita!' };
   }
 
-  async refuseMonitoring(id_monitoring: number, id_teacher: number) {
-    const teacher = await this.userService.findOneById(id_teacher);
+  async refuseMonitoring(data_token: JWTUserDTO, id_monitoring: number) {
+    const teacher = await this.userService.findOneById(data_token.sub);
 
     if (!teacher)
       throw new NotFoundException('Professor(a) não encontrado(a).');
 
-    if (teacher.type_user_id == 1)
+    if (teacher.type_user_id == TypeUser.Student)
       throw new BadRequestException(
         'Você não tem permissão para recusar solicitações.',
       );
 
     const request_monitor = await this.prismaService.monitor.findFirst({
       where: { id: id_monitoring },
+      include: {
+        subject: true,
+      },
     });
 
     if (!request_monitor)
       throw new NotFoundException('Solicitação não encontrada!');
+
+    if (
+      data_token.department == undefined ||
+      data_token.department.id != request_monitor.subject.department_id
+    ) {
+      throw new UnauthorizedException(
+        'Coordenador(a) não pertence ao Departamento da Disciplina.',
+      );
+    }
 
     const student = await this.userService.findOneById(
       request_monitor.student_id,
     );
 
     if (
-      request_monitor.responsible_professor_id != id_teacher &&
-      teacher.type_user_id != 3
+      request_monitor.responsible_professor_id != data_token.sub &&
+      teacher.type_user_id != TypeUser.Coordinator &&
+      teacher.type_user_id != TypeUser.SuperCoordinator
     )
       throw new BadRequestException(
         'Você não tem permissão para recusar esta solicitação.',
