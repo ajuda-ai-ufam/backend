@@ -97,6 +97,7 @@ model Monitor {
   ScheduleMonitoring       ScheduleMonitoring[]
   AvailableTimes           AvailableTimes[]
   MonitorSettings          MonitorSettings[]
+  ExternalMonitoring       ExternalMonitoring[]
 
   @@map("monitor")
 }
@@ -122,6 +123,7 @@ model Teacher {
   department            Department              @relation(fields: [department_id], references: [id])
   SubjectResponsability SubjectResponsability[]
   Monitor               Monitor[]
+  ExternalMonitoring    ExternalMonitoring[]
 
   @@map("teacher")
 }
@@ -229,6 +231,7 @@ model ScheduleTopics {
   updated_at         DateTime             @updatedAt
   created_at         DateTime             @default(now())
   ScheduleMonitoring ScheduleMonitoring[]
+  ExternalMonitoring ExternalMonitoring[]
 
   @@index([token])
   @@map("schedule_topics")
@@ -266,4 +269,22 @@ model SuperCoordinators {
   user    User @relation(fields: [user_id], references: [id])
 
   @@map("super_coordinators")
+}
+
+model ExternalMonitoring{
+  id                  Int               @id @default(autoincrement())
+  student_id          Int?                 
+  student_name        String            @db.VarChar(50)
+  monitor_id          Int
+  monitor             Monitor           @relation(fields: [monitor_id], references: [id])
+  start               DateTime
+  end                 DateTime
+  professor_id        Int
+  professor           Teacher            @relation(fields: [professor_id], references: [user_id])
+  description         String?            @db.VarChar(250)
+  schedule_topic_id   Int?
+  ScheduleTopics      ScheduleTopics?    @relation(fields: [schedule_topic_id], references: [id])
+  created_at          DateTime           @default(now())
+
+  @@map("external_monitoring")
 }
