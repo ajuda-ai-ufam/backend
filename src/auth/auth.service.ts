@@ -35,6 +35,12 @@ export class AuthService {
         ).department;
       }
 
+      if (user.type_user.type == Role.Professor) {
+        coordinadorDepartment = (
+          await this.userService.findOneTeacherByIdWithDepartment(user.id)
+        ).department;
+      }
+
       return {
         id: user.id,
         username: user.name,
