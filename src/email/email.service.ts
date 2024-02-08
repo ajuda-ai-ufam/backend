@@ -201,4 +201,12 @@ export class EmailService {
       },
     });
   }
+  async sendEmailExternalMonitoring(email: string) {
+    return this.mailerService.sendMail({
+      to: email,
+      from: process.env.MAIL_AUTH_USER,
+      subject: 'Monitoria externa realizada',
+      text: 'Monitoria externa realizada',
+    });
+  }
 }

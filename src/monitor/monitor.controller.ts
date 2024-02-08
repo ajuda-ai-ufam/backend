@@ -48,6 +48,7 @@ import { UpdateMonitorCommand } from './commands/update-monitor.command';
 import { Monitor } from './domain/monitor';
 import { ListMonitorsQueryParams } from './dto/list-monitors.request.dto';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
+import {CreateExternalMonitoringDto} from './dto/external-monitoring.dto';
 import { UpdateMonitorDTO } from './dto/update-monitor.dto';
 import { MonitorService } from './monitor.service';
 import {
@@ -60,6 +61,7 @@ import {
   ScheduleNotPendingException,
   ScheduledMonitoringNotFoundException,
   UserLoggedNotResponsableForMonitoringException,
+  InvalidTokenException
 } from './utils/exceptions';
 
 @ApiTags('Monitor')
@@ -311,6 +313,23 @@ export class MonitorController {
       }
 
       throw error;
+    }
+  }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post('external-monitoring')
+  async externalMonitoring(
+    @Body() body: CreateExternalMonitoringDto,    
+  ) {
+    try{
+      return await this.monitorService.createExternalMonitoring(body);
+    } catch (error) {
+      if (error instanceof InvalidTokenException) {
+        throw new UnauthorizedException(error.message);
+      }
+      else{
+        throw new BadRequestException(error.message);
+      }
     }
   }
 }

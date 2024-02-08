@@ -14,6 +14,8 @@ import { UserService } from 'src/user/user.service';
 import { RequestMonitoringDto } from './dto/request-monitoring.dto';
 import { JWTUserDTO } from 'src/teacher/dto/user-token.dto';
 import { TypeUser } from 'src/auth/enums/type-user.enum';
+import { CreateExternalMonitoringDto } from './dto/external-monitoring.dto';
+import { createExternalMonitoringCommand } from './commands/create-externalMonitoring.command';
 
 @Injectable()
 export class MonitorService {
@@ -22,6 +24,7 @@ export class MonitorService {
     private readonly subjectService: SubjectService,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
+    private readonly createExternalMonitoringCommand: createExternalMonitoringCommand
   ) {}
   async requestMonitoring(user_id: number, data: RequestMonitoringDto) {
     const user = await this.userService.findOneById(user_id);
@@ -268,4 +271,36 @@ export class MonitorService {
       orderBy: { week_day: 'asc' },
     });
   }
+  async createExternalMonitoring(data: CreateExternalMonitoringDto) {
+    const {
+      student_id,
+      student_name,
+      monitor_id,
+      professor_id,
+      start,
+      end,
+      schedule_topic_id,
+      description,
+    } = data;
+  
+    try {
+      await this.createExternalMonitoringCommand.execute({
+        student_id,
+        student_name,
+        monitor_id,
+        professor_id,
+        start,
+        end,
+        schedule_topic_id,
+        description,
+      });
+
+      return { status: 201, message: 'Monitoramento externo cadastrado com sucesso!' };
+    } catch (error) {
+      console.error('Erro ao criar monitoramento externo:', error);
+      throw new Error(`Erro ao criar monitoramento externo: ${error.message}`);
+    }
+    
+  }
+  
 }

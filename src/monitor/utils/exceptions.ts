@@ -71,3 +71,10 @@ export class NotTheScheduleMonitorException extends Error {
     this.message = 'Você não tem permissão para rejeitar este agendamento';
   }
 }
+
+export class InvalidTokenException extends Error {
+  constructor() {
+    super();
+    this.message = `O token não é válido!`;
+  }
+}
