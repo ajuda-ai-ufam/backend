@@ -232,6 +232,15 @@ export class UserService {
     });
   }
 
+  async findOneTeacherByIdWithDepartment(user_id: number) {
+    return this.prisma.teacher.findFirst({
+      where: { user_id },
+      include: {
+        department: true,
+      },
+    });
+  }
+
   async findOneByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
