@@ -271,7 +271,7 @@ export class MonitorService {
       orderBy: { week_day: 'asc' },
     });
   }
-  async createExternalMonitoring(data: CreateExternalMonitoringDto) {
+  async createExternalMonitoring(data: CreateExternalMonitoringDto, token_user_id: number) {
     const {
       student_id,
       student_name,
@@ -282,7 +282,11 @@ export class MonitorService {
       schedule_topic_id,
       description,
     } = data;
-  
+    
+    if (token_user_id !== monitor_id) {
+      throw new UnauthorizedException('Você não tem permissão para criar monitoramento externo para outro monitor.');
+    }
+    
     try {
       await this.createExternalMonitoringCommand.execute({
         student_id,

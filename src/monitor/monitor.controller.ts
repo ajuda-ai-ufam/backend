@@ -318,11 +318,15 @@ export class MonitorController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post('external-monitoring')
+  @ApiOperation({summary: 'Cadastra uma monitoria externa', description: 'Cadastra uma monitoria externa para um monitor'})
   async externalMonitoring(
+    @Req() req: Request,
     @Body() body: CreateExternalMonitoringDto,    
   ) {
     try{
-      return await this.monitorService.createExternalMonitoring(body);
+      const token = req.headers.authorization.toString().replace('Bearer ', '');
+      const user = this.jwtService.decode(token) as JWTUser;
+      return await this.monitorService.createExternalMonitoring(body, user.monitor.id);
     } catch (error) {
       if (error instanceof InvalidTokenException) {
         throw new UnauthorizedException(error.message);

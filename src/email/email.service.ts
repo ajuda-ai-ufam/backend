@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { CreateExternalMonitoringDto } from 'src/monitor/dto/external-monitoring.dto';
 @Injectable()
 export class EmailService {
   constructor(private mailerService: MailerService) {}
@@ -201,12 +202,18 @@ export class EmailService {
       },
     });
   }
-  async sendEmailExternalMonitoring(email: string) {
+  async sendEmailExternalMonitoring(data: CreateExternalMonitoringDto, email: string) {
     return this.mailerService.sendMail({
       to: email,
       from: process.env.MAIL_AUTH_USER,
       subject: 'Monitoria externa realizada',
       text: 'Monitoria externa realizada',
+      template: `external-monitoring.hbs`,
+      context: {
+        name: data.student_name,
+        topic: data.schedule_topic_id,
+        front_end_base_url: process.env.FRONT_END_BASE_URL,
+      },
     });
   }
 }
