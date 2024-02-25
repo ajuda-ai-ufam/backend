@@ -80,6 +80,32 @@ export class SubjectController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({ description: 'Rota para listar todas as disciplinas sem paginação.' })
+  @Get("/all")
+  async findAllSemPaginacao(
+    @Req() req: Request,
+    @Query() query: SubjectQueryDto,
+  ){
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    try {
+      return await this.subjectService.findAllSemPaginacao(
+        user.sub,
+        user.type_user.type,
+        query,
+      );
+    } catch (error) {
+      if (error instanceof UserNotStudentException) {
+        throw new BadRequestException(error.message);
+      }
+
+      throw error;
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Get(':id')
   async findOne(@Req() req: Request, @Param('id') id: number) {
     const token = req.headers.authorization.toString().replace('Bearer ', '');
