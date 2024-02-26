@@ -9,6 +9,7 @@ import { ListStudentSchedulesCommand } from './commands/list-student-schedules.c
 import { ScheduleMonitoringCommand } from './commands/schedule-monitoring.command';
 import { StudentController } from './student.controller';
 import { EmailService } from 'src/email/email.service';
+import { FindAllStudentsCommand } from './commands/find-all-students.command';
 
 @Module({
   imports: [JwtModule],
@@ -17,6 +18,7 @@ import { EmailService } from 'src/email/email.service';
     CreateStudentCommand,
     FindEnrollmentCommand,
     FindOneByIdCommand,
+    FindAllStudentsCommand,
     GetMonitorAvailabilityCommand,
     ListStudentSchedulesCommand,
     ScheduleMonitoringCommand,
