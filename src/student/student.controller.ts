@@ -31,15 +31,29 @@ import {
   StudentTimeAlreadyScheduledException,
   TopicNotFoundException,
 } from './utils/exceptions';
+import { QueryPaginationDto } from 'src/common/dto/query-pagination.dto';
+import { IResponsePaginate } from 'src/common/interfaces/pagination.interface';
+import { FindAllStudentsCommand } from './commands/find-all-students.command';
 
 @ApiTags('Students')
 @Controller('student')
 export class StudentController {
   constructor(
     private readonly scheduleMonitoringCommand: ScheduleMonitoringCommand,
+    private readonly findAllStudentsCommand: FindAllStudentsCommand,
     private readonly listStudentSchedulesCommand: ListStudentSchedulesCommand,
     private readonly jwtService: JwtService,
   ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get()
+  async findAll(
+    @Query() query: QueryPaginationDto,
+  ): Promise<IResponsePaginate> {
+    return await this.findAllStudentsCommand.execute(query);
+  }
+
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

@@ -274,4 +274,138 @@ export class SubjectService {
     });
     return pagination(data, query);
   }
+
+  async findAllSemPaginacao(userId: number,userType: Role,query: SubjectQueryDto,): Promise<Subject[]> {
+    const selecUserData = {
+      select: {
+        user: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+    };
+    const teacherId =
+      typeof query.teacherId === 'string'
+        ? Number.parseInt(query.teacherId)
+        : null;
+  
+    if (teacherId !== null) {
+      const teacherExists = await this.prisma.teacher.findUnique({
+        where: { user_id: teacherId },
+      });
+  
+      if (!teacherExists) {
+        throw new NotFoundException('Professor não encontrado.');
+      }
+    }
+  
+    const onlyEnrollments = query.onlyEnrollments;
+  
+    if (onlyEnrollments === true && userType !== Role.Student) {
+      throw new UserNotStudentException();
+    }
+  
+    let subjectsEnrollments = [];
+    if (userType === Role.Student) {
+      subjectsEnrollments = await this.prisma.subjectEnrollment.findMany({
+        where: {
+          student_id: userId,
+          canceled_at: null,
+        },
+      });
+    }
+  
+    const monitorStatus =
+      typeof query.monitorStatus === 'undefined' ? null : query.monitorStatus;
+  
+    const monitorStatusFilter =
+      monitorStatus !== null
+        ? {
+            id_status: {
+              in: [...monitorStatus],
+            },
+          }
+        : {
+            id_status: {
+              in: [MonitorStatus.AVAILABLE, MonitorStatus.APPROVED],
+            },
+          };
+  
+    const where = {
+      name: {
+        contains: query.search,
+      },
+      studentsEnrolled:
+        onlyEnrollments === true
+          ? {
+              some: {
+                student_id: {
+                  equals: userId,
+                },
+                canceled_at: {
+                  equals: null,
+                },
+              },
+            }
+          : undefined,
+      SubjectResponsability:
+        teacherId !== null
+          ? {
+              some: {
+                professor_id: {
+                  equals: teacherId,
+                },
+              },
+            }
+          : undefined,
+    };
+  
+    const data = await this.prisma.subject.findMany({
+      where: where,
+      include: {
+        SubjectResponsability: {
+          select: {
+            id: true,
+            professor: selecUserData,
+            status: { select: { id: true, status: true } },
+          },
+        },
+        Monitor: {
+          select: {
+            id: true,
+            student: {
+              select: {
+                user: selecUserData.select.user,
+                enrollment: true,
+                course: {
+                  select: { id: true, name: true },
+                },
+              },
+            },
+            status: { select: { id: true, status: true } },
+            responsible_professor: {
+              select: { user: selecUserData.select.user },
+            },
+            MonitorSettings: {
+              select: { id: true, preferential_place: true },
+              where: { is_active: true },
+            },
+          },
+          where: monitorStatusFilter,
+        },
+      },
+      orderBy: { name: 'asc' },
+    });
+  
+    data.forEach((element) => {
+      element['isStudentEnrolled'] = false;
+      subjectsEnrollments.forEach((subject) => {
+        if (subject.subject_id == element.id) {
+          element['isStudentEnrolled'] = true;
+        }
+      });
+    });
+    
+    return data;
+  }
+  
 }
