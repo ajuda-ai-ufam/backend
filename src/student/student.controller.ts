@@ -50,7 +50,7 @@ export class StudentController {
   @Get()
   async findAll(
     @Query() query: QueryPaginationDto,
-  ): Promise<IResponsePaginate> {
+  ) {
     return await this.findAllStudentsCommand.execute(query);
   }
 
