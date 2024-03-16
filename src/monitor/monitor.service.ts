@@ -71,21 +71,6 @@ export class MonitorService {
     if (!professor)
       throw new NotFoundException('Professor(a) não encontrado(a).');
 
-    const hasMonitoring = await this.prismaService.monitor.findFirst({
-      where: {
-        student_id: user_id,
-        id_status: {
-          in: [1, 2, 3],
-        },
-      },
-      include: { status: true },
-    });
-
-    if (hasMonitoring)
-      throw new BadRequestException(
-        `Você já possui uma monitoria com o status: ${hasMonitoring.status.status}`,
-      );
-
     const email: string = professor.email;
     const sub = 'Você recebeu uma nova solicitação!';
     const context = { student_name: user.name, subject_name: subject.name };
