@@ -4,4 +4,5 @@ export enum ScheduleStatus {
   CANCELED = 3,
   REALIZED = 4,
   NOT_REALIZED = 5,
+  REALIZED_EXTERNALLY=6
 }

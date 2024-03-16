@@ -58,6 +58,7 @@ const status_schedule_monitoring = [
   { status: 'Cancelada', id: 3 },
   { status: 'Realizada', id: 4 },
   { status: 'Não realizada', id: 5 },
+  {status: 'Realizado Externamente',id: 6}
 ];
 
 const type_user = [
