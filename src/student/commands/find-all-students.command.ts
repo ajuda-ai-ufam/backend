@@ -8,7 +8,7 @@ import { pagination } from 'src/common/pagination';
 export class FindAllStudentsCommand {
   constructor(private prisma: PrismaService) {}
 
-  async execute(query: QueryPaginationDto): Promise<IResponsePaginate> {
+  async execute(query: QueryPaginationDto) {
     const data = await this.prisma.student.findMany({
         select: {
             user: {
@@ -25,7 +25,7 @@ export class FindAllStudentsCommand {
             ]
         },
     });
-    return pagination(data, query);
 
+    return data;
   }
 }
