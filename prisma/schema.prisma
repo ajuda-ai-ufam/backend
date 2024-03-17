@@ -24,6 +24,15 @@ model TypeCode {
   @@map("type_code")
 }
 
+model TypeMonitoring {
+  id   Int    @id @unique @default(autoincrement())
+  type String @db.VarChar(32)
+  ScheduleMonitoring ScheduleMonitoring[]
+
+  @@map("type_monitoring")
+}
+
+
 model User {
   id                Int                 @id @default(autoincrement())
   email             String              @unique @db.VarChar(50)
@@ -220,6 +229,8 @@ model ScheduleMonitoring {
   ScheduleTopics      ScheduleTopics?          @relation(fields: [schedule_topic_id], references: [id])
   monitor_settings_id Int?
   monitor_settings    MonitorSettings?          @relation(fields: [monitor_settings_id], references: [id])
+  type_monitoring_id  Int                       @default(1)
+  TypeMonitoring      TypeMonitoring            @relation(fields: [type_monitoring_id], references: [id])
 
   @@map("schedule_monitoring")
 }
