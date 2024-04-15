@@ -76,6 +76,11 @@ We use Makefile commands to run our scripts:
   make db-seed
   ```
 
+- Populate DB with mocks: 
+  ```bash
+  make db-populate
+  ```
+
 - Access database through terminal:
   ```bash
   make db-shell
