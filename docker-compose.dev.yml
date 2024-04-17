@@ -13,6 +13,7 @@ services:
         volumes:
             - mysql_dev:/var/lib/mysql
             - mysql_config_dev:/etc/mysql
+            - /var/run/docker.sock:/var/run/docker.sock
 
     super_backend:
         container_name: super_api_dev
@@ -28,6 +29,7 @@ services:
         volumes:
             - .:/usr/src/app
             - /usr/src/app/node_modules
+            - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
     mysql_dev:
