@@ -22,7 +22,8 @@ EXPOSE 8080
 
 
 FROM base as development
-RUN npm ci
+RUN npm install
 COPY . ./
+RUN ls -la
 RUN npx prisma generate
 EXPOSE 3003
