@@ -27,7 +27,7 @@ services:
         command: npm run start:dev
         restart: unless-stopped
         volumes:
-            - .:/usr/src/app
+            - /home/jenkins/workspace/test-pipeline:/usr/src/app
             - /usr/src/app/node_modules
             - /var/run/docker.sock:/var/run/docker.sock
 
