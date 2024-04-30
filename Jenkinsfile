@@ -5,6 +5,7 @@ pipeline {
         }
     }
     
+    // We set this variable because Docker cannot bind mount the source files from the host to the container, so we just create a normal volume with the source directory.
     environment {
         BIND_SOURCE_VOLUME = '/usr/src/app'
     }
