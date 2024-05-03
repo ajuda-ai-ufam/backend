@@ -21,26 +21,60 @@ pipeline {
                 ])
             }
         }
-        stage('Build') {
+        stage('Test') {
             steps {
-                echo "Building.."
+                echo 'Testing..'
                 sh '''
-                    cp -r /home/jenkins/monitoria-static-files/. .
-                    ls -la
-                    make build
-                    make up
+                    npm install
+                    npm run test:cov
                 '''
             }
         }
-        stage('Test') {
+        stage('Build') {
             steps {
-                echo "Testing.."
+                echo 'Building..'
+                sh '''
+                    cp -r /home/jenkins/monitoria-static-files/. .
+                    make build up-silent
+                '''
+            }
+        }
+        stage('Ensure API is up') {
+            steps {
+                echo 'Checking if API is up...'
+                script {
+                    // Wait until the log contains "app started successfully"
+                    def appStarted = false
+                    timeout(2) { // Timeout after 2 minutes
+                        waitUntil {
+                            sleep(5) // Poll every 5 seconds
+                            appStarted = sh(script: "make logs | grep 'Nest application successfully started'", returnStatus: true) == 0
+                            return appStarted
+                        }
+                    }
+                }
+            }
+        }
+        stage('Populate DB') {
+            steps {
+                echo 'Populating DB..'
+                sh '''
+                    make db-start
+                    make db-migrate
+                    make db-seed
+                    make db-populate
+                '''
             }
         }
         stage('Deliver') {
             steps {
                 echo 'Deliver....'
             }
+        }
+    }
+    post {
+        always {
+            sh 'make down'
         }
     }
 }

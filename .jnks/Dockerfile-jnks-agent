@@ -3,7 +3,7 @@ FROM jenkins/agent:latest-alpine3.19-jdk21
 USER root
 
 RUN apk update
-RUN apk add python3 py3-pip make docker docker-cli-compose openrc
+RUN apk add python3 py3-pip make docker docker-cli-compose openrc npm nodejs
 
 RUN apk --no-cache add shadow
 RUN addgroup jenkins docker

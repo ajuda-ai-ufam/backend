@@ -23,7 +23,7 @@ build-no-cache:
 
 .PHONY: down
 down:
-	@docker-compose down  --remove-orphans
+	@docker-compose down --remove-orphans
 
 .PHONY: logs
 logs:
@@ -32,6 +32,10 @@ logs:
 .PHONY: shell
 shell:
 	@docker-compose exec ${API_SERVICE_NAME} bash
+
+.PHONY: test
+test:
+	@docker-compose exec ${API_SERVICE_NAME} npm run test:cov
 
 .PHONY: db-start
 db-start:
