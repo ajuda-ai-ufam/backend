@@ -2,6 +2,7 @@ API_SERVICE_NAME=super_backend
 DB_SERVICE_NAME=super_mysqldb
 
 DEV_DOCKER_COMPOSE_FILE=docker-compose.dev.yml
+CI_DOCKER_COMPOSE_FILE=docker-compose.ci.yml
 STG_DOCKER_COMPOSE_FILE=docker-compose.staging.yml
 PROD_DOCKER_COMPOSE_FILE=docker-compose.yml
 
@@ -12,6 +13,10 @@ up:
 .PHONY: up-silent
 up-silent:
 	@docker-compose -f ${DEV_DOCKER_COMPOSE_FILE} up -d
+
+.PHONY: up-ci
+up-ci:
+	@docker-compose -f ${CI_DOCKER_COMPOSE_FILE} up --build -d
 
 .PHONY: build
 build:
@@ -44,6 +49,10 @@ db-start:
 .PHONY: db-migrate
 db-migrate:
 	@docker-compose exec ${API_SERVICE_NAME} npx prisma migrate dev
+
+.PHONY: db-migrate-deploy
+db-migrate-deploy:
+	@docker-compose exec ${API_SERVICE_NAME} npx prisma migrate deploy
 
 .PHONY: db-migrate-reset
 db-migrate-reset:

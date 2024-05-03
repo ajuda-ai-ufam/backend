@@ -23,7 +23,7 @@ services:
         env_file: ./.env
         ports:
             - $HTTP_PORT:$HTTP_PORT
-        command: npm run start:dev
+        command: npm run start
         restart: unless-stopped
         volumes:
             - ${BIND_SOURCE_VOLUME:-.:/usr/src/app}

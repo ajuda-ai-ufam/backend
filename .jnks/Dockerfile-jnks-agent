@@ -1,10 +1,11 @@
-FROM jenkins/agent:latest-alpine3.19-jdk21
+FROM jenkins/agent:latest-alpine3.18-jdk17
 
 USER root
 
 RUN apk update
-RUN apk add python3 py3-pip make docker docker-cli-compose openrc npm nodejs
+RUN apk add python3 py3-pip make docker docker-cli-compose openrc npm nodejs procps
 
+# Setup Jenkins permissions for docker.sock
 RUN apk --no-cache add shadow
 RUN addgroup jenkins docker
 RUN groupmod --gid 1001 docker

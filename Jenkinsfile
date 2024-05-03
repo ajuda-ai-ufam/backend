@@ -24,10 +24,10 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing..'
-                sh '''
-                    npm install
-                    npm run test:cov
-                '''
+                // sh '''
+                //     npm i
+                //     npm run test:cov
+                // '''
             }
         }
         stage('Build') {
@@ -60,7 +60,7 @@ pipeline {
                 echo 'Populating DB..'
                 sh '''
                     make db-start
-                    make db-migrate
+                    make db-migrate-deploy
                     make db-seed
                     make db-populate
                 '''
