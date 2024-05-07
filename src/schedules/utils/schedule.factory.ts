@@ -2,6 +2,7 @@ import { Schedule } from '../domain/schedule';
 
 export class ScheduleFactory {
   static createFromPrisma(prismaSchedule): Schedule {
+
     const schedule: Schedule = {
       id: prismaSchedule.id,
       startDate: prismaSchedule.start,
@@ -49,6 +50,15 @@ export class ScheduleFactory {
         enrollment: prismaSchedule.student.enrollment,
         name: prismaSchedule.student.user.name,
         email: prismaSchedule.student.user.email,
+      };
+    }
+
+    if (!!prismaSchedule.student_name) {
+      schedule.student = {
+        id: prismaSchedule.student_id,
+        enrollment: "",
+        name: prismaSchedule.student_name,
+        email: "",
       };
     }
 
