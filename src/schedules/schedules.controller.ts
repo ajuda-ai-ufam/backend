@@ -46,6 +46,7 @@ import { Topic } from './dto/topic.dto';
 import { GetTopicsCommand as GetScheduleTopicsCommand } from './commands/get-topics.command';
 import { GetTopicsQueryParams } from './dto/get-topics.request.dto';
 import { GetTopicsResponse } from './dto/get-topics.response.dto';
+import { ListExternalMonitoringCommand } from './commands/list-external-monitoring.command';
 
 @Controller('schedules')
 @ApiTags('Schedules')
@@ -55,6 +56,7 @@ export class SchedulesController {
     private readonly endScheduleCommand: EndScheduleCommand,
     private readonly getScheduleTopicsCommand: GetScheduleTopicsCommand,
     private readonly listSchedulesCommand: ListSchedulesCommand,
+    private readonly listExternalMonitoringCommand: ListExternalMonitoringCommand,
     private readonly listEndingSchedulesCommand: ListEndingSchedulesCommand,
     private readonly createTopicCommand: CreateTopicCommand,
     private readonly jwtService: JwtService,
@@ -99,6 +101,57 @@ export class SchedulesController {
 
     try {
       return await this.listSchedulesCommand.execute(
+        { ...query, responsibleIds, subjectIds },
+        user.sub,
+        user.type_user.type,
+      );
+    } catch (error) {
+      if (error instanceof ProfessorNotAuthorizedException) {
+        throw new ForbiddenException({ error: { message: error.message } });
+      }
+
+      throw error;
+    }
+  }
+
+  @ApiBearerAuth()
+  @Get('external_monitoring')
+  @ApiOperation({
+    summary: 'Retorna os agendamentos externos de um monitor.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Lista de agendamentos externos',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Você não tem autorização para performar esta ação.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Não foi encontrado um token de autenticação válido.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Nenhum agendamento externo foi encontrado.',
+  })
+  async listExternalMonitoring(@Req() req: Request,
+  @Query() query: ListSchedulesQueryParams,): Promise<any> {
+    const token = req.headers.authorization.toString().replace('Bearer ', '');
+    const user = this.jwtService.decode(token) as JWTUser;
+
+    const responsibleIds =
+      typeof query.responsibleIds === 'number'
+        ? [query.responsibleIds]
+        : query.responsibleIds;
+
+    const subjectIds =
+      typeof query.subjectIds === 'number'
+        ? [query.subjectIds]
+        : query.subjectIds;
+
+    try {
+      return await this.listExternalMonitoringCommand.execute(
         { ...query, responsibleIds, subjectIds },
         user.sub,
         user.type_user.type,

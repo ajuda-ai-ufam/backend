@@ -17,6 +17,7 @@ import { RefuseScheduledMonitoringCommand } from './commands/refuse-scheduled-mo
 import { EndMonitoringCommand } from './commands/end-monitoring.command';
 import { GetMonitorCommand } from './commands/get-monitor.command';
 import { UpdateMonitorCommand } from './commands/update-monitor.command';
+import { createExternalMonitoringCommand } from './commands/create-externalMonitoring.command';
 
 @Module({
   controllers: [MonitorController],
@@ -28,6 +29,7 @@ import { UpdateMonitorCommand } from './commands/update-monitor.command';
     ListMonitorsCommand,
     RefuseScheduledMonitoringCommand,
     UpdateMonitorCommand,
+    createExternalMonitoringCommand,
     MonitorService,
     PrismaService,
     SubjectService,

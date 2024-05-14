@@ -9,10 +9,12 @@ import { ListSchedulesCommand } from './commands/list-schedules.command';
 import { SchedulesController } from './schedules.controller';
 import { CreateTopicCommand } from './commands/create-topic.command';
 import { GetTopicsCommand } from './commands/get-topics.command';
+import { ListExternalMonitoringCommand } from './commands/list-external-monitoring.command';
 
 @Module({
   providers: [
     CancelScheduleCommand,
+    ListExternalMonitoringCommand,
     EndScheduleCommand,
     GetTopicsCommand,
     ListSchedulesCommand,
