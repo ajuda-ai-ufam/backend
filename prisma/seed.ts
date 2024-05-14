@@ -68,6 +68,11 @@ const type_user = [
   { type: 'Super Coordinator', id: 4 },
 ];
 
+const type_monitoring = [
+  {type:'Interna',id:1},
+  {type:'Externa',id:2},
+];
+
 const departments = [
   { code: '000', name: 'Outros', abbreviation: 'Outros', id: 1 },
   { code: 'ICOMP', name: 'Instituto de Computação', abbreviation: 'IComp', id: 2 },
@@ -155,6 +160,15 @@ async function main() {
     });
   }
   console.log('Code types seeded.');
+
+  for (const type of type_monitoring) {
+    await prisma.typeMonitoring.upsert({
+      create: type,
+      update: {},
+      where: { id: type.id },
+    });
+  }
+  console.log('Monitoria types seeded.');
 
   for (const status of status_monitoring) {
     await prisma.statusMonitoring.upsert({
